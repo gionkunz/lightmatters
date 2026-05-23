@@ -1,0 +1,26 @@
+{
+  "name": "physics",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/physics/src",
+  "projectType": "library",
+  "tags": ["scope:physics"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/physics",
+        "main": "libs/physics/src/index.ts",
+        "tsConfig": "libs/physics/tsconfig.lib.json",
+        "assets": ["libs/physics/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/physics/jest.config.cts"
+      }
+    }
+  }
+}

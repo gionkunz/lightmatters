@@ -4,9 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-Light Matters is in **pre-implementation**. Docs and a visual-design prototype exist; the Angular app has not yet been scaffolded. The first engineering task is the project scaffold (step 1 of the build order in `docs/architecture.md`).
+Light Matters is **scaffolded**: an Nx integrated monorepo with the `lightmatters` Angular 21 app, a Playwright `lightmatters-e2e` project, and three foundational libraries (`libs/design`, `libs/engine`, `libs/physics`). No product code yet — the next engineering tasks are the design tokens + theme service (step 2 of the build order in `docs/architecture.md`).
 
-There are no build / test / lint commands yet because there is no code. Update this file once the Angular app is initialized.
+Build / test / lint commands:
+
+```bash
+nx build lightmatters --tui=false           # build the app
+nx test lightmatters --tui=false            # jest unit tests for the app
+nx lint lightmatters --tui=false            # ESLint for the app
+nx run-many -t lint -p design engine physics --tui=false   # lint all libs
+nx affected -t lint test build --tui=false  # only what changed
+```
 
 ## What this is
 
@@ -28,6 +36,7 @@ Light Matters (lightmatters.app) is an interactive web app that builds intuition
 See `docs/architecture.md` for full reasoning. Highlights so you don't re-litigate them:
 
 - **Stack:** Angular + **ogl** (WebGL) + SVG, organized as an **Nx** classic integrated monorepo (`apps/` + `libs/`). Hosted on **Cloudflare Pages** at `lightmatters.app`.
+- **CSS:** **Tailwind v4** via `@tailwindcss/postcss`. No `tailwind.config.js`; configuration (theme tokens, `@source` directives for libs) lives in `apps/lightmatters/src/styles.css`. Global styles entry is `.css` (not `.scss`) so PostCSS handles `@import "tailwindcss";` directly; component `.scss` files still work for Sass-only features.
 - **Typography:** **EB Garamond** (serif, everywhere readable) + **IBM Plex Mono** (small uppercase "Kicker" labels only). No sans-serif. Ever.
 - **Two themes:** light and dark. Both first-class, not an either-or.
 - **Two-accent color grammar:** red = body / vector A, blue = body / vector B. Semantic, never decorative.
@@ -42,15 +51,25 @@ See `docs/architecture.md` for full reasoning. Highlights so you don't re-litiga
 
 ## Running Nx commands
 
-**Always pass `--tui=false` when invoking any `nx` command.** Nx's interactive TUI breaks non-interactive shells: output is unparseable, the process can hang waiting for keypresses, and you lose the logs you need to reason about the result. This applies to every `nx` invocation — `nx build`, `nx test`, `nx serve`, `nx affected`, `nx run-many`, `nx g`, etc. Example:
+**Always disable Nx's interactive TUI when invoking any `nx` command.** The TUI breaks non-interactive shells: output is unparseable, the process can hang waiting for keypresses, and you lose the logs you need to reason about the result.
+
+Two mechanisms — pick the right one for the command:
+
+- **Task commands** (`nx build`, `nx test`, `nx serve`, `nx lint`, `nx affected`, `nx run-many`, `nx show`): pass `--tui=false` as a flag.
+- **Generators** (`nx g @nx/angular:*`, `nx g @nx/js:*`, …): use the `NX_TUI=false` env var instead. The Angular generator schemas strict-validate flags and will error with `"'tui' is not found in schema"` if you pass `--tui=false` as a flag.
+
+Examples:
 
 ```bash
 nx build lightmatters --tui=false
 nx affected -t lint test build --tui=false
-nx g @nx/angular:lib design --tui=false
+NX_TUI=false nx g @nx/angular:application --name=my-app --directory=apps/my-app
+NX_TUI=false nx g @nx/angular:library --name=design --directory=libs/design
 ```
 
-If you ever see the agent execution hang on an Nx command, suspect a missing `--tui=false` first.
+If you ever see the agent execution hang on an Nx command, suspect a missing TUI disable first.
+
+Also: Angular generators in this Nx/Angular version reject **positional** name arguments. Always pass `--name=<name>` explicitly (e.g. `nx g @nx/angular:application --name=lightmatters`, not `nx g @nx/angular:application lightmatters`).
 
 ## Working on this project
 
@@ -59,3 +78,27 @@ If you ever see the agent execution hang on an Nx command, suspect a missing `--
 - When porting from `visual-design-prototype/`, **match the visual output, not the React structure**. Re-decompose into Angular components and directives.
 - Physics formulas (Lorentz factor, time dilation, Doppler shift, etc.) go in `src/app/physics/` as pure functions. Both diagrams and narration call into the same module.
 - The brand sheet from the prototype (`visual-design-prototype/project/brand-sheet.jsx`) should be ported as a `/design-sheet` route — it's the visual-regression canary.
+
+<!-- nx configuration start-->
+<!-- Leave the start & end comments to automatically receive updates. -->
+
+# General Guidelines for working with Nx
+
+- For navigating/exploring the workspace, invoke the `nx-workspace` skill first - it has patterns for querying projects, targets, and dependencies
+- When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
+- Prefix nx commands with the workspace's package manager (e.g., `pnpm nx build`, `npm exec nx test`) - avoids using globally installed CLI
+- You have access to the Nx MCP server and its tools, use them to help the user
+- For Nx plugin best practices, check `node_modules/@nx/<plugin>/PLUGIN.md`. Not all plugins have this file - proceed without it if unavailable.
+- NEVER guess CLI flags - always check nx_docs or `--help` first when unsure
+
+## Scaffolding & Generators
+
+- For scaffolding tasks (creating apps, libs, project structure, setup), ALWAYS invoke the `nx-generate` skill FIRST before exploring or calling MCP tools
+
+## When to use nx_docs
+
+- USE for: advanced config options, unfamiliar flags, migration guides, plugin configuration, edge cases
+- DON'T USE for: basic generator syntax (`nx g @nx/react:app`), standard commands, things you already know
+- The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
+
+<!-- nx configuration end-->
