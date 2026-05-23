@@ -2,7 +2,7 @@
   "name": "design",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/design/src",
-  "prefix": "lib",
+  "prefix": "lm",
   "projectType": "library",
   "tags": ["scope:design"],
   "targets": {

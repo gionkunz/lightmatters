@@ -25,6 +25,15 @@ export default [
               onlyDependOnLibsWithTags: ['*'],
             },
             {
+              sourceTag: 'scope:feature',
+              onlyDependOnLibsWithTags: [
+                'scope:design',
+                'scope:engine',
+                'scope:primitive',
+                'scope:physics',
+              ],
+            },
+            {
               sourceTag: 'scope:chapter',
               onlyDependOnLibsWithTags: [
                 'scope:engine',

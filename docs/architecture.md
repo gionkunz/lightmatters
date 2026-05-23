@@ -54,12 +54,15 @@ Nx workspace, integrated Angular monorepo. One deployable app, many libraries.
 ```
 lightmatters/                          ← workspace root
   apps/
-    lightmatters/                      ← the Angular app: bootstrap, routing, shell
+    lightmatters/                      ← minimal app shell — no features live here
       src/
         app/
-          app.routes.ts
-          shell/                       ← layout, navigation, chapter index, theme toggle
-    lightmatters-e2e/                  ← Playwright/Cypress end-to-end tests
+          app.config.ts                ← root providers
+          app.routes.ts                ← root routes; every page is lazy-imported from a feature lib
+          app.component.ts             ← layout chrome: wordmark, theme toggle, <router-outlet/>
+        main.ts
+        styles.css                     ← Tailwind entry + @theme tokens + @source directives
+    lightmatters-e2e/                  ← Playwright end-to-end tests
 
   libs/
     design/                            ← tokens, ThemeService, brand components, lmInteractive
@@ -72,38 +75,73 @@ lightmatters/                          ← workspace root
       curved-surface/                  ← cylinder ↔ cone ↔ gravity-well surface (3D)
       worldline-tracer/                ← animated point + fading trail
       wireframe-body/                  ← line-rendered sphere / planet
-    chapters/
-      01-position-time/                ← one Nx lib per chapter (lazy-loadable)
-      02-speed-budget/
+    features/                          ← every user-facing routable area is a feature lib
+      landing/                         ← /
+      chapter-index/                   ← /chapters
+      design-sheet/                    ← /design-sheet (dev-only)
+      chapter-01-position-time/        ← one feature lib per chapter (lazy-loaded)
+      chapter-02-speed-budget/
       ...
 
   nx.json, package.json, tsconfig.base.json, eslint.config.mjs, ...
 ```
 
+### The app shell and feature libraries
+
+The `apps/lightmatters` project is **intentionally minimal**. It contains:
+
+- bootstrap (`main.ts`, `app.config.ts`),
+- the root routes file (`app.routes.ts`) — nothing but `loadChildren` entries pointing at feature libs,
+- the layout chrome in `app.component.ts` — wordmark, theme toggle, `<router-outlet/>`, and any persistent shell UI composed from `libs/design` brand components.
+
+**No features live in the app.** No page templates, no chapter content, no route handlers beyond the lazy-import wiring. If something has its own URL, it belongs in a feature lib.
+
+Every user-facing area is a **feature library** under `libs/features/`. A feature lib exposes a `Routes` array as its public API, which the app shell lazy-imports:
+
+```ts
+// libs/features/chapter-01-position-time/src/lib/chapter-01.routes.ts
+import type { Routes } from '@angular/router';
+
+export const chapter01Routes: Routes = [
+  { path: '', component: ChapterShellComponent, children: [
+    { path: 'step/:step', component: StepHostComponent },
+    { path: '', redirectTo: 'step/1', pathMatch: 'full' },
+  ]},
+];
+
+// apps/lightmatters/src/app/app.routes.ts
+export const appRoutes: Routes = [
+  { path: '',            loadChildren: () => import('@lightmatters/feature-landing').then(m => m.landingRoutes) },
+  { path: 'chapters',    loadChildren: () => import('@lightmatters/feature-chapter-index').then(m => m.chapterIndexRoutes) },
+  { path: 'design-sheet',loadChildren: () => import('@lightmatters/feature-design-sheet').then(m => m.designSheetRoutes) },
+  { path: 'ch/01',       loadChildren: () => import('@lightmatters/feature-chapter-01-position-time').then(m => m.chapter01Routes) },
+  // ...
+  { path: '**',          redirectTo: 'chapters' },
+];
+```
+
+**Chapters are a category of feature.** Each chapter is a feature lib (`feature-chapter-NN-<slug>`); landing, chapter-index, and design-sheet are non-chapter features. They follow the same rules: own folder, own dependency graph, own lazy chunk, route config as public API. Adding a chapter and adding a non-chapter page are the same operation.
+
 ### Dependency rules
 
 Enforced via `@nx/enforce-module-boundaries` with Nx tags:
 
-| Tag                  | May depend on                                                  |
-|----------------------|-----------------------------------------------------------------|
-| `scope:app`          | everything                                                      |
-| `scope:chapter`      | `scope:engine`, `scope:primitives`, `scope:physics`, `scope:design` |
-| `scope:primitive`    | `scope:engine`, `scope:physics`, `scope:design`                 |
-| `scope:engine`       | `scope:design`                                                  |
-| `scope:design`       | — (leaf)                                                        |
-| `scope:physics`      | — (leaf, pure functions only)                                   |
+| Tag                  | May depend on                                                       |
+|----------------------|---------------------------------------------------------------------|
+| `scope:app`          | `scope:feature`, `scope:design` (shell chrome only)                 |
+| `scope:feature`      | `scope:engine`, `scope:primitives`, `scope:physics`, `scope:design` |
+| `scope:primitive`    | `scope:engine`, `scope:physics`, `scope:design`                     |
+| `scope:engine`       | `scope:design`                                                      |
+| `scope:design`       | — (leaf)                                                            |
+| `scope:physics`      | — (leaf, pure functions only)                                       |
 
-Chapters never depend on each other. Primitives never depend on chapters. The dependency graph stays a clean DAG, which keeps `nx affected` builds fast and prevents accidental coupling.
+Features never depend on each other. Primitives never depend on features. The app depends on features only through dynamic `loadChildren` imports (not on the feature's internal symbols). The dependency graph stays a clean DAG, which keeps `nx affected` builds fast and prevents accidental coupling.
 
-### Why a lib per chapter
+### Why a lib per feature
 
-Each chapter is small enough to be a single lib, and giving each its own project gives us: lazy-loading via the Angular router for free, isolated dependency graphs (a content edit in chapter 4 doesn't invalidate the build of chapter 2), and a natural seam for generators (`nx g chapter <n>-<name>` scaffolds the lib + entry point + first step).
+Each feature is small enough to be a single lib, and giving each its own project gives us: lazy-loading via the Angular router for free, isolated dependency graphs (a content edit in chapter 4 doesn't invalidate the build of chapter 2), and a natural seam for generators (`nx g chapter <n>-<name>` scaffolds a feature lib + route config + first step).
 
-If a chapter grows complex enough to need internal sub-libs, split it then; start coarse.
-
-### What lives in the app vs. a lib
-
-Anything that has more than one consumer or could be reused outside the immediate shell goes in a lib. The `apps/lightmatters` project is intentionally thin — routing config, the shell (navigation, chapter index, theme toggle), and the chapter registry. All the interesting code lives in libs.
+If a feature grows complex enough to need internal sub-libs, split it then; start coarse.
 
 ## The timeline — the heart of the engine
 
@@ -221,9 +259,9 @@ A step is a small TypeScript module exporting a `Step` object. It declares:
 - the timeline (the narrative + animations + interactions),
 - any controls (sliders, toggles) and their initial values.
 
-A chapter is a small module exporting a `Chapter` object: metadata (title, blurb), and an ordered list of steps.
+A chapter is a small module exporting a `Chapter` object: metadata (title, blurb), an ordered list of steps, and a `Routes` array (the lib's public API).
 
-The chapter index page is generated from these declarations. Adding a chapter is: create a folder under `chapters/`, write step files, register the chapter in the chapter list. No engine changes required.
+The chapter index feature reads from a central chapter registry (a small typed list, one entry per chapter feature). Adding a chapter is: `nx g chapter <n>-<name>` to scaffold the feature lib, write step files, register the chapter in the registry, add one `loadChildren` line to `app.routes.ts`. No engine changes required.
 
 ### Visualization lifecycle
 
@@ -247,7 +285,9 @@ Both rendering primitives and narration (for inline numeric values, fact lines) 
 
 Per-step URLs: `/ch/:chapter/step/:step`, plus `/` (landing), `/chapters` (journey map), and `/design-sheet` (dev-only). Routing uses the standard Angular Router so browser back/forward, deep links, and bookmarks work out of the box. Each step route is the canonical share-able URL; a user can send a friend a link to a specific beat in the journey.
 
-On invalid routes, fall back to the chapter index with a small "we couldn't find that step" notice.
+**Route ownership is distributed.** The app shell's `app.routes.ts` declares one top-level entry per feature, each using `loadChildren` to import that feature's exported `Routes` array. The feature owns its own URL space below its mount point — child routes, redirects, route-level resolvers, route-scoped providers all live in the feature lib. The shell never knows what `step/:step` means; chapter features do.
+
+On invalid routes, fall back to the chapter index with a small "we couldn't find that step" notice (a `**` catch-all in `app.routes.ts`).
 
 ## State and persistence
 
@@ -257,7 +297,7 @@ On invalid routes, fall back to the chapter index with a small "we couldn't find
 
 ## Performance considerations
 
-- Lazy-load chapters. The chapter-per-lib layout makes this natural — each `libs/chapters/NN-name` is a route-level lazy chunk via `loadChildren`. The shell bundle stays tiny.
+- Lazy-load every feature. The feature-per-lib layout makes this the default — each `libs/features/*` is a route-level lazy chunk via `loadChildren`. The shell bundle stays tiny because no feature code ships with it.
 - WebGL contexts are expensive — share one context across the app if possible, swap scenes within it as the user moves between steps.
 - Throttle `requestAnimationFrame` work when a step is paused at a wait condition.
 - Pre-compile shaders for the project-wide line primitives at startup.
@@ -306,12 +346,14 @@ Fully responsive interaction design is deferred past v1.
 
 1. **Nx workspace scaffold.** `npx create-nx-workspace@latest lightmatters --preset=angular-monorepo` (integrated). Pick the `lightmatters` app name, SCSS, esbuild. Generate the initial libs — `design`, `engine`, `physics` — with `nx g @nx/angular:lib`. Configure Nx tags + `@nx/enforce-module-boundaries` per the rules above. Wire Tailwind v4 into the app via PostCSS (`@tailwindcss/postcss`) and add `@source` directives for the libs. Wire deploy pipeline to Cloudflare Pages at `lightmatters.app`.
 2. **Design system foundation.** In `libs/design`: port the prototype's tokens, themes (light/dark + toggle), EB Garamond + IBM Plex Mono web fonts, brand components (Wordmark, Kicker, Button, Slider), and the `lmInteractive` glow directive.
-3. **Landing page** in `apps/lightmatters` (translated from `visual-design-prototype/project/landing.jsx`) — proves the design system on a real page.
-4. **The `TimelineRunner`** in `libs/engine` with the smallest event set (`narrate`, `animate`, `wait` for next).
-5. **The `Narrator` component** in `libs/engine` — progressive text reveal driven by the timeline.
-6. **One end-to-end step** using a single primitive (a static spacetime diagram with one moving vector). Proves the engine.
-7. **The spacetime diagram** as `libs/primitives/spacetime-diagram` in SVG (port the look from `primitives.jsx`).
-8. **Chapter 1** as `libs/chapters/01-position-time`, fully authored on top of the engine. Add a `nx g chapter` generator while we're here so chapters 2+ are one command.
-9. **WebGL rendering** — wireframe aesthetic prototyped on a sphere in ogl, then `libs/primitives/curved-surface` for the cone visualizations.
-10. **Expand the timeline event set** (`bind`, `branch`, `trigger`) as Chapter 2 and Chapter 3 demand them.
-11. **Chapter 2, then Chapter 3.** At this point the engine should be stable; further chapters are mostly content.
+3. **App shell.** Wire `app.component.ts` to render the layout chrome (wordmark + theme toggle + `<router-outlet/>`) using `libs/design` brand components. `app.routes.ts` starts with a single `loadChildren` to the landing feature plus a `**` catch-all.
+4. **Landing feature** at `libs/features/landing` (translated from `visual-design-prototype/project/landing.jsx`) — proves the design system and the feature/lazy-route pattern on a real page.
+5. **The `TimelineRunner`** in `libs/engine` with the smallest event set (`narrate`, `animate`, `wait` for next).
+6. **The `Narrator` component** in `libs/engine` — progressive text reveal driven by the timeline.
+7. **One end-to-end step** using a single primitive (a static spacetime diagram with one moving vector), hosted inside a throwaway feature lib. Proves the engine.
+8. **The spacetime diagram** as `libs/primitives/spacetime-diagram` in SVG (port the look from `primitives.jsx`).
+9. **Chapter 1** as `libs/features/chapter-01-position-time`, fully authored on top of the engine. Add a `nx g chapter` generator while we're here so chapters 2+ are one command (scaffolds the feature lib, route config, registry entry, and first step).
+10. **Chapter-index and design-sheet features** at `libs/features/chapter-index` and `libs/features/design-sheet`, both lazy-loaded from the shell.
+11. **WebGL rendering** — wireframe aesthetic prototyped on a sphere in ogl, then `libs/primitives/curved-surface` for the cone visualizations.
+12. **Expand the timeline event set** (`bind`, `branch`, `trigger`) as Chapter 2 and Chapter 3 demand them.
+13. **Chapter 2, then Chapter 3.** At this point the engine should be stable; further chapters are mostly content.

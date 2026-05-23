@@ -17,7 +17,8 @@
     "paths": {
       "@org/design": ["./libs/design/src/index.ts"],
       "@org/engine": ["./libs/engine/src/index.ts"],
-      "@org/physics": ["./libs/physics/src/index.ts"]
+      "@org/physics": ["./libs/physics/src/index.ts"],
+      "@org/feature-landing": ["./libs/features/landing/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
