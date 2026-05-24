@@ -20,10 +20,10 @@ import {
   CHAPTER_01_TOTAL_STEPS,
   hasNextStep,
 } from '../step-registry';
-import { STEP_02_TIME } from './step-02-time';
+import { STEP_03_SPACETIME } from './step-03-spacetime';
 
 @Component({
-  selector: 'lm-step-02',
+  selector: 'lm-step-03',
   imports: [
     LmStepFrameComponent,
     LmNarratorComponent,
@@ -34,9 +34,9 @@ import { STEP_02_TIME } from './step-02-time';
     <lm-step-frame
       [chapter]="1"
       [chapterTitle]="chapterTitle"
-      [step]="2"
+      [step]="3"
       [stepsTotal]="stepsTotal"
-      [hasNextStep]="hasNextStep(2)"
+      [hasNextStep]="hasNextStep(3)"
       [showPlayback]="!runner.isComplete()"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -47,7 +47,6 @@ import { STEP_02_TIME } from './step-02-time';
       [canRewind]="!runner.isComplete()"
       [canFastForward]="runner.playbackActive() || runner.isPaused()"
       (back)="goPrevStep()"
-      (next)="goNextStep()"
       (rewind)="runner.rewind()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -64,38 +63,51 @@ import { STEP_02_TIME } from './step-02-time';
 
         <div class="flex items-center justify-center">
           <lm-spacetime-diagram
-            variant="time-only"
+            variant="full"
+            [position]="position()"
             [time]="time()"
             [width]="680"
-            [height]="320"
+            [height]="460"
           />
         </div>
 
-        <div class="mx-auto w-full max-w-[520px]">
+        <div class="mx-auto flex w-full max-w-[520px] flex-col gap-4">
+          <lm-slider
+            label="position"
+            [value]="position()"
+            [disabled]="!runner.atExplorationWait()"
+            (valueChange)="onPositionChange($event)"
+          />
           <lm-slider
             label="time"
             [value]="time()"
             [disabled]="!runner.atExplorationWait()"
-            (valueChange)="onSliderChange($event)"
+            (valueChange)="onTimeChange($event)"
           />
         </div>
       </div>
     </lm-step-frame>
   `,
 })
-export class Step02Component implements OnInit, OnDestroy {
+export class Step03Component implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
-  protected readonly step = STEP_02_TIME;
+  protected readonly step = STEP_03_SPACETIME;
   protected readonly chapterTitle = CHAPTER_01_TITLE;
   protected readonly stepsTotal = CHAPTER_01_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;
+  protected readonly position = signal(0);
   protected readonly time = signal(0);
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
 
   constructor() {
+    this.registry.register('diagram.position', {
+      get: () => this.position(),
+      set: (v) => this.position.set(v),
+      initial: 0,
+    });
     this.registry.register('diagram.time', {
       get: () => this.time(),
       set: (v) => this.time.set(v),
@@ -137,17 +149,19 @@ export class Step02Component implements OnInit, OnDestroy {
     }
   }
 
-  protected onSliderChange(value: number): void {
+  protected onPositionChange(value: number): void {
+    if (this.runner.atExplorationWait()) {
+      this.position.set(value);
+    }
+  }
+
+  protected onTimeChange(value: number): void {
     if (this.runner.atExplorationWait()) {
       this.time.set(value);
     }
   }
 
   protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/01/step/1');
-  }
-
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/01/step/3');
+    void this.router.navigateByUrl('/ch/01/step/2');
   }
 }
