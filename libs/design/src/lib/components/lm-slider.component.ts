@@ -31,12 +31,16 @@ import { LmInteractiveDirective } from '../directives/lm-interactive.directive';
           class="absolute inset-x-0 top-[9px] h-px bg-ink opacity-[0.22]"
         ></div>
         <div
-          class="absolute left-0 top-[9px] h-px bg-accent-1 opacity-90"
+          class="absolute left-0 top-[9px] h-px opacity-90"
+          [class.bg-accent-1]="accent() === 'accent-1'"
+          [class.bg-accent-2]="accent() === 'accent-2'"
           [style.width.%]="value() * 100"
         ></div>
         <div
           lmInteractive
-          class="absolute top-px size-[18px] -translate-x-1/2 rounded-full border-[1.5px] border-accent-1 bg-paper"
+          class="absolute top-px size-[18px] -translate-x-1/2 rounded-full border-[1.5px] bg-paper"
+          [class.border-accent-1]="accent() === 'accent-1'"
+          [class.border-accent-2]="accent() === 'accent-2'"
           [style.left.%]="value() * 100"
         ></div>
       </div>
@@ -48,6 +52,7 @@ export class LmSliderComponent {
   readonly value = input(0.5);
   readonly valueFormat = input<'decimal' | 'percent'>('decimal');
   readonly disabled = input(false);
+  readonly accent = input<'accent-1' | 'accent-2'>('accent-1');
 
   readonly valueChange = output<number>();
 

@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { ChapterShellComponent } from './chapter-shell.component';
+import { LmChapterShellComponent } from '@lm/engine';
 import { StepPageComponent } from './step-page.component';
 
 export const chapter02Routes: Routes = [
   {
     path: '',
-    component: ChapterShellComponent,
+    component: LmChapterShellComponent,
     children: [
       { path: 'step/:step', component: StepPageComponent },
       { path: '', redirectTo: 'step/1', pathMatch: 'full' },

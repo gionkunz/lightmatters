@@ -39,7 +39,7 @@ export interface Step {
   id: string;
   title: string;
   kicker?: string;
-  layout: 'intro';
+  layout: 'intro' | 'chat-feed';
   timeline: TimelineEvent[];
 }
 

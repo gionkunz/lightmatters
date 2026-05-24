@@ -6,3 +6,5 @@ export { LmKickerComponent } from './lib/components/lm-kicker.component';
 export { LmButtonComponent } from './lib/components/lm-button.component';
 export { LmThemeToggleComponent } from './lib/components/lm-theme-toggle.component';
 export { LmSliderComponent } from './lib/components/lm-slider.component';
+export { LmFactLineComponent } from './lib/components/lm-fact-line.component';
+export { LmLegendComponent } from './lib/components/lm-legend.component';

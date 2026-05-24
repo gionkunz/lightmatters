@@ -1,3 +1,5 @@
+import { properTimeFraction } from './lorentz';
+
 /** Speed of light in km/s (SI definition). */
 export const SPEED_OF_LIGHT_KMS = 299_792.458;
 
@@ -19,22 +21,26 @@ export interface SpeedBudgetComponents {
   spaceKm: number;
 }
 
-/** Geometric time/space split for a fixed-c budget vector on the diagram arc. */
+/** Spatial speed in km/s for physical v/c (0 = rest, 1 = c). */
+export function spatialSpeedKms(vOverC: number): number {
+  return Math.min(1, Math.max(0, vOverC)) * SPEED_OF_LIGHT_KMS;
+}
+
+/** Time/space split for a fixed-c budget vector; vOverC is physical velocity. */
 export function speedBudgetComponents(
-  velocity: number,
-  properYears = 1,
+  vOverC: number,
+  coordinateYears = 1,
 ): SpeedBudgetComponents {
-  const angle = velocity * (Math.PI / 2);
+  const v = Math.min(1, Math.max(0, vOverC));
   return {
-    timeYears: properYears * Math.cos(angle),
-    spaceKm: properYears * Math.sin(angle) * LIGHT_YEAR_KM,
+    timeYears: coordinateYears * properTimeFraction(v),
+    spaceKm: coordinateYears * v * LIGHT_YEAR_KM,
   };
 }
 
-/** Spatial speed in km/s for a position on the budget arc (0 = rest, 1 = c). */
-export function arcSpatialSpeedKms(velocity: number): number {
-  const angle = velocity * (Math.PI / 2);
-  return Math.sin(angle) * SPEED_OF_LIGHT_KMS;
+/** @deprecated Use {@link spatialSpeedKms}. Kept for diagram tip labels. */
+export function arcSpatialSpeedKms(vOverC: number): number {
+  return spatialSpeedKms(vOverC);
 }
 
 export interface SpeedBudgetTipLabel {

@@ -4,14 +4,18 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { LmButtonComponent } from '@lm/design';
 import { Step01Component } from './steps/step-01.component';
+import { Step02Component } from './steps/step-02.component';
 
 @Component({
   selector: 'lm-step-page',
-  imports: [Step01Component, LmButtonComponent, RouterLink],
+  imports: [Step01Component, Step02Component, LmButtonComponent, RouterLink],
   template: `
     @switch (stepNumber()) {
       @case (1) {
         <lm-step-01 />
+      }
+      @case (2) {
+        <lm-step-02 />
       }
       @default {
         <div

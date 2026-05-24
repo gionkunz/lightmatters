@@ -21,7 +21,9 @@ export {
 } from './lib/timeline/narrate-text';
 export { TargetRegistry } from './lib/timeline/target-registry';
 export { TimelineRunner, DEFAULT_NARRATE_READ_PAUSE_MS, DEFAULT_NARRATE_SPEED_MS } from './lib/timeline/timeline-runner';
+export { LmChapterShellComponent } from './lib/components/lm-chapter-shell.component';
 export { LmNarratorComponent } from './lib/components/lm-narrator.component';
+export { LmNarratorChatFeedComponent } from './lib/components/lm-narrator-chat-feed.component';
 export { LmStepFrameComponent } from './lib/components/lm-step-frame.component';
 export { LmPlaybackControlsComponent } from './lib/components/lm-playback-controls.component';
 export { LmPlaybackBarComponent } from './lib/components/lm-playback-bar.component';

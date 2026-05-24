@@ -1,3 +1,4 @@
+import { EQUAL_SPLIT_V_OVER_C } from '@lm/physics';
 import type { Step } from '@lm/engine';
 
 /** Hold after each narrate beat so the diagram readout can land before the next line. */
@@ -46,13 +47,13 @@ export const STEP_01_ALWAYS_AT_C: Step = {
       type: 'animate',
       target: 'diagram.velocity',
       from: 1,
-      to: 0.5,
+      to: EQUAL_SPLIT_V_OVER_C,
       duration: 1.2,
       easing: 'ease-out',
     },
     {
       type: 'narrate',
-      text: 'Halfway on the arc is a fifty-fifty split — equal motion through time and through space.',
+      text: 'When the vector bisects the angle — forty-five degrees on the arc — time and space get equal shares. That takes about seventy-one percent of light speed through space.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

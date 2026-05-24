@@ -48,6 +48,7 @@ import { STEP_01_ALWAYS_AT_C } from './step-01-always-at-c';
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
       (back)="goPrevStep()"
+      (next)="goNextStep()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -148,5 +149,9 @@ export class Step01Component implements OnInit, OnDestroy {
 
   protected goPrevStep(): void {
     void this.router.navigateByUrl('/ch/01/step/4');
+  }
+
+  protected goNextStep(): void {
+    void this.router.navigateByUrl('/ch/02/step/2');
   }
 }

@@ -37,6 +37,7 @@ export class TimelineRunner {
   readonly narrationVisibleCount = signal(0);
   readonly atExplorationWait = signal(false);
   readonly atReadPause = signal(false);
+  readonly completedNarrateTexts = signal<string[]>([]);
   readonly progress = signal(0);
   readonly elapsedMs = signal(0);
   /** @deprecated Use {@link checkpoints} instead. */
@@ -123,6 +124,7 @@ export class TimelineRunner {
     this.narrationVisibleCount.set(0);
     this.atExplorationWait.set(false);
     this.atReadPause.set(false);
+    this.completedNarrateTexts.set([]);
     this.narratePlayback = null;
     this.animatePlayback = null;
     this.setProgress(0);
@@ -227,6 +229,7 @@ export class TimelineRunner {
     this.waitingForUser.set(false);
     this.atExplorationWait.set(false);
     this.atReadPause.set(false);
+    this.rebuildCompletedNarrateTexts();
     this.narratePlayback = null;
     this.animatePlayback = null;
     this.setProgress(this.eventOffsets[eventIndex] ?? 0);
@@ -282,6 +285,7 @@ export class TimelineRunner {
     while (this.index < this.events.length) {
       const event = this.events[this.index];
       if (event.type === 'wait') {
+        this.rebuildCompletedNarrateTexts();
         this.handleWait(event);
         return;
       }
@@ -289,6 +293,7 @@ export class TimelineRunner {
       this.index++;
     }
 
+    this.rebuildCompletedNarrateTexts();
     this.finish();
   }
 
@@ -318,6 +323,7 @@ export class TimelineRunner {
     this.narratePlayback = null;
     this.animatePlayback = null;
     this.index++;
+    this.rebuildCompletedNarrateTexts();
     await this.runNext(generation);
   }
 
@@ -703,5 +709,16 @@ export class TimelineRunner {
     this.cancelTimers();
     this.narrateResolve = null;
     this.animateResolve = null;
+  }
+
+  private rebuildCompletedNarrateTexts(): void {
+    const texts: string[] = [];
+    for (let i = 0; i < this.index; i++) {
+      const event = this.events[i];
+      if (event.type === 'narrate') {
+        texts.push(event.text);
+      }
+    }
+    this.completedNarrateTexts.set(texts);
   }
 }

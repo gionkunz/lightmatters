@@ -288,6 +288,25 @@ describe('TimelineRunner', () => {
     expect(runner.activeCheckpointIndex()).toBe(1);
   });
 
+  it('includes completed narrate beats in the stack before the next beat starts', async () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'narrate', text: 'First beat', speed: 10, pauseAfter: 0 },
+      { type: 'narrate', text: 'Second beat', speed: 10, pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+
+    jest.advanceTimersByTime(120);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(runner.completedNarrateTexts()).toEqual(['First beat']);
+    expect(runner.narrationText()).toBe('Second beat');
+  });
+
   it('goToPreviousCheckpoint from exploration returns to last beat', async () => {
     const registry = new TargetRegistry();
     let value = 0;

@@ -170,6 +170,71 @@ describe('LmSpacetimeDiagramComponent', () => {
     });
   });
 
+  describe('pair', () => {
+    let fixture: ComponentFixture<LmSpacetimeDiagramComponent>;
+
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [LmSpacetimeDiagramComponent],
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(LmSpacetimeDiagramComponent);
+      fixture.componentRef.setInput('variant', 'pair');
+      fixture.componentRef.setInput('budgetArc', true);
+      fixture.componentRef.setInput('height', 460);
+      fixture.detectChanges();
+    });
+
+    it('renders twin accent vectors', () => {
+      fixture.componentRef.setInput('velocityA', 0.01);
+      fixture.componentRef.setInput('velocityB', 0.5);
+      fixture.detectChanges();
+      const vectors = fixture.nativeElement.querySelectorAll(
+        'line[stroke-linecap="round"]',
+      );
+      expect(vectors.length).toBeGreaterThanOrEqual(2);
+      expect(vectors[0].getAttribute('stroke')).toBe('var(--lm-accent-1)');
+      expect(vectors[1].getAttribute('stroke')).toBe('var(--lm-accent-2)');
+    });
+
+    it('places half light speed vector at 30 degrees on the budget arc', () => {
+      fixture.componentRef.setInput('velocityB', 0.5);
+      fixture.detectChanges();
+      const vectorLen = 240;
+      const left = 70;
+      const fullBottom = 360;
+      const expectedX = left + vectorLen * Math.sin(Math.asin(0.5));
+      const expectedY = fullBottom - vectorLen * Math.cos(Math.asin(0.5));
+      const lines = fixture.nativeElement.querySelectorAll(
+        'line[stroke-linecap="round"]',
+      );
+      const traveller = lines[lines.length - 1];
+      expect(Number.parseFloat(traveller.getAttribute('x2'))).toBeCloseTo(
+        expectedX,
+        0,
+      );
+      expect(Number.parseFloat(traveller.getAttribute('y2'))).toBeCloseTo(
+        expectedY,
+        0,
+      );
+    });
+
+    it('renders accent tip labels for both travellers', () => {
+      fixture.componentRef.setInput('showTipLabel', true);
+      fixture.componentRef.setInput('velocityA', 0.01);
+      fixture.componentRef.setInput('velocityB', 0.5);
+      fixture.componentRef.setInput('tipProperYears', 1);
+      fixture.detectChanges();
+
+      const text = fixture.nativeElement.textContent ?? '';
+      expect(text).toContain('time passed');
+      expect(text).toContain('traveled');
+      expect(text).toContain('0.87');
+      expect(text).toContain('149,896 km/s');
+      expect(fixture.nativeElement.querySelectorAll('rect[fill-opacity="0.6"]').length).toBe(2);
+    });
+  });
+
   describe('single with budgetArc', () => {
     let fixture: ComponentFixture<LmSpacetimeDiagramComponent>;
 
@@ -211,6 +276,22 @@ describe('LmSpacetimeDiagramComponent', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toContain('1 year time passed');
       expect(fixture.nativeElement.textContent).toContain('0 km traveled (0 km/s)');
+    });
+
+    it('places half light speed vector at 30 degrees with Lorentz readout', () => {
+      fixture.componentRef.setInput('velocity', 0.5);
+      fixture.componentRef.setInput('tipProperYears', 1);
+      fixture.detectChanges();
+      const line = fixture.nativeElement.querySelector('line[stroke-linecap="round"]');
+      const vectorLen = 240;
+      const left = 70;
+      const expectedX = left + vectorLen * Math.sin(Math.asin(0.5));
+      expect(Number.parseFloat(line.getAttribute('x2'))).toBeCloseTo(
+        expectedX,
+        0,
+      );
+      expect(fixture.nativeElement.textContent).toContain('0.87');
+      expect(fixture.nativeElement.textContent).toContain('149,896 km/s');
     });
 
     it('renders a label background panel', () => {

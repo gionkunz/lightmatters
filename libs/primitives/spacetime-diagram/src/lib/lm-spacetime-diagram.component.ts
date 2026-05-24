@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { speedBudgetTipLabel } from '@lm/physics';
 
-type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single';
+type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single' | 'pair';
 
 /** SVG spacetime diagram — position-only, time-only, full, and single variants for Chapter 1. */
 @Component({
@@ -86,7 +86,7 @@ type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single';
             t
           </text>
         }
-      } @else if (variant() === 'full' || variant() === 'single') {
+      } @else if (variant() === 'full' || variant() === 'single' || variant() === 'pair') {
         <g
           class="stroke-ink"
           fill="none"
@@ -146,7 +146,7 @@ type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single';
             r="5"
             class="fill-ink"
           />
-        } @else {
+        } @else if (variant() === 'single') {
           @if (budgetArc()) {
             <path
               [attr.d]="budgetArcPath"
@@ -207,6 +207,61 @@ type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single';
               </text>
             </g>
           }
+        } @else {
+          @if (budgetArc()) {
+            <path
+              [attr.d]="budgetArcPath"
+              class="stroke-ink"
+              fill="none"
+              stroke-width="1"
+              stroke-linecap="round"
+              [attr.opacity]="axisOpacity() * 0.45"
+            />
+          }
+
+          @for (vector of pairVectors(); track vector.id) {
+            <line
+              [attr.x1]="left"
+              [attr.y1]="fullBottom"
+              [attr.x2]="vector.tipX"
+              [attr.y2]="vector.tipY"
+              fill="none"
+              [attr.stroke]="vector.color"
+              [attr.stroke-width]="vectorStroke() + 0.2"
+              stroke-linecap="round"
+            />
+            <polyline
+              [attr.points]="vector.arrowPoints"
+              fill="none"
+              [attr.stroke]="vector.color"
+              [attr.stroke-width]="vectorStroke() + 0.2"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+            />
+            @if (showTipLabel()) {
+              <g [attr.transform]="vector.tipLabelTransform">
+                <rect
+                  x="-4"
+                  y="-22"
+                  [attr.width]="vector.tipLabelWidth"
+                  height="50"
+                  rx="2"
+                  fill="var(--lm-paper)"
+                  fill-opacity="0.6"
+                />
+                <text
+                  x="4"
+                  y="-4"
+                  class="font-mono text-[14px] leading-snug tracking-wide"
+                  [attr.fill]="vector.color"
+                  opacity="0.9"
+                >
+                  <tspan x="4">{{ vector.tipLabel.timeLine }}</tspan>
+                  <tspan x="4" dy="18">{{ vector.tipLabel.spaceLine }}</tspan>
+                </text>
+              </g>
+            }
+          }
         }
 
         @if (showLabels()) {
@@ -234,6 +289,8 @@ export class LmSpacetimeDiagramComponent {
   readonly position = input(0.5);
   readonly time = input(0.5);
   readonly velocity = input(0);
+  readonly velocityA = input(0.01);
+  readonly velocityB = input(0);
   readonly width = input(680);
   readonly height = input(200);
   readonly showLabels = input(true);
@@ -291,11 +348,50 @@ export class LmSpacetimeDiagramComponent {
   }
 
   protected get maxVectorAngleRad(): number {
-    return this.budgetArc() ? Math.PI / 2 : Math.PI / 4;
+    return this.budgetArc() || this.variant() === 'pair' ? Math.PI / 2 : Math.PI / 4;
+  }
+
+  protected budgetVelocityAngleRad(vOverC: number): number {
+    return Math.asin(Math.min(1, Math.max(0, vOverC)));
   }
 
   protected get vectorAngleRad(): number {
-    return this.velocity() * this.maxVectorAngleRad;
+    if (this.budgetArc() || this.variant() === 'pair') {
+      return this.budgetVelocityAngleRad(this.velocity());
+    }
+    return this.velocity() * (Math.PI / 4);
+  }
+
+  protected pairVectors(): {
+    id: string;
+    tipX: number;
+    tipY: number;
+    arrowPoints: string;
+    color: string;
+    tipLabel: ReturnType<typeof speedBudgetTipLabel>;
+    tipLabelTransform: string;
+    tipLabelWidth: number;
+  }[] {
+    const specs = [
+      { id: 'a', v: this.velocityA(), color: 'var(--lm-accent-1)' },
+      { id: 'b', v: this.velocityB(), color: 'var(--lm-accent-2)' },
+    ];
+    return specs.map(({ id, v, color }) => {
+      const angle = this.budgetVelocityAngleRad(v);
+      const tipX = this.left + this.vectorLen * Math.sin(angle);
+      const tipY = this.fullBottom - this.vectorLen * Math.cos(angle);
+      const tipLabel = speedBudgetTipLabel(v, this.tipProperYears());
+      return {
+        id,
+        tipX,
+        tipY,
+        arrowPoints: this.arrowPointsForTip(tipX, tipY),
+        color,
+        tipLabel,
+        tipLabelTransform: `translate(${tipX + 16}, ${tipY - 4})`,
+        tipLabelWidth: this.tipLabelWidthFor(tipLabel.timeLine, tipLabel.spaceLine),
+      };
+    });
   }
 
   protected get budgetArcPath(): string {
@@ -316,8 +412,12 @@ export class LmSpacetimeDiagramComponent {
   }
 
   protected get tipLabelWidth(): number {
-    const lines = [this.tipLabel().timeLine, this.tipLabel().spaceLine];
-    const longest = Math.max(...lines.map((line) => line.length));
+    const label = this.tipLabel();
+    return this.tipLabelWidthFor(label.timeLine, label.spaceLine);
+  }
+
+  protected tipLabelWidthFor(timeLine: string, spaceLine: string): number {
+    const longest = Math.max(timeLine.length, spaceLine.length);
     return Math.min(380, Math.max(260, longest * 8.2 + 12));
   }
 
@@ -338,8 +438,10 @@ export class LmSpacetimeDiagramComponent {
   }
 
   protected get vectorArrowPoints(): string {
-    const tipX = this.vectorTipX;
-    const tipY = this.vectorTipY;
+    return this.arrowPointsForTip(this.vectorTipX, this.vectorTipY);
+  }
+
+  protected arrowPointsForTip(tipX: number, tipY: number): string {
     const backX = this.left - tipX;
     const backY = this.fullBottom - tipY;
     const backLen = Math.hypot(backX, backY);
