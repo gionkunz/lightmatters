@@ -1,0 +1,21 @@
+{
+  "name": "spacetime-diagram",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/primitives/spacetime-diagram/src",
+  "prefix": "lm",
+  "projectType": "library",
+  "tags": ["scope:primitive"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/primitives/spacetime-diagram/jest.config.cts",
+        "tsConfig": "libs/primitives/spacetime-diagram/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

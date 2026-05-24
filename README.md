@@ -4,23 +4,22 @@
 
 ✨ A repository showcasing key [Nx](https://nx.dev) features for Angular monorepos ✨
 🚀 If you haven't connected to Nx Cloud yet, [complete your setup here](https://cloud.nx.app/setup/connect-workspace/guide). Get faster builds with remote caching, distributed task execution, and self-healing CI. [See how your workspace can benefit](#nx-cloud).
+
 ## 📦 Project Overview
 
 This repository demonstrates a production-ready Angular monorepo with:
 
 - **2 Applications**
-
   - `shop` - Angular e-commerce application with product listings and detail views
   - `api` - Backend API with Docker support serving product data
 
 - **6 Libraries**
-
-  - `@org/feature-products` - Product listing feature (Angular)
-  - `@org/feature-product-detail` - Product detail feature (Angular)
-  - `@org/data` - Data access layer for shop features
-  - `@org/shared-ui` - Shared UI components
-  - `@org/models` - Shared data models
-  - `@org/products` - API product service library
+  - `@lm/feature-products` - Product listing feature (Angular)
+  - `@lm/feature-product-detail` - Product detail feature (Angular)
+  - `@lm/data` - Data access layer for shop features
+  - `@lm/shared-ui` - Shared UI components
+  - `@lm/models` - Shared data models
+  - `@lm/products` - API product service library
 
 - **E2E Testing**
   - `shop-e2e` - Playwright tests for the shop application

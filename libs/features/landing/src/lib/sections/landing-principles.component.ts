@@ -1,6 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
-import { LmKickerComponent } from '@org/design';
+import { LmKickerComponent } from '@lm/design';
 
 @Component({
   selector: 'lm-landing-principles',
@@ -11,14 +11,23 @@ import { LmKickerComponent } from '@org/design';
     >
       <lm-kicker class="pt-2" [opacity]="0.55">III · how</lm-kicker>
       <div class="grid gap-[22px]">
-        @for (line of lines; track line.head; let i = $index; let last = $last) {
+        @for (
+          line of lines;
+          track line.head;
+          let i = $index;
+          let last = $last
+        ) {
           <div
             class="grid grid-cols-[64px_320px_1fr] items-baseline gap-x-9 pb-[22px]"
             [class.border-b]="!last"
             [class.border-ink-faint]="!last"
           >
-            <lm-kicker [opacity]="0.45">{{ i + 1 | number: '2.0-0' }}</lm-kicker>
-            <div class="font-serif text-[32px] italic leading-tight text-ink">{{ line.head }}</div>
+            <lm-kicker [opacity]="0.45">{{
+              i + 1 | number: '2.0-0'
+            }}</lm-kicker>
+            <div class="font-serif text-[32px] italic leading-tight text-ink">
+              {{ line.head }}
+            </div>
             <div
               class="max-w-[540px] text-pretty font-serif text-lg leading-snug text-ink opacity-75"
             >

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LmKickerComponent } from '@org/design';
+import { LmKickerComponent } from '@lm/design';
 
 @Component({
   selector: 'lm-landing-manifesto',
@@ -13,16 +13,21 @@ import { LmKickerComponent } from '@org/design';
         <p
           class="m-0 max-w-[880px] text-pretty font-serif text-[30px] font-medium leading-snug text-ink"
         >
-          Most people meet relativity as equations or analogies that never quite click.
-          <em>Light Matters</em> is the other way in — a sequence of small drawings you can hold
-          in one hand, then tilt, dial, and break open until the geometry tells you what the math
-          meant all along.
+          Most people meet relativity as equations or analogies that never quite
+          click.
+          <em>Light Matters</em> is the other way in — a sequence of small
+          drawings you can hold in one hand, then tilt, dial, and break open
+          until the geometry tells you what the math meant all along.
         </p>
         <div class="mt-14 grid grid-cols-3 gap-x-9 gap-y-3">
           @for (item of pillars; track item.head) {
             <div class="border-t border-ink-faint pt-[18px]">
-              <div class="mb-2.5 font-serif text-[22px] italic text-ink">{{ item.head }}</div>
-              <div class="text-pretty font-serif text-base leading-normal text-ink opacity-70">
+              <div class="mb-2.5 font-serif text-[22px] italic text-ink">
+                {{ item.head }}
+              </div>
+              <div
+                class="text-pretty font-serif text-base leading-normal text-ink opacity-70"
+              >
                 {{ item.body }}
               </div>
             </div>

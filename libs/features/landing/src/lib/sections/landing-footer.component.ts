@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LmWordmarkComponent } from '@org/design';
+import { LmWordmarkComponent } from '@lm/design';
 
 @Component({
   selector: 'lm-landing-footer',
@@ -11,7 +11,9 @@ import { LmWordmarkComponent } from '@org/design';
         class="text-center font-mono text-[10px] uppercase tracking-[0.22em] text-ink opacity-50"
       >
         a paper companion to Epstein's
-        <em class="font-serif text-[13px] normal-case not-italic tracking-normal">
+        <em
+          class="font-serif text-[13px] normal-case not-italic tracking-normal"
+        >
           Relativity Visualized
         </em>
       </div>

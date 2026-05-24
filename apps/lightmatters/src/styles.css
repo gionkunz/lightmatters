@@ -3,6 +3,8 @@
 @source '../../../libs/design/src';
 @source '../../../libs/engine/src';
 @source '../../../libs/features/landing/src';
+@source '../../../libs/features/chapter-01-position-time/src';
+@source '../../../libs/primitives/spacetime-diagram/src';
 
 @theme inline {
   --font-serif: 'EB Garamond', 'Iowan Old Style', serif;

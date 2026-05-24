@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
-import {
-  LmThemeToggleComponent,
-  LmWordmarkComponent,
-} from '@org/design';
+import { LmThemeToggleComponent, LmWordmarkComponent } from '@lm/design';
 
 @Component({
   selector: 'lm-landing-nav',

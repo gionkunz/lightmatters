@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { LmButtonComponent, LmKickerComponent } from '@org/design';
+import { RouterLink } from '@angular/router';
+import { LmButtonComponent, LmKickerComponent } from '@lm/design';
 
 @Component({
   selector: 'lm-landing-cta',
-  imports: [LmKickerComponent, LmButtonComponent],
+  imports: [RouterLink, LmKickerComponent, LmButtonComponent],
   template: `
     <section
       class="grid place-items-center border-b border-ink-faint px-16 py-[120px] text-center"
@@ -17,10 +18,13 @@ import { LmButtonComponent, LmKickerComponent } from '@org/design';
       <p
         class="mt-6 max-w-[620px] text-pretty font-serif text-xl leading-snug text-ink opacity-75"
       >
-        Spend ninety minutes inside the diagram and the universe stops being a lecture.
+        Spend ninety minutes inside the diagram and the universe stops being a
+        lecture.
       </p>
       <div class="mt-10 flex items-center gap-4">
-        <lm-button [primary]="true">begin chapter 1 →</lm-button>
+        <a routerLink="/ch/01/step/1">
+          <lm-button [primary]="true">begin chapter 1 →</lm-button>
+        </a>
         <lm-button>read the founder's note</lm-button>
       </div>
     </section>

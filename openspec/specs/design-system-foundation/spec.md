@@ -51,7 +51,7 @@ The design system SHALL configure EB Garamond as the serif (body and display) ty
 
 ### Requirement: Brand components are exported from libs/design
 
-The `@org/design` public API SHALL export standalone Angular components: `LmWordmark`, `LmKicker`, `LmButton`, and `LmThemeToggle`. Each component SHALL read design tokens via Tailwind/CSS (not hard-coded hex in component TS).
+The `@lm/design` public API SHALL export standalone Angular components: `LmWordmark`, `LmKicker`, `LmButton`, and `LmThemeToggle`. Each component SHALL read design tokens via Tailwind/CSS (not hard-coded hex in component TS).
 
 #### Scenario: LmWordmark renders with accent dot
 

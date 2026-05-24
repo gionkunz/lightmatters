@@ -56,7 +56,7 @@
 - [x] 9.2 `npx nx lint lightmatters --tui=false` succeeded (all files pass).
 - [x] 9.3 `npx nx test lightmatters --tui=false` succeeded (1 passed, 1 total — the default `app.spec.ts`).
 - [x] 9.4 `npx nx run-many -t lint -p design engine physics --tui=false` succeeded for all three libs.
-- [x] 9.5 Negative test: created `libs/engine/src/lib/_boundary-test.ts` importing from `@org/physics`; lint failed with exact message `A project tagged with "scope:engine" can only depend on libs tagged with "scope:design"`. Deleted the throwaway file and re-ran lint (with `--skip-nx-cache`) — passes cleanly.
+- [x] 9.5 Negative test: created `libs/engine/src/lib/_boundary-test.ts` importing from `@lm/physics`; lint failed with exact message `A project tagged with "scope:engine" can only depend on libs tagged with "scope:design"`. Deleted the throwaway file and re-ran lint (with `--skip-nx-cache`) — passes cleanly.
 
 ## 9.5. Wire Tailwind v4 into the app
 

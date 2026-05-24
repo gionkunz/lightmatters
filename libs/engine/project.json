@@ -2,7 +2,7 @@
   "name": "engine",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/engine/src",
-  "prefix": "lib",
+  "prefix": "lm",
   "projectType": "library",
   "tags": ["scope:engine"],
   "targets": {

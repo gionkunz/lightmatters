@@ -1,8 +1,7 @@
 ## Requirements
-
 ### Requirement: Landing page is served at the root route
 
-The application SHALL lazy-load a landing feature library at path `/` that renders the marketing landing page. Unknown paths SHALL redirect to `/`.
+The application SHALL lazy-load a landing feature library at path `/` that renders the marketing landing page. Unknown paths that are not matched by a defined feature route SHALL redirect to `/`.
 
 #### Scenario: Root URL renders landing page
 
@@ -90,3 +89,18 @@ Hero and chapter cards SHALL use a placeholder diagram component rather than the
 
 - **WHEN** the Hero preview diagram placeholder renders
 - **THEN** no CSS animation loops run on the placeholder SVG (static v1)
+
+### Requirement: Chapter 1 entry points link to Step 1
+
+The landing page Hero primary CTA and Chapter 1 preview card SHALL link to `/ch/01/step/1`.
+
+#### Scenario: Hero begin button navigates to Step 1
+
+- **WHEN** a user clicks the Hero primary CTA ("begin chapter 1" or equivalent)
+- **THEN** the router navigates to `/ch/01/step/1`
+
+#### Scenario: Chapter 1 card navigates to Step 1
+
+- **WHEN** a user clicks the Chapter 1 preview card
+- **THEN** the router navigates to `/ch/01/step/1`
+

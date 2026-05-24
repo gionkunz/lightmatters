@@ -5,7 +5,7 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { ThemeService } from '@org/design';
+import { ThemeService } from '@lm/design';
 import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {

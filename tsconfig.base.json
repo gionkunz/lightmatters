@@ -15,10 +15,16 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@org/design": ["./libs/design/src/index.ts"],
-      "@org/engine": ["./libs/engine/src/index.ts"],
-      "@org/physics": ["./libs/physics/src/index.ts"],
-      "@org/feature-landing": ["./libs/features/landing/src/index.ts"]
+      "@lm/design": ["./libs/design/src/index.ts"],
+      "@lm/engine": ["./libs/engine/src/index.ts"],
+      "@lm/physics": ["./libs/physics/src/index.ts"],
+      "@lm/feature-landing": ["./libs/features/landing/src/index.ts"],
+      "@lm/spacetime-diagram": [
+        "./libs/primitives/spacetime-diagram/src/index.ts"
+      ],
+      "@lm/feature-chapter-01-position-time": [
+        "./libs/features/chapter-01-position-time/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -44,7 +44,7 @@ Two practical constraints shape this scaffold:
 **Why this path:** In Nx 22.7.x, `create-nx-workspace` has no flag combination that produces a clean Angular-compatible monorepo with our app name. Every preset/template option falls into one of three buckets:
 
 - **`nrwl/angular-template`** (what `--preset=angular-monorepo` remaps to): Angular-compatible config, but pre-baked with a `shop` Angular app + an `api` Node app + their e2e projects.
-- **`nrwl/empty-template`** (what `--preset=apps`, `--preset=ts`, etc. remap to): clean, but uses TypeScript project references / npm workspaces (`packages/*` layout, `composite: true`, `customConditions: ["@org/source"]`). The `@nx/angular` plugin explicitly **refuses to install** into this setup with the error: *"The Angular framework doesn't support a TypeScript setup with project references."* Flags like `--no-workspaces` and `--useProjectJson=true` are silently ignored when the resolved scaffold is template-driven.
+- **`nrwl/empty-template`** (what `--preset=apps`, `--preset=ts`, etc. remap to): clean, but uses TypeScript project references / npm workspaces (`packages/*` layout, `composite: true`, `customConditions: ["@lm/source"]`). The `@nx/angular` plugin explicitly **refuses to install** into this setup with the error: _"The Angular framework doesn't support a TypeScript setup with project references."_ Flags like `--no-workspaces` and `--useProjectJson=true` are silently ignored when the resolved scaffold is template-driven.
 - **`nrwl/typescript-template`**: same TS-references blocker as empty, no Angular included.
 
 Empirically verified on Nx 22.7.x. So the path forward is: take the Angular-compatible template, throw away its demo projects, generate ours fresh.
@@ -108,7 +108,7 @@ We wire Tailwind v4 into the `lightmatters` app per [Nx's Tailwind 4 + Angular g
 3. Switch the app's global styles entry from `styles.scss` to `styles.css` and update `apps/lightmatters/project.json`'s `styles` array accordingly. The first line of `styles.css` is `@import "tailwindcss" source("./app");` followed by `@source` directives for the libs that contain templates with Tailwind classes (`libs/design`, `libs/engine`).
 4. Component-scoped styles (e.g., `app.component.scss`) remain `.scss` so Sass features (nesting, mixins) are available where they matter; only the global entry has to be `.css`.
 
-**Why `.css` for the global entry, not `.scss`:** Angular's build pipeline runs Sass *before* PostCSS. `@import "tailwindcss";` in a `.scss` file would be intercepted by Sass, which tries to resolve it as a Sass partial (`_tailwindcss.scss` or `tailwindcss.scss`) and fails because that doesn't exist. Renaming the global entry to `.css` lets PostCSS handle the directive directly.
+**Why `.css` for the global entry, not `.scss`:** Angular's build pipeline runs Sass _before_ PostCSS. `@import "tailwindcss";` in a `.scss` file would be intercepted by Sass, which tries to resolve it as a Sass partial (`_tailwindcss.scss` or `tailwindcss.scss`) and fails because that doesn't exist. Renaming the global entry to `.css` lets PostCSS handle the directive directly.
 
 **Why no `tailwind.config.js`:** Tailwind v4 is CSS-first. Theme tokens are declared via `@theme` inside the same stylesheet; `@source` directives control which files get scanned for class usage. There's no separate JS config to maintain — see the Tailwind v4 docs.
 
