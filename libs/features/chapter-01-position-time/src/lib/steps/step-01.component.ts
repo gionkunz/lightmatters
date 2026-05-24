@@ -41,17 +41,19 @@ import { STEP_01_POSITION } from './step-01-position';
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
       [totalMs]="totalDurationMs"
-      [beatMarkers]="runner.beatMarkers()"
+      [checkpoints]="runner.checkpoints()"
+      [activeCheckpointIndex]="runner.activeCheckpointIndex()"
       [playbackActive]="runner.playbackActive()"
       [playbackPaused]="runner.isPaused()"
-      [canRewind]="!runner.isComplete()"
-      [canFastForward]="runner.playbackActive() || runner.isPaused()"
+      [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
+      [canGoNext]="runner.canGoToNextCheckpoint()"
       (back)="goHome()"
       (next)="goNextStep()"
-      (rewind)="runner.rewind()"
+      (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
-      (fastForward)="runner.fastForward()"
+      (goNext)="runner.goToNextCheckpoint()"
+      (checkpointSeek)="runner.goToCheckpoint($event)"
     >
       <div
         class="mx-auto grid h-full max-w-[1100px] w-full grid-rows-[auto_1fr_auto] gap-6 px-20 pb-10 pt-16"
@@ -133,7 +135,7 @@ export class Step01Component implements OnInit, OnDestroy {
     } else if (this.runner.playbackActive()) {
       this.runner.pause();
     } else if (!this.runner.isComplete()) {
-      this.runner.fastForward();
+      this.runner.goToNextCheckpoint();
     }
   }
 

@@ -20,10 +20,10 @@ import {
   CHAPTER_01_TOTAL_STEPS,
   hasNextStep,
 } from '../step-registry';
-import { STEP_03_SPACETIME } from './step-03-spacetime';
+import { STEP_04_MOVING_SPACETIME } from './step-04-moving-spacetime';
 
 @Component({
-  selector: 'lm-step-03',
+  selector: 'lm-step-04',
   imports: [
     LmStepFrameComponent,
     LmNarratorComponent,
@@ -34,9 +34,9 @@ import { STEP_03_SPACETIME } from './step-03-spacetime';
     <lm-step-frame
       [chapter]="1"
       [chapterTitle]="chapterTitle"
-      [step]="3"
+      [step]="4"
       [stepsTotal]="stepsTotal"
-      [hasNextStep]="hasNextStep(3)"
+      [hasNextStep]="hasNextStep(4)"
       [showPlayback]="!runner.isComplete()"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -48,7 +48,6 @@ import { STEP_03_SPACETIME } from './step-03-spacetime';
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
       (back)="goPrevStep()"
-      (next)="goNextStep()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -66,54 +65,41 @@ import { STEP_03_SPACETIME } from './step-03-spacetime';
 
         <div class="flex items-center justify-center">
           <lm-spacetime-diagram
-            variant="full"
-            [position]="position()"
-            [time]="time()"
+            variant="single"
+            [velocity]="velocity()"
             [width]="680"
             [height]="460"
           />
         </div>
 
-        <div class="mx-auto flex w-full max-w-[520px] flex-col gap-4">
+        <div class="mx-auto w-full max-w-[520px]">
           <lm-slider
-            label="position"
-            [value]="position()"
+            label="v / c"
+            [value]="velocity()"
             [disabled]="!runner.atExplorationWait()"
-            (valueChange)="onPositionChange($event)"
-          />
-          <lm-slider
-            label="time"
-            [value]="time()"
-            [disabled]="!runner.atExplorationWait()"
-            (valueChange)="onTimeChange($event)"
+            (valueChange)="onVelocityChange($event)"
           />
         </div>
       </div>
     </lm-step-frame>
   `,
 })
-export class Step03Component implements OnInit, OnDestroy {
+export class Step04Component implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
-  protected readonly step = STEP_03_SPACETIME;
+  protected readonly step = STEP_04_MOVING_SPACETIME;
   protected readonly chapterTitle = CHAPTER_01_TITLE;
   protected readonly stepsTotal = CHAPTER_01_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;
-  protected readonly position = signal(0);
-  protected readonly time = signal(0);
+  protected readonly velocity = signal(0);
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
 
   constructor() {
-    this.registry.register('diagram.position', {
-      get: () => this.position(),
-      set: (v) => this.position.set(v),
-      initial: 0,
-    });
-    this.registry.register('diagram.time', {
-      get: () => this.time(),
-      set: (v) => this.time.set(v),
+    this.registry.register('diagram.velocity', {
+      get: () => this.velocity(),
+      set: (v) => this.velocity.set(v),
       initial: 0,
     });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
@@ -152,23 +138,13 @@ export class Step03Component implements OnInit, OnDestroy {
     }
   }
 
-  protected onPositionChange(value: number): void {
+  protected onVelocityChange(value: number): void {
     if (this.runner.atExplorationWait()) {
-      this.position.set(value);
-    }
-  }
-
-  protected onTimeChange(value: number): void {
-    if (this.runner.atExplorationWait()) {
-      this.time.set(value);
+      this.velocity.set(value);
     }
   }
 
   protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/01/step/2');
-  }
-
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/01/step/4');
+    void this.router.navigateByUrl('/ch/01/step/3');
   }
 }

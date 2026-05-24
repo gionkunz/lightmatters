@@ -6,6 +6,8 @@ import { STEP_02_TIME } from './steps/step-02-time';
 import { Step02Component } from './steps/step-02.component';
 import { STEP_03_SPACETIME } from './steps/step-03-spacetime';
 import { Step03Component } from './steps/step-03.component';
+import { STEP_04_MOVING_SPACETIME } from './steps/step-04-moving-spacetime';
+import { Step04Component } from './steps/step-04.component';
 
 export interface StepEntry {
   step: Step;
@@ -20,6 +22,7 @@ const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_POSITION, component: Step01Component }],
   [2, { step: STEP_02_TIME, component: Step02Component }],
   [3, { step: STEP_03_SPACETIME, component: Step03Component }],
+  [4, { step: STEP_04_MOVING_SPACETIME, component: Step04Component }],
 ]);
 
 export function resolveStep(stepNumber: number): StepEntry | undefined {

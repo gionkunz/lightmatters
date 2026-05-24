@@ -1,6 +1,8 @@
 import { Component, input } from '@angular/core';
 
-/** SVG spacetime diagram — position-only, time-only, and full variants for Chapter 1. */
+type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single';
+
+/** SVG spacetime diagram — position-only, time-only, full, and single variants for Chapter 1. */
 @Component({
   selector: 'lm-spacetime-diagram',
   template: `
@@ -83,7 +85,7 @@ import { Component, input } from '@angular/core';
             t
           </text>
         }
-      } @else if (variant() === 'full') {
+      } @else if (variant() === 'full' || variant() === 'single') {
         <g
           class="stroke-ink"
           fill="none"
@@ -124,24 +126,53 @@ import { Component, input } from '@angular/core';
           />
         }
 
-        @if (showWorldline()) {
+        @if (variant() === 'full') {
+          @if (showWorldline()) {
+            <line
+              [attr.x1]="left"
+              [attr.y1]="fullBottom"
+              [attr.x2]="fullPointX"
+              [attr.y2]="fullPointY"
+              class="stroke-ink"
+              fill="none"
+              stroke-width="1.5"
+            />
+          }
+
+          <circle
+            [attr.cx]="fullPointX"
+            [attr.cy]="fullPointY"
+            r="5"
+            class="fill-ink"
+          />
+        } @else {
           <line
             [attr.x1]="left"
             [attr.y1]="fullBottom"
-            [attr.x2]="fullPointX"
-            [attr.y2]="fullPointY"
+            [attr.x2]="vectorTipX"
+            [attr.y2]="vectorTipY"
             class="stroke-ink"
             fill="none"
-            stroke-width="1.5"
+            [attr.stroke-width]="vectorStroke()"
+            stroke-linecap="round"
           />
+          <polyline
+            [attr.points]="vectorArrowPoints"
+            class="stroke-ink"
+            fill="none"
+            [attr.stroke-width]="vectorStroke()"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+          />
+          @if (showDot()) {
+            <circle
+              [attr.cx]="vectorTipX"
+              [attr.cy]="vectorTipY"
+              r="3.5"
+              class="fill-ink"
+            />
+          }
         }
-
-        <circle
-          [attr.cx]="fullPointX"
-          [attr.cy]="fullPointY"
-          r="5"
-          class="fill-ink"
-        />
 
         @if (showLabels()) {
           <text
@@ -164,15 +195,18 @@ import { Component, input } from '@angular/core';
   `,
 })
 export class LmSpacetimeDiagramComponent {
-  readonly variant = input<'position-only' | 'time-only' | 'full'>('position-only');
+  readonly variant = input<DiagramVariant>('position-only');
   readonly position = input(0.5);
   readonly time = input(0.5);
+  readonly velocity = input(0);
   readonly width = input(680);
   readonly height = input(200);
   readonly showLabels = input(true);
   readonly axisOpacity = input(1);
   readonly showLightCone = input(true);
   readonly showWorldline = input(true);
+  readonly showDot = input(true);
+  readonly vectorStroke = input(2.4);
 
   protected readonly left = 70;
   protected readonly right = 610;
@@ -182,6 +216,7 @@ export class LmSpacetimeDiagramComponent {
   protected readonly timeBottom = 280;
   protected readonly fullTop = 40;
   protected readonly fullBottom = 360;
+  protected readonly vectorLen = 240;
   protected readonly ticks = [0, 0.2, 0.4, 0.6, 0.8, 1];
 
   protected get axisSpan(): number {
@@ -214,5 +249,37 @@ export class LmSpacetimeDiagramComponent {
 
   protected get lightConeEndX(): number {
     return this.left + this.fullTimeAxisSpan;
+  }
+
+  protected get vectorAngleRad(): number {
+    return this.velocity() * (Math.PI / 4);
+  }
+
+  protected get vectorTipX(): number {
+    return this.left + this.vectorLen * Math.sin(this.vectorAngleRad);
+  }
+
+  protected get vectorTipY(): number {
+    return this.fullBottom - this.vectorLen * Math.cos(this.vectorAngleRad);
+  }
+
+  protected get vectorArrowPoints(): string {
+    const tipX = this.vectorTipX;
+    const tipY = this.vectorTipY;
+    const backX = this.left - tipX;
+    const backY = this.fullBottom - tipY;
+    const backLen = Math.hypot(backX, backY);
+    const bx = backX / backLen;
+    const by = backY / backLen;
+    const px = -by;
+    const py = bx;
+    const wing = 6;
+    const back = 9;
+
+    return [
+      `${tipX + bx * back + px * wing},${tipY + by * back + py * wing}`,
+      `${tipX},${tipY}`,
+      `${tipX + bx * back - px * wing},${tipY + by * back - py * wing}`,
+    ].join(' ');
   }
 }

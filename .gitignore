@@ -46,6 +46,9 @@ Thumbs.db
 .angular
 .playwright-mcp
 
+# MathJax bundle copied from node_modules on build/serve
+apps/lightmatters/public/mathjax
+
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 

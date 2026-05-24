@@ -6,6 +6,7 @@ import {
   LmThemeToggleComponent,
   LmWordmarkComponent,
 } from '@lm/design';
+import type { TimelineCheckpoint } from '../timeline/types';
 import { LmPlaybackBarComponent } from './lm-playback-bar.component';
 
 /** Step shell: nav, playback bar, content, navigation footer. */
@@ -64,15 +65,17 @@ import { LmPlaybackBarComponent } from './lm-playback-bar.component';
         [progress]="progress()"
         [elapsedMs]="elapsedMs()"
         [totalMs]="totalMs()"
-        [beatMarkers]="beatMarkers()"
+        [checkpoints]="checkpoints()"
+        [activeCheckpointIndex]="activeCheckpointIndex()"
         [showPause]="playbackActive()"
         [showPlay]="playbackPaused()"
-        [canRewind]="canRewind()"
-        [canFastForward]="canFastForward()"
-        (rewind)="rewind.emit()"
+        [canGoPrevious]="canGoPrevious()"
+        [canGoNext]="canGoNext()"
+        (goPrevious)="goPrevious.emit()"
         (pauseRequested)="pauseRequested.emit()"
         (playRequested)="playRequested.emit()"
-        (fastForward)="fastForward.emit()"
+        (goNext)="goNext.emit()"
+        (checkpointSeek)="checkpointSeek.emit($event)"
       />
 
       <main class="overflow-hidden">
@@ -121,18 +124,20 @@ export class LmStepFrameComponent {
   readonly progress = input(0);
   readonly elapsedMs = input(0);
   readonly totalMs = input(0);
-  readonly beatMarkers = input<number[]>([]);
+  readonly checkpoints = input<TimelineCheckpoint[]>([]);
+  readonly activeCheckpointIndex = input(0);
   readonly playbackActive = input(false);
   readonly playbackPaused = input(false);
-  readonly canRewind = input(false);
-  readonly canFastForward = input(false);
+  readonly canGoPrevious = input(false);
+  readonly canGoNext = input(false);
 
   readonly back = output<void>();
   readonly next = output<void>();
-  readonly rewind = output<void>();
+  readonly goPrevious = output<void>();
   readonly pauseRequested = output<void>();
   readonly playRequested = output<void>();
-  readonly fastForward = output<void>();
+  readonly goNext = output<void>();
+  readonly checkpointSeek = output<number>();
 
   protected dots(): { filled: boolean; here: boolean }[] {
     const current = this.step();

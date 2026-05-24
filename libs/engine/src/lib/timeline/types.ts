@@ -7,7 +7,7 @@ export interface NarrateEvent {
   text: string;
   /** Milliseconds per character. Default 28. */
   speed?: number;
-  /** Milliseconds to hold after the full text is revealed. Default 2400. Set 0 to skip. */
+  /** Milliseconds to hold after the full text is revealed. Default 4000. Skipped automatically on the narrate beat immediately before an exploration wait. Set 0 to skip. */
   pauseAfter?: number;
 }
 
@@ -26,6 +26,14 @@ export interface WaitEvent {
 }
 
 export type TimelineEvent = NarrateEvent | AnimateEvent | WaitEvent;
+
+/** A seekable beat on the timeline progress bar (start of a narrate or animate event). */
+export interface TimelineCheckpoint {
+  /** Index into the step's timeline events array. */
+  eventIndex: number;
+  /** Normalized start position on the progress track (0–1). */
+  position: number;
+}
 
 export interface Step {
   id: string;

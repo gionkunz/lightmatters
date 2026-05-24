@@ -37,6 +37,7 @@ At any moment, at most two visualization canvases are on screen — typically on
 - **State:** Angular signals for component-local and shared reactive state. A small step-scoped store for the active timeline and its variables.
 - **CSS framework:** **Tailwind v4** as the utility layer, configured via PostCSS (`@tailwindcss/postcss`) per [Nx's Tailwind 4 + Angular guide](https://nx.dev/blog/setup-tailwind-4-angular-nx-workspace). No `tailwind.config.js` — Tailwind 4 is CSS-first: `@import "tailwindcss";` plus `@source` directives in the app's global stylesheet name which libraries get scanned for class usage. Design tokens (palette, type, spacing) are declared with `@theme` inside the same stylesheet so they're available as both Tailwind utilities and CSS custom properties. Component-scoped styles can still use SCSS when needed for nesting / mixins; the global styles entry is plain CSS so PostCSS handles the Tailwind directives directly.
 - **Typography:** **EB Garamond** for all body, narration, and display text. **IBM Plex Mono** for axis labels, chapter/step marks, and the small "Kicker" uppercase labels. Both served as web fonts.
+- **Inline math:** **MathJax v4** (TeX input → CHTML output). Authors write `$...$` LaTeX directly in narrate strings; MathJax loads lazily from `/mathjax/` on first inline formula (not in the main bundle). Formulas render in MathJax's math font — distinct from EB Garamond narration.
 - **Monorepo / tooling:** **Nx** in classic **integrated monorepo** mode (`apps/` + `libs/`, single `package.json`, Nx-managed Angular projects). Scaffolded with `create-nx-workspace` using the `angular-monorepo` preset. The integrated layout gives us enforced module boundaries between engine / primitives / chapters via the `@nx/enforce-module-boundaries` lint rule, `nx affected` graphs for fast CI, generators for new chapters and primitives, and a single source for tooling versions.
 - **Build:** Nx-driven Angular build. Static output deployed as-is.
 - **Hosting:** **Cloudflare Pages**, custom domain `lightmatters.app`.
@@ -65,13 +66,13 @@ lightmatters/                          ← workspace root
     lightmatters-e2e/                  ← Playwright end-to-end tests
 
   libs/
-    design/                            ← tokens, ThemeService, brand components, lmInteractive
+    design/                            ← tokens, ThemeService, brand components, lmInteractive, MathJaxService
     engine/                            ← timeline runner, narrator, step frame, playback bar, step-page host
     physics/                           ← pure functions: lorentz, time-dilation, doppler, geodesics
     primitives/
       spacetime-diagram/               ← the reusable 2D spacetime diagram (time vertical)
       light-circle/                    ← expanding wavefront primitive
-      velocity-vector/                 ← normalized speed-budget vector
+      velocity-vector/                 ← (planned) twin-vector pair; single vector lives in spacetime-diagram for now
       curved-surface/                  ← cylinder ↔ cone ↔ gravity-well surface (3D)
       worldline-tracer/                ← animated point + fading trail
       wireframe-body/                  ← line-rendered sphere / planet
@@ -194,7 +195,15 @@ A `TimelineRunner` is a small state machine that:
 3. For wait conditions, subscribes to the relevant signal (animation completion, user input) and pauses progression.
 4. Exposes reactive playhead state — `waitingForUser`, `progress`, `elapsedMs`, `beatMarkers` — so step chrome (playback bar, footer controls) can react.
 
-**Narrate events** reveal text character by character, then hold for a configurable **read pause** (`pauseAfter`, default 2400ms) before advancing. Space or skip during the read pause jumps past the hold.
+**Narrate events** reveal text character by character, then hold for a configurable **read pause** (`pauseAfter`, default 4000ms) before advancing. Space or skip during the read pause jumps past the hold. The read pause is **skipped automatically** on the narrate beat immediately before an `userAdvance` wait — sliders and other exploration controls unlock as soon as that beat finishes typing.
+
+**Inline LaTeX in narration.** Narrate `text` fields may contain `$...$` delimiters for inline math. The engine parses these into text and math segments (`parseNarrateText` in `libs/engine`). Text segments reveal letter-by-letter as before; math segments reveal atomically (one typing-unit block). Each math block counts as five character-units for timing. `LmNarratorComponent` typesets revealed math via `MathJaxService` (`libs/design`), which lazy-loads `tex-chtml-nofont.js` from `/mathjax/` and calls `MathJax.typesetPromise()` per formula. Plain strings without `$` behave unchanged and never load MathJax.
+
+Example:
+
+```ts
+{ type: 'narrate', text: 'The Lorentz factor is $\\gamma = \\frac{1}{\\sqrt{1-v^2/c^2}}$ — watch how it grows.' }
+```
 
 **Playback controls** (top `LmPlaybackBar` in the step frame):
 
@@ -228,7 +237,16 @@ The single most important primitive. It is essentially:
 - A set of slots into which other primitives (vectors, light circles, worldlines, points) can be inserted.
 - Optionally, a "fold" transform that can morph the diagram from a flat plane into a cylinder or cone — this is the bridge between Chapter 1's flat diagram and Chapter 3's cone geometry. The 2D and 3D renderings of the spacetime diagram should be the **same conceptual object**, just rendered differently.
 
-**Incremental variants.** Chapter 1 Step 1 ships a **`position-only`** variant first: horizontal spatial axis, tick marks, a movable point — no time axis yet. Later steps add the vertical time axis and the rest of the full diagram vocabulary from `visual-guidelines.md`.
+**Incremental variants.** Chapter 1 grows the diagram one concept at a time:
+
+| Variant | Chapter 1 step | What it shows |
+|---------|----------------|---------------|
+| `position-only` | Step 1 | Horizontal spatial axis, movable point — no time axis yet |
+| `time-only` | Step 2 | Vertical time axis, movable point — no space axis yet |
+| `full` | Step 3 | Both axes, light cone, worldline segment from origin to `(position, time)` |
+| `single` | Step 4 | Both axes, light cone, fixed-length **velocity vector** from origin; angle driven by `velocity` (v/c, 0 = pure time, 1 = light cone) |
+
+Steps 5–6 will extend the vocabulary further. The `pair` twin-vector variant (Chapter 2 speed-budget comparison) and decorative vector swing animation remain deferred. See `visual-guidelines.md` §8 for stroke, arrowhead, and light-cone conventions.
 
 ### The curved surface
 
@@ -256,6 +274,7 @@ Architecture-relevant summary:
 - **Tokens** live in `libs/design/src/lib/tokens.ts` as a typed object. Projected onto `<html>` as CSS custom properties (`--lm-paper`, `--lm-ink`, `--lm-accent-1`, etc.) and re-bound into WebGL shader uniforms whenever the theme changes.
 - **A `ThemeService`** exposing a signal for the active theme + a `toggle()` method. Persists to `localStorage`. Default `light`.
 - **An `lmInteractive` directive** implements the shared idle/hover/glow treatment so every interactive element behaves consistently. Diagrams never use it.
+- **A `MathJaxService`** lazy-loads MathJax v4 for inline LaTeX in narration. On `build` and `serve`, a `copy-mathjax` target copies `node_modules/mathjax` to `apps/lightmatters/public/mathjax/` (gitignored); the main bundle only contains the small loader service.
 - **Two type families** — EB Garamond (serif, everywhere readable) and IBM Plex Mono (Kicker labels only). Loaded as web fonts with `font-display: swap`.
 - **The prototype's component files** (`landing.jsx`, `chapter-index.jsx`, `step-ui.jsx`, `primitives.jsx`, `brand-sheet.jsx`) are a **feature inventory**, not a folder structure. Re-decompose into Angular idioms.
 - **Brand sheet as a route** — port `brand-sheet.jsx` to a `/design-sheet` route as a visual-regression canary.
@@ -289,7 +308,7 @@ export const timeDilation = (vOverC: number) => 1 / lorentz(vOverC);
 export const dopplerFactor = (vOverC: number, approaching: boolean) => ...;
 ```
 
-Both rendering primitives and narration (for inline numeric values, fact lines) call into this module. It is a utility module, not an enforced architectural layer — if it grows enough to warrant signal-based reactivity or per-step physical state, promote it later.
+Both rendering primitives and narration call into this module. Narration may also use inline `$...$` LaTeX (rendered by MathJax) for formulas before or alongside numeric readouts from `physics`. It is a utility module, not an enforced architectural layer — if it grows enough to warrant signal-based reactivity or per-step physical state, promote it later.
 
 ## Routing
 
@@ -308,6 +327,7 @@ On invalid **app-level** routes, redirect to `/` (landing). Unknown **step numbe
 ## Performance considerations
 
 - Lazy-load every feature. The feature-per-lib layout makes this the default — each `libs/features/*` is a route-level lazy chunk via `loadChildren`. The shell bundle stays tiny because no feature code ships with it.
+- **MathJax is lazy-loaded separately.** The ~800 KB MathJax bundle lives at `/mathjax/` and loads only when a step first typesets inline math — not on landing or text-only steps.
 - WebGL contexts are expensive — share one context across the app if possible, swap scenes within it as the user moves between steps.
 - Throttle `requestAnimationFrame` work when a step is paused at a wait condition.
 - Pre-compile shaders for the project-wide line primitives at startup.
@@ -361,8 +381,9 @@ Fully responsive interaction design is deferred past v1.
 5. ~~**The `TimelineRunner`**~~ in `libs/engine` with `narrate`, `animate`, `wait`, skip, read pause, pause/resume, rewind, and progress tracking. Done.
 6. ~~**The `Narrator` component**~~ in `libs/engine` — per-letter fade-in reveal driven by the timeline. Done.
 7. ~~**End-to-end step + spacetime diagram primitive.**~~ Done as Chapter 1 Step 1 (`position-only` variant + `LmSlider`).
-8. **Chapter 1** as `libs/features/chapter-01-position-time` — Step 1 authored; steps 2–6 remain. Add an `nx g chapter` generator while authoring the rest so chapters 2+ are one command.
-9. **Chapter-index and design-sheet features** at `libs/features/chapter-index` and `libs/features/design-sheet`, both lazy-loaded from the shell.
-10. **WebGL rendering** — wireframe aesthetic prototyped on a sphere in ogl, then `libs/primitives/curved-surface` for the cone visualizations.
-11. **Expand the timeline event set** (`bind`, `branch`, `trigger`) as Chapter 2 and Chapter 3 demand them.
-12. **Chapter 2, then Chapter 3.** At this point the engine should be stable; further chapters are mostly content.
+8. **Chapter 1** as `libs/features/chapter-01-position-time` — Steps 1–4 authored (`position-only` → `time-only` → `full` → `single` / speed budget); steps 5–6 remain. Step-to-step footer navigation wired through step 4. Add an `nx g chapter` generator while authoring the rest so chapters 2+ are one command.
+9. ~~**Inline math in narration.**~~ Done — `$...$` LaTeX in narrate strings, MathJax v4 lazy load, atomic math reveal in typewriter.
+10. **Chapter-index and design-sheet features** at `libs/features/chapter-index` and `libs/features/design-sheet`, both lazy-loaded from the shell.
+11. **WebGL rendering** — wireframe aesthetic prototyped on a sphere in ogl, then `libs/primitives/curved-surface` for the cone visualizations.
+12. **Expand the timeline event set** (`bind`, `branch`, `trigger`) as Chapter 2 and Chapter 3 demand them.
+13. **Chapter 2, then Chapter 3.** At this point the engine should be stable; further chapters are mostly content.

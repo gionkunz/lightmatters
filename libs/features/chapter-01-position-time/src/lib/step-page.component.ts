@@ -6,6 +6,7 @@ import { LmButtonComponent } from '@lm/design';
 import { Step01Component } from './steps/step-01.component';
 import { Step02Component } from './steps/step-02.component';
 import { Step03Component } from './steps/step-03.component';
+import { Step04Component } from './steps/step-04.component';
 
 @Component({
   selector: 'lm-step-page',
@@ -13,6 +14,7 @@ import { Step03Component } from './steps/step-03.component';
     Step01Component,
     Step02Component,
     Step03Component,
+    Step04Component,
     LmButtonComponent,
     RouterLink,
   ],
@@ -26,6 +28,9 @@ import { Step03Component } from './steps/step-03.component';
       }
       @case (3) {
         <lm-step-03 />
+      }
+      @case (4) {
+        <lm-step-04 />
       }
       @default {
         <div

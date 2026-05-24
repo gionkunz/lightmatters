@@ -1,32 +1,33 @@
-import { Component, input } from '@angular/core';
-import { LmKickerComponent } from '@lm/design';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  Injector,
+  input,
+  viewChildren,
+} from '@angular/core';
+import { LmKickerComponent, MathJaxService } from '@lm/design';
+import {
+  buildNarrateRenderPieces,
+  narrateTextTypingUnits,
+  parseNarrateText,
+} from '../timeline/narrate-text';
 
-type NarratorSegment =
-  | { kind: 'word'; chars: string[] }
-  | { kind: 'space' };
+const NARR_TEXT =
+  'm-0 font-serif text-[30px] leading-[1.4] text-pretty';
 
-/** Narrator text revealed letter-by-letter with a soft fade-in. */
+const MATH_PILL =
+  'inline-block align-[-0.06em] rounded-[5px] bg-ink-very-faint px-[0.38em] pt-[0.06em] pb-[0.1em] shadow-[inset_0_0_0_1px_var(--lm-ink-faint)]';
+
+const MATH_HOST = `${MATH_PILL} animate-char-in [&_mjx-container]:!my-0 [&_mjx-container]:!text-[1em] [&_mjx-math]:!text-[1em]`;
+
+/** Narrator text revealed letter-by-letter with inline LaTeX via MathJax. */
 @Component({
   selector: 'lm-narrator',
   imports: [LmKickerComponent],
-  styles: `
-    @keyframes lm-char-in {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    .lm-narr-word {
-      white-space: nowrap;
-    }
-
-    .lm-narr-char {
-      animation: lm-char-in 0.45s ease-out both;
-    }
-  `,
   template: `
     <div>
       @if (kicker()) {
@@ -34,50 +35,117 @@ type NarratorSegment =
           kicker()
         }}</lm-kicker>
       }
-      <p
-        class="m-0 min-h-[90px] max-w-[800px] text-pretty font-serif text-[30px] leading-[1.4] text-ink"
-      >
-        @for (segment of segments(); track $index) {
-          @if (segment.kind === 'space') {
-            {{ ' ' }}
-          } @else {
-            <span class="lm-narr-word">
-              @for (char of segment.chars; track $index) {
-                <span class="lm-narr-char">{{ char }}</span>
+      <div class="relative max-w-[800px] min-h-[90px]">
+        <p [class]="NARR_TEXT + ' invisible select-none'" aria-hidden="true">
+          @for (piece of ghostPieces(); track $index) {
+            @switch (piece.kind) {
+              @case ('space') {
+                {{ ' ' }}
               }
-            </span>
+              @case ('word') {
+                <span class="whitespace-nowrap">
+                  @for (char of piece.chars; track $index) {
+                    <span>{{ char }}</span>
+                  }
+                </span>
+              }
+              @case ('math') {
+                <span [class]="MATH_PILL">
+                  <span class="inline-block min-w-[1.35em]">&nbsp;</span>
+                </span>
+              }
+            }
           }
-        }
-      </p>
+        </p>
+        <p [class]="NARR_TEXT + ' absolute inset-0 text-ink'">
+          @for (piece of renderPieces(); track $index) {
+            @switch (piece.kind) {
+              @case ('space') {
+                {{ ' ' }}
+              }
+              @case ('word') {
+                <span class="whitespace-nowrap">
+                  @for (char of piece.chars; track $index) {
+                    <span class="animate-char-in">{{ char }}</span>
+                  }
+                </span>
+              }
+              @case ('math') {
+                <span
+                  #mathHost
+                  [class]="MATH_HOST"
+                  [attr.data-latex]="piece.latex"
+                ></span>
+              }
+            }
+          }
+        </p>
+      </div>
     </div>
   `,
 })
 export class LmNarratorComponent {
+  private readonly mathJax = inject(MathJaxService);
+  private readonly injector = inject(Injector);
+  private readonly mathHosts = viewChildren<ElementRef<HTMLElement>>('mathHost');
+
+  protected readonly NARR_TEXT = NARR_TEXT;
+  protected readonly MATH_PILL = MATH_PILL;
+  protected readonly MATH_HOST = MATH_HOST;
+
   readonly kicker = input<string | undefined>();
   readonly text = input.required<string>();
   readonly visibleCount = input.required<number>();
 
-  protected segments(): NarratorSegment[] {
-    const visible = this.text().slice(0, this.visibleCount());
-    const segments: NarratorSegment[] = [];
-    let word: string[] = [];
+  protected readonly renderPieces = computed(() =>
+    buildNarrateRenderPieces(
+      parseNarrateText(this.text()),
+      this.visibleCount(),
+    ),
+  );
 
-    for (const char of visible) {
-      if (char === ' ') {
-        if (word.length > 0) {
-          segments.push({ kind: 'word', chars: word });
-          word = [];
-        }
-        segments.push({ kind: 'space' });
-      } else {
-        word.push(char);
+  protected readonly ghostPieces = computed(() =>
+    buildNarrateRenderPieces(
+      parseNarrateText(this.text()),
+      narrateTextTypingUnits(this.text()),
+    ),
+  );
+
+  constructor() {
+    effect(() => {
+      this.renderPieces();
+      afterNextRender(
+        () => {
+          void this.typesetVisibleMath();
+        },
+        { injector: this.injector },
+      );
+    });
+  }
+
+  private async typesetVisibleMath(): Promise<void> {
+    const pending = this.mathHosts().filter((ref) => {
+      const element = ref.nativeElement;
+      return (
+        element.dataset['latex'] &&
+        element.dataset['typeset'] !== 'done' &&
+        element.dataset['typeset'] !== 'pending'
+      );
+    });
+
+    for (const ref of pending) {
+      const element = ref.nativeElement;
+      const latex = element.dataset['latex'];
+      if (!latex) {
+        continue;
+      }
+
+      try {
+        await this.mathJax.typesetElement(element, latex);
+      } catch {
+        element.dataset['typeset'] = 'error';
+        element.textContent = `$${latex}$`;
       }
     }
-
-    if (word.length > 0) {
-      segments.push({ kind: 'word', chars: word });
-    }
-
-    return segments;
   }
 }

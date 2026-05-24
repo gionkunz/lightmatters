@@ -6,7 +6,17 @@
   "sourceRoot": "apps/lightmatters/src",
   "tags": ["scope:app"],
   "targets": {
+    "copy-mathjax": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["{workspaceRoot}/node_modules/mathjax/**/*"],
+      "outputs": ["{workspaceRoot}/apps/lightmatters/public/mathjax"],
+      "options": {
+        "command": "rm -rf apps/lightmatters/public/mathjax && cp -r node_modules/mathjax apps/lightmatters/public/mathjax"
+      }
+    },
     "build": {
+      "dependsOn": ["copy-mathjax"],
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -48,6 +58,7 @@
     },
     "serve": {
       "continuous": true,
+      "dependsOn": ["copy-mathjax"],
       "executor": "@angular/build:dev-server",
       "configurations": {
         "production": {
