@@ -5,7 +5,7 @@ export type WaitCondition = 'userAdvance' | 'animationDone';
 export interface NarrateEvent {
   type: 'narrate';
   text: string;
-  /** Milliseconds per character. Default 28. */
+  /** Milliseconds per character. Default 34. */
   speed?: number;
   /** Milliseconds to hold after the full text is revealed. Default 4000. Skipped automatically on the narrate beat immediately before an exploration wait. Set 0 to skip. */
   pauseAfter?: number;

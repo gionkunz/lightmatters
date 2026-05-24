@@ -104,3 +104,12 @@ The landing page Hero primary CTA and Chapter 1 preview card SHALL link to `/ch/
 - **WHEN** a user clicks the Chapter 1 preview card
 - **THEN** the router navigates to `/ch/01/step/1`
 
+### Requirement: Chapter 2 entry point links to Step 1
+
+The landing page Chapter 2 preview card SHALL link to `/ch/02/step/1`.
+
+#### Scenario: Chapter 2 card navigates to Step 1
+
+- **WHEN** a user clicks the Chapter 2 preview card ("The speed budget")
+- **THEN** the router navigates to `/ch/02/step/1`
+

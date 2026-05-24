@@ -16,13 +16,14 @@ import {
 import { LmSliderComponent } from '@lm/design';
 import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
 import {
-  CHAPTER_01_TITLE,
-  CHAPTER_01_TOTAL_STEPS,
+  CHAPTER_02_TITLE,
+  CHAPTER_02_TOTAL_STEPS,
+  hasNextStep,
 } from '../step-registry';
-import { STEP_04_MOVING_SPACETIME } from './step-04-moving-spacetime';
+import { STEP_01_ALWAYS_AT_C } from './step-01-always-at-c';
 
 @Component({
-  selector: 'lm-step-04',
+  selector: 'lm-step-01',
   imports: [
     LmStepFrameComponent,
     LmNarratorComponent,
@@ -31,12 +32,11 @@ import { STEP_04_MOVING_SPACETIME } from './step-04-moving-spacetime';
   ],
   template: `
     <lm-step-frame
-      [chapter]="1"
+      [chapter]="2"
       [chapterTitle]="chapterTitle"
-      [step]="4"
+      [step]="1"
       [stepsTotal]="stepsTotal"
-      [hasNextStep]="true"
-      [nextChapter]="true"
+      [hasNextStep]="hasNextStep(1)"
       [showPlayback]="!runner.isComplete()"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -48,7 +48,6 @@ import { STEP_04_MOVING_SPACETIME } from './step-04-moving-spacetime';
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
       (back)="goPrevStep()"
-      (next)="goNextStep()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -68,6 +67,8 @@ import { STEP_04_MOVING_SPACETIME } from './step-04-moving-spacetime';
           <lm-spacetime-diagram
             variant="single"
             [velocity]="velocity()"
+            [budgetArc]="true"
+            [showTipLabel]="true"
             [width]="680"
             [height]="460"
           />
@@ -85,13 +86,14 @@ import { STEP_04_MOVING_SPACETIME } from './step-04-moving-spacetime';
     </lm-step-frame>
   `,
 })
-export class Step04Component implements OnInit, OnDestroy {
+export class Step01Component implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
-  protected readonly step = STEP_04_MOVING_SPACETIME;
-  protected readonly chapterTitle = CHAPTER_01_TITLE;
-  protected readonly stepsTotal = CHAPTER_01_TOTAL_STEPS;
+  protected readonly step = STEP_01_ALWAYS_AT_C;
+  protected readonly chapterTitle = CHAPTER_02_TITLE;
+  protected readonly stepsTotal = CHAPTER_02_TOTAL_STEPS;
+  protected readonly hasNextStep = hasNextStep;
   protected readonly velocity = signal(0);
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
@@ -145,10 +147,6 @@ export class Step04Component implements OnInit, OnDestroy {
   }
 
   protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/01/step/3');
-  }
-
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/02/step/1');
+    void this.router.navigateByUrl('/ch/01/step/4');
   }
 }

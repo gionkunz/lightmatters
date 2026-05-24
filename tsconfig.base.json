@@ -24,6 +24,9 @@
       ],
       "@lm/feature-chapter-01-position-time": [
         "./libs/features/chapter-01-position-time/src/index.ts"
+      ],
+      "@lm/feature-chapter-02-speed-budget": [
+        "./libs/features/chapter-02-speed-budget/src/index.ts"
       ]
     }
   },

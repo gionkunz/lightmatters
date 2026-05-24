@@ -4,6 +4,7 @@
 @source '../../../libs/engine/src';
 @source '../../../libs/features/landing/src';
 @source '../../../libs/features/chapter-01-position-time/src';
+@source '../../../libs/features/chapter-02-speed-budget/src';
 @source '../../../libs/primitives/spacetime-diagram/src';
 
 @theme inline {
@@ -25,7 +26,7 @@
   --color-glow-2: var(--lm-glow-2);
   --color-glow-ink: var(--lm-glow-ink);
 
-  --animate-char-in: lm-char-in 0.45s ease-out both;
+  --animate-char-in: lm-char-in 0.54s ease-out both;
 }
 
 :root,

@@ -1,0 +1,21 @@
+{
+  "name": "feature-chapter-02-speed-budget",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/features/chapter-02-speed-budget/src",
+  "prefix": "lm",
+  "projectType": "library",
+  "tags": ["scope:feature"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/features/chapter-02-speed-budget/jest.config.cts",
+        "tsConfig": "libs/features/chapter-02-speed-budget/tsconfig.spec.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

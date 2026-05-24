@@ -169,4 +169,54 @@ describe('LmSpacetimeDiagramComponent', () => {
       expect(tilted.getAttribute('x2')).not.toBe(verticalX2);
     });
   });
+
+  describe('single with budgetArc', () => {
+    let fixture: ComponentFixture<LmSpacetimeDiagramComponent>;
+
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [LmSpacetimeDiagramComponent],
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(LmSpacetimeDiagramComponent);
+      fixture.componentRef.setInput('variant', 'single');
+      fixture.componentRef.setInput('budgetArc', true);
+      fixture.componentRef.setInput('showTipLabel', true);
+      fixture.componentRef.setInput('height', 460);
+      fixture.detectChanges();
+    });
+
+    it('renders the budget arc and tip label', () => {
+      const svg = fixture.nativeElement.querySelector('svg');
+      expect(svg.querySelector('path')).toBeTruthy();
+      expect(svg.textContent).toContain('time passed');
+      expect(svg.textContent).toContain('traveled');
+    });
+
+    it('renders a horizontal vector at velocity 1', () => {
+      fixture.componentRef.setInput('velocity', 1);
+      fixture.detectChanges();
+      const line = fixture.nativeElement.querySelector('line[stroke-linecap="round"]');
+      const y1 = Number.parseFloat(line.getAttribute('y1'));
+      const y2 = Number.parseFloat(line.getAttribute('y2'));
+      expect(y1).toBeCloseTo(y2, 0);
+      expect(Number.parseFloat(line.getAttribute('x2'))).toBeGreaterThan(
+        Number.parseFloat(line.getAttribute('x1')),
+      );
+    });
+
+    it('shows pure-time label at velocity 0', () => {
+      fixture.componentRef.setInput('velocity', 0);
+      fixture.componentRef.setInput('tipProperYears', 1);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('1 year time passed');
+      expect(fixture.nativeElement.textContent).toContain('0 km traveled (0 km/s)');
+    });
+
+    it('renders a label background panel', () => {
+      fixture.componentRef.setInput('velocity', 0);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('rect[fill-opacity="0.6"]')).toBeTruthy();
+    });
+  });
 });

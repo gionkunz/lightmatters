@@ -104,8 +104,11 @@ import { LmPlaybackBarComponent } from './lm-playback-bar.component';
         <div class="flex shrink-0 items-center gap-3.5">
           <lm-button [emphasis]="true" (click)="back.emit()">← back</lm-button>
           @if (hasNextStep()) {
-            <lm-button [primary]="true" [emphasis]="true" (click)="next.emit()"
-              >continue →</lm-button
+            <lm-button
+              [primary]="true"
+              [emphasis]="true"
+              (click)="next.emit()"
+              >{{ nextChapter() ? 'next chapter →' : 'continue →' }}</lm-button
             >
           }
         </div>
@@ -119,6 +122,7 @@ export class LmStepFrameComponent {
   readonly step = input.required<number>();
   readonly stepsTotal = input.required<number>();
   readonly hasNextStep = input(false);
+  readonly nextChapter = input(false);
 
   readonly showPlayback = input(false);
   readonly progress = input(0);

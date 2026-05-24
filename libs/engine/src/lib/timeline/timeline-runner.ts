@@ -13,6 +13,9 @@ import { TargetRegistry } from './target-registry';
 /** Default hold after a narrate beat finishes typing (not applied before exploration wait). */
 export const DEFAULT_NARRATE_READ_PAUSE_MS = 4000;
 
+/** Default milliseconds between typewriter character reveals. */
+export const DEFAULT_NARRATE_SPEED_MS = 34;
+
 interface NarratePlayback {
   event: NarrateEvent;
   count: number;
@@ -409,7 +412,7 @@ export class TimelineRunner {
     }
 
     const { event, phase } = this.narratePlayback;
-    const speed = event.speed ?? 28;
+    const speed = event.speed ?? DEFAULT_NARRATE_SPEED_MS;
     const pauseAfter = this.narratePauseAfter(event, this.index);
 
     if (phase === 'typing') {
@@ -602,7 +605,7 @@ export class TimelineRunner {
     if (event.type === 'narrate') {
       const pauseAfter = this.narratePauseAfter(event, eventIndex);
       return (
-        narrateTextTypingUnits(event.text) * (event.speed ?? 28) +
+        narrateTextTypingUnits(event.text) * (event.speed ?? DEFAULT_NARRATE_SPEED_MS) +
         (pauseAfter > 0 ? pauseAfter : 0)
       );
     }
@@ -643,7 +646,7 @@ export class TimelineRunner {
     const event = this.events[this.index];
 
     if (event?.type === 'narrate' && this.narratePlayback) {
-      const speed = this.narratePlayback.event.speed ?? 28;
+      const speed = this.narratePlayback.event.speed ?? DEFAULT_NARRATE_SPEED_MS;
       if (this.narratePlayback.phase === 'typing') {
         const count = this.narratePlayback.count;
         ms += Math.max(0, count - 1) * speed;

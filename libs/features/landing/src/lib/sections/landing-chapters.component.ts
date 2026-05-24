@@ -26,9 +26,9 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
       </div>
       <div class="grid grid-cols-4 gap-x-6 gap-y-8">
         @for (chapter of chapters; track chapter.n) {
-          @if (chapter.n === 1) {
+          @if (chapterRoute(chapter.n); as route) {
             <a
-              routerLink="/ch/01/step/1"
+              [routerLink]="route"
               class="lm-chapter-card block cursor-pointer bg-paper-alt p-[22px] no-underline text-inherit"
             >
               <ng-container
@@ -78,4 +78,15 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
 })
 export class LandingChaptersComponent {
   protected readonly chapters = CHAPTERS;
+
+  protected chapterRoute(chapterNumber: number): string | null {
+    switch (chapterNumber) {
+      case 1:
+        return '/ch/01/step/1';
+      case 2:
+        return '/ch/02/step/1';
+      default:
+        return null;
+    }
+  }
 }

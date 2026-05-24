@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { speedBudgetTipLabel } from '@lm/physics';
 
 type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single';
 
@@ -146,6 +147,17 @@ type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single';
             class="fill-ink"
           />
         } @else {
+          @if (budgetArc()) {
+            <path
+              [attr.d]="budgetArcPath"
+              class="stroke-ink"
+              fill="none"
+              stroke-width="1"
+              stroke-linecap="round"
+              [attr.opacity]="axisOpacity() * 0.45"
+            />
+          }
+
           <line
             [attr.x1]="left"
             [attr.y1]="fullBottom"
@@ -171,6 +183,29 @@ type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single';
               r="3.5"
               class="fill-ink"
             />
+          }
+
+          @if (showTipLabel()) {
+            <g [attr.transform]="tipLabelTransform">
+              <rect
+                x="-4"
+                y="-22"
+                [attr.width]="tipLabelWidth"
+                height="50"
+                rx="2"
+                fill="var(--lm-paper)"
+                fill-opacity="0.6"
+              />
+              <text
+                x="4"
+                y="-4"
+                class="fill-ink font-mono text-[14px] leading-snug tracking-wide"
+                opacity="0.9"
+              >
+                <tspan x="4">{{ tipLabel().timeLine }}</tspan>
+                <tspan x="4" dy="18">{{ tipLabel().spaceLine }}</tspan>
+              </text>
+            </g>
           }
         }
 
@@ -207,6 +242,10 @@ export class LmSpacetimeDiagramComponent {
   readonly showWorldline = input(true);
   readonly showDot = input(true);
   readonly vectorStroke = input(2.4);
+  /** Sweep from pure time to pure space (0→90°) with tip readout; Ch 2 speed budget. */
+  readonly budgetArc = input(false);
+  readonly showTipLabel = input(false);
+  readonly tipProperYears = input(1);
 
   protected readonly left = 70;
   protected readonly right = 610;
@@ -251,8 +290,43 @@ export class LmSpacetimeDiagramComponent {
     return this.left + this.fullTimeAxisSpan;
   }
 
+  protected get maxVectorAngleRad(): number {
+    return this.budgetArc() ? Math.PI / 2 : Math.PI / 4;
+  }
+
   protected get vectorAngleRad(): number {
-    return this.velocity() * (Math.PI / 4);
+    return this.velocity() * this.maxVectorAngleRad;
+  }
+
+  protected get budgetArcPath(): string {
+    const endX = this.left + this.vectorLen * Math.sin(this.maxVectorAngleRad);
+    const endY = this.fullBottom - this.vectorLen * Math.cos(this.maxVectorAngleRad);
+    return [
+      `M ${this.left} ${this.fullBottom - this.vectorLen}`,
+      `A ${this.vectorLen} ${this.vectorLen} 0 0 1 ${endX} ${endY}`,
+    ].join(' ');
+  }
+
+  protected tipLabel() {
+    return speedBudgetTipLabel(this.velocity(), this.tipProperYears());
+  }
+
+  protected get tipLabelTransform(): string {
+    return `translate(${this.tipLabelX}, ${this.tipLabelY})`;
+  }
+
+  protected get tipLabelWidth(): number {
+    const lines = [this.tipLabel().timeLine, this.tipLabel().spaceLine];
+    const longest = Math.max(...lines.map((line) => line.length));
+    return Math.min(380, Math.max(260, longest * 8.2 + 12));
+  }
+
+  protected get tipLabelX(): number {
+    return this.vectorTipX + 16;
+  }
+
+  protected get tipLabelY(): number {
+    return this.vectorTipY - 4;
   }
 
   protected get vectorTipX(): number {

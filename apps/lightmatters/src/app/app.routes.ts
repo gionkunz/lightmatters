@@ -14,6 +14,13 @@ export const appRoutes: Routes = [
       ),
   },
   {
+    path: 'ch/02',
+    loadChildren: () =>
+      import('@lm/feature-chapter-02-speed-budget').then(
+        (m) => m.chapter02Routes,
+      ),
+  },
+  {
     path: '**',
     redirectTo: '',
   },
