@@ -29,4 +29,15 @@ describe('LmButtonComponent', () => {
     expect(button.classList.contains('border')).toBe(true);
     expect(button.classList.contains('text-ink')).toBe(true);
   });
+
+  it('uses larger upright text when emphasis is true', () => {
+    fixture = TestBed.createComponent(LmButtonComponent);
+    fixture.componentRef.setInput('emphasis', true);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('button');
+    expect(button.classList.contains('text-[19px]')).toBe(true);
+    expect(button.classList.contains('font-normal')).toBe(true);
+    expect(button.classList.contains('italic')).toBe(false);
+  });
 });

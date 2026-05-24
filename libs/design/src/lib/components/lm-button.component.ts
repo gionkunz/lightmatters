@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { LmInteractiveDirective } from '../directives/lm-interactive.directive';
 
-/** Serif italic button with primary (filled) and outline variants. */
+/** Serif button with primary (filled) and outline variants. */
 @Component({
   selector: 'lm-button',
   imports: [LmInteractiveDirective],
@@ -9,7 +9,15 @@ import { LmInteractiveDirective } from '../directives/lm-interactive.directive';
     <button
       type="button"
       lmInteractive
-      class="cursor-pointer px-[22px] py-[10px] font-serif text-[17px] italic transition-colors duration-400"
+      class="cursor-pointer font-serif transition-colors duration-400"
+      [class.px-[22px]]="!emphasis()"
+      [class.py-[10px]]="!emphasis()"
+      [class.text-[17px]]="!emphasis()"
+      [class.italic]="!emphasis()"
+      [class.px-7]="emphasis()"
+      [class.py-3]="emphasis()"
+      [class.text-[19px]]="emphasis()"
+      [class.font-normal]="emphasis()"
       [class.border]="!primary()"
       [class.border-ink-faint]="!primary()"
       [class.bg-ink]="primary()"
@@ -23,4 +31,5 @@ import { LmInteractiveDirective } from '../directives/lm-interactive.directive';
 })
 export class LmButtonComponent {
   readonly primary = input(false);
+  readonly emphasis = input(false);
 }

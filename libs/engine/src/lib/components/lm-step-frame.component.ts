@@ -99,9 +99,9 @@ import { LmPlaybackBarComponent } from './lm-playback-bar.component';
           </div>
         </div>
         <div class="flex shrink-0 items-center gap-3.5">
-          <lm-button (click)="back.emit()">← home</lm-button>
+          <lm-button [emphasis]="true" (click)="back.emit()">← back</lm-button>
           @if (hasNextStep()) {
-            <lm-button [primary]="true" (click)="next.emit()"
+            <lm-button [primary]="true" [emphasis]="true" (click)="next.emit()"
               >continue →</lm-button
             >
           }
