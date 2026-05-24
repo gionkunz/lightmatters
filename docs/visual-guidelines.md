@@ -177,7 +177,7 @@ Every primitive defined in `primitives.jsx`. Each must exist in the Angular port
 
 | Prototype | Angular suggestion | Purpose |
 |---|---|---|
-| `Typewriter` | `lm-typewriter` | Looping (or one-shot) text reveal with a blinking caret (`▍`, `1.1s steps(2)`). Speed `~28ms/char`, pause `~3000ms` between loops. |
+| `Typewriter` | `lm-narrator` | One-shot text reveal: letters fade in sequentially (`~28ms/char` typing speed from the timeline). Words are grouped to avoid mid-word line breaks. No blinking caret. After reveal, a read pause (`pauseAfter`, default `2400ms`) holds before the timeline advances. |
 | `SectionRule` | `lm-section-rule` | Numbered section divider: mono Roman numeral + italic serif title + flex-growing hairline. |
 | `Stamp` | `lm-stamp` | Page stamp — `"01 / 08"` mono kicker over italic serif name. |
 | `Wordmark` | `lm-wordmark` | See §6. Sized via input. |
@@ -186,7 +186,7 @@ Every primitive defined in `primitives.jsx`. Each must exist in the Angular port
 | `Kicker` | `lm-kicker` | The defining mono uppercase label, 10–11px, 0.22em tracking. Used everywhere. |
 | `Button` | `lm-button` | Primary (filled ink) / secondary (outline). Italic serif label. Glow on hover. |
 | `Slider` | `lm-slider` | Mono label + value, `1px` track, ticks, draggable accent-glowing thumb. Accepts `accent` color. |
-| `STDiagram` | `lm-spacetime-diagram` | The recurring spacetime diagram. Variants: `single`, `pair`, `wavefront`, `cone`. |
+| `STDiagram` | `lm-spacetime-diagram` | The recurring spacetime diagram. Variants: `position-only` (Ch 1 Step 1), `single`, `pair`, `wavefront`, `cone`. |
 | `STMini` | (variant of above) | Tiny thumbnail variants for chapter cards: `axes`, `vector`, `pair`, `cone`, `wavefront`, `well`, `doppler`, `bend`. |
 | `ConeShape` / `BigCone` | (variant of curved-surface) | Wireframe cone with rims, meridians, cross-section ellipses, and an optional worldline path. |
 | `ThemeToggle` | `lm-theme-toggle` | Outlined mono pill with an accent dot. Glows on hover. |
@@ -202,7 +202,8 @@ Every primitive defined in `primitives.jsx`. Each must exist in the Angular port
 
 The spacetime diagram is the most-reused primitive. Lock these conventions:
 
-- **Axes** — time vertical (up), space horizontal (right). `1px` stroke, `ink` color. Origin at bottom-left of the diagram area.
+- **Full diagram** — time vertical (up), space horizontal (right). `1px` stroke, `ink` color. Origin at bottom-left of the diagram area.
+- **Position-only variant (Ch 1 Step 1)** — horizontal spatial axis only: tick marks, `x` label, movable point at normalized position 0–1. No time axis yet.
 - **Ticks** — 5 tick marks per axis, `5px` long, perpendicular outward.
 - **Axis labels** — `t` and `x` in mono, italic serif `c` for the light-cone line. Small (10–11px), `~0.65` opacity.
 - **Light cone** — dashed diagonal line (`stroke-dasharray: 3 4`, opacity `~0.55`) at 45°, from origin upward and to the right.
@@ -227,7 +228,7 @@ The prototype demonstrates the **range** of layouts the engine must support. New
 Single column, centered, max-width `1100px`. Top to bottom:
 
 1. Kicker label ("a worldline").
-2. Large narrator text (30px serif, min-height 90px to prevent layout shifts as the typewriter reveals).
+2. Large narrator text (30px serif, min-height 90px to prevent layout shifts as letters fade in).
 3. A single full-width diagram, centered.
 4. One slim slider centered below.
 
@@ -249,14 +250,15 @@ Full-bleed diagram absolutely centered, with:
 
 - A side-mounted kicker + italic serif title at top-left.
 - 1–2 `Annotation` callouts pointing at specific regions of the diagram with hairline pointers.
-- A floating narrator panel pinned to the bottom: `surface + 'ee'` background, `backdrop-filter: blur(8px)`, `1px solid inkFaint` border, `padding: 22px 28px`. The panel contains the typewriter narration on the left and a single slider on the right.
+- A floating narrator panel pinned to the bottom: `surface + 'ee'` background, `backdrop-filter: blur(8px)`, `1px solid inkFaint` border, `padding: 22px 28px`. The panel contains the narrator on the left and a single slider on the right.
 
 Use this for the "wow" moments — when the diagram itself should fill the visual field.
 
 ### Step chrome (shared by all step layouts)
 
-- **Nav (top, 20×40px padding)** — `Wordmark size={20}` + chapter kicker + chapter title (italic serif) + `ProgressDots` + step counter kicker + `ThemeToggle`. Border-bottom `1px inkFaint`.
-- **Footer (18×40px padding)** — keyboard hints on the left (`← back`, `↩ skip reveal`, `m map`), Previous + Continue buttons on the right. Border-top `1px inkFaint`.
+- **Playback bar (top, full width)** — music-player-style progress with beat markers, plus rewind / pause / fast-forward transport. Sits above the step nav.
+- **Nav (20×40px padding)** — `Wordmark size={20}` + chapter kicker + chapter title (italic serif) + `ProgressDots` + step counter kicker + `ThemeToggle`. Border-bottom `1px inkFaint`.
+- **Footer (18×40px padding)** — keyboard hints on the left (`← back`, `space skip`, `pause / skip`), Previous + Continue buttons on the right. Border-top `1px inkFaint`.
 
 ### Landing layout
 
@@ -276,11 +278,11 @@ Reference page documenting the design system itself. Two-column body: Wordmark /
 
 The narrator is more than just text — it is a UI pattern with specific styles per layout:
 
-- **Single-beat (layout A)** — one large 30px typewriter line. Use a `min-height` matching ~3 lines to prevent layout shift.
+- **Single-beat (layout A)** — one large 30px line with per-letter fade-in. Use a `min-height` matching ~3 lines to prevent layout shift.
 - **Chat-feed (layout B)** — vertical stack. Past beats fade to `opacity 0.45`. Current beat (the one currently revealing) is larger (24px) and carries a `2px solid inkMid` left accent.
-- **Floating panel (layout C)** — typewriter inside a `surface + 'ee'` blurred panel.
+- **Floating panel (layout C)** — narrator inside a `surface + 'ee'` blurred panel.
 - **Inline color** — when the narration names a labeled entity (vector A, traveller B), wrap the name in `<em style="color: accent; font-style: normal">`. The semantic accent grammar (§4) extends into prose.
-- **Typewriter spec** — `~28ms` per character, `~3000–3800ms` pause between loops, blinking caret (`▍`) at `1.1s steps(2)` infinite, opacity fades to 0 when text is complete.
+- **Reveal spec** — `~28ms` per character (timeline `speed`), each letter fades in over `~450ms ease-out`. Words are wrapped in `nowrap` spans so line breaks fall between words, not mid-word. No blinking caret. After the full chunk is visible, a **read pause** (`pauseAfter`, default `2400ms`) holds before the timeline advances; Space skips the hold.
 
 ---
 
@@ -297,11 +299,12 @@ Animation pacing is part of the brand. Unhurried, never showy.
 | Wavefront ring expansion | 4.2s loop | `ease-out` | 1.05s stagger between successive rings. |
 | Wavefront emitter pulse | 1.4s loop | `ease-in-out` | Subtle scale on the source dot. |
 | Cone-fall (worldline trace) | 5.5s loop | `cubic-bezier(.55,0,.45,1)` | Dot rides an SVG `animateMotion` path. |
-| Typewriter character | ~28ms each | linear | Range 26–30ms in different contexts. |
-| Typewriter caret blink | 1.1s | `steps(2) infinite` | Block caret. |
+| Narration letter fade-in | 0.45s | `ease-out` | Per character, as each letter appears. |
+| Narration typing interval | ~28ms each | linear | Timeline `speed`; range 26–30ms in different contexts. |
+| Read pause after narration | 2400ms default | — | Configurable via `pauseAfter` on narrate events. Skippable. |
 | Section-card hover translate | 0.2s | default | `translateY(-2px)`. |
 
-`prefers-reduced-motion`: collapse all loops to a single static frame at the most-informative point (e.g. the vector at its maximum angle, the wavefront at full expansion). Typewriter reveals fall through to instant. Hover glows still animate (they're functional feedback, not decoration).
+**No `prefers-reduced-motion` concession.** Motion in Light Matters is pedagogy, not decoration — narration reveals, diagram animations, and transport controls all participate in the explanation. See `docs/architecture.md` § Accessibility.
 
 ---
 

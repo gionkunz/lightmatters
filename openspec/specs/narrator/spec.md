@@ -1,21 +1,25 @@
 # narrator Specification
 
 ## Purpose
-TBD - created by archiving change chapter-01-step-01. Update Purpose after archive.
-## Requirements
-### Requirement: Narrator renders progressive typewriter text
 
-The engine SHALL provide an `LmNarrator` component that displays narrator text in EB Garamond with a typewriter reveal effect driven by timeline `narrate` events.
+Progressive narration UI driven by timeline `narrate` events. Renders step kickers and body text as accessible DOM content in the step frame.
+
+## Requirements
+
+### Requirement: Narrator renders progressive letter reveal
+
+The engine SHALL provide an `LmNarrator` component that displays narrator text in EB Garamond with a sequential letter reveal driven by timeline `narrate` events. Each letter fades in (`~450ms ease-out`) as it appears. Words SHALL be grouped so line breaks do not split words mid-token. No blinking caret.
 
 #### Scenario: Text reveals character by character
 
 - **WHEN** a narrate event supplies the text "Position is a location on a line."
 - **THEN** the narrator component displays characters sequentially until the full sentence is visible
+- **AND** each visible letter uses a fade-in animation
 
-#### Scenario: Narrator shows an active caret during reveal
+#### Scenario: Words do not break mid-token
 
-- **WHEN** text is mid-reveal
-- **THEN** a blinking caret indicator is visible at the insertion point
+- **WHEN** narration wraps across lines on a narrow viewport
+- **THEN** line breaks occur between words, not within a word
 
 ### Requirement: Skip completes narrator text instantly
 
@@ -43,4 +47,3 @@ Narrator text SHALL be rendered as real HTML text nodes (not canvas or SVG), rea
 
 - **WHEN** Step 1 renders with active narration
 - **THEN** the narration text is present as DOM text content accessible to assistive technology
-

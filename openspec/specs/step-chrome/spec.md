@@ -1,7 +1,8 @@
 # step-chrome Specification
 
 ## Purpose
-TBD - created by archiving change chapter-01-step-01. Update Purpose after archive.
+
+Reusable step shell: chapter nav, progress dots, top playback bar, footer controls, and step routing host.
 ## Requirements
 ### Requirement: Step frame provides chapter navigation chrome
 
@@ -38,9 +39,19 @@ The step host SHALL listen for Space and Enter key presses to trigger timeline s
 - **AND** the user presses Space
 - **THEN** the timeline proceeds (or completes the step if no further events)
 
+### Requirement: Step frame provides playback transport
+
+The step frame SHALL render an `LmPlaybackBar` above the nav with progress, beat markers, and rewind / pause / fast-forward controls wired to the timeline runner.
+
+#### Scenario: Playback bar shows progress during narration
+
+- **WHEN** Step 1's timeline is playing through narrate events
+- **THEN** the playback bar progress indicator advances
+- **AND** beat markers are visible on the progress track
+
 ### Requirement: StepHost resolves step from route parameter
 
-The engine SHALL provide an `LmStepHost` component that reads the `:step` route parameter, loads the corresponding step module, mounts visualizations, and starts the timeline runner.
+The chapter feature SHALL provide a step page component that reads the `:step` route parameter, loads the corresponding step module, mounts visualizations, and starts the timeline runner.
 
 #### Scenario: Route param selects step
 

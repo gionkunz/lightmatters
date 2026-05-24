@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-Light Matters has an Nx integrated monorepo with the `lightmatters` Angular 21 app, foundational libraries (`libs/design`, `libs/engine`, `libs/physics`), a design system + landing page at `/`, and a Playwright `lightmatters-e2e` project. Next up per `docs/architecture.md` build order: the timeline engine.
+Light Matters has an Nx integrated monorepo with the `lightmatters` Angular 21 app, foundational libraries (`libs/design`, `libs/engine`, `libs/physics`, `libs/primitives/spacetime-diagram`), a design system + landing page at `/`, Chapter 1 Step 1 at `/ch/01/step/1`, and a Playwright `lightmatters-e2e` project. The timeline engine, narrator, step chrome, and position-only spacetime diagram primitive are implemented. Next up per `docs/architecture.md` build order: remaining Chapter 1 steps, `bind`/`trigger` timeline events, chapter-index, and design-sheet.
 
 Build / test / lint commands:
 
@@ -74,9 +74,9 @@ Also: Angular generators in this Nx/Angular version reject **positional** name a
 ## Working on this project
 
 - The **engine and primitives** are the leverage points. Time spent making them clean pays back across every chapter.
-- Adding a new chapter should not require engine changes — create a folder under `src/app/chapters/`, write step files, register the chapter.
+- Adding a new chapter should not require engine changes — scaffold a feature lib under `libs/features/chapter-NN-<slug>/`, write step files, register routes in `app.routes.ts`.
 - When porting from `visual-design-prototype/`, **match the visual output, not the React structure**. Re-decompose into Angular components and directives.
-- Physics formulas (Lorentz factor, time dilation, Doppler shift, etc.) go in `src/app/physics/` as pure functions. Both diagrams and narration call into the same module.
+- Physics formulas (Lorentz factor, time dilation, Doppler shift, etc.) go in `libs/physics/` as pure functions. Both diagrams and narration call into the same module.
 - The brand sheet from the prototype (`visual-design-prototype/project/brand-sheet.jsx`) should be ported as a `/design-sheet` route — it's the visual-regression canary.
 
 <!-- nx configuration start-->

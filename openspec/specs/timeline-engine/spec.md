@@ -1,8 +1,11 @@
 # timeline-engine Specification
 
 ## Purpose
-TBD - created by archiving change chapter-01-step-01. Update Purpose after archive.
+
+Declarative timeline orchestration for steps: sequential `narrate`, `animate`, and `wait` events with skip, read pause, playback transport, and reactive playhead state.
+
 ## Requirements
+
 ### Requirement: TimelineRunner executes events in order
 
 The engine SHALL provide a `TimelineRunner` service that walks a step's timeline event array sequentially, scheduling time-based events against `requestAnimationFrame` and pausing on `wait` conditions.
@@ -19,12 +22,18 @@ The engine SHALL provide a `TimelineRunner` service that walks a step's timeline
 
 ### Requirement: Timeline supports narrate events
 
-A `narrate` event SHALL enqueue a text chunk for the narrator component to reveal with typewriter animation.
+A `narrate` event SHALL enqueue a text chunk for the narrator component to reveal sequentially. After the full chunk is visible, the runner SHALL hold for a configurable read pause (`pauseAfter`, default 2400ms) before advancing unless skipped.
 
 #### Scenario: Narrate event reveals text
 
 - **WHEN** the runner reaches a `narrate` event with text "Position is a location on a line."
 - **THEN** the narrator component begins revealing that text character by character
+
+#### Scenario: Read pause holds before next event
+
+- **WHEN** a narrate event completes with default `pauseAfter`
+- **THEN** the timeline waits approximately 2400ms before proceeding to the next event
+- **AND** the user may skip the hold via Space or fast-forward
 
 ### Requirement: Timeline supports animate events
 
@@ -51,7 +60,7 @@ A `wait` event SHALL pause timeline progression until its condition is satisfied
 
 ### Requirement: Skip fast-forwards to next wait boundary
 
-The runner SHALL expose a `skip()` operation that instantly completes in-progress animations and jumps to the next `wait` event without losing final state values.
+The runner SHALL expose a `skip()` operation that instantly completes in-progress animations and narration and jumps to the next `wait` event without losing final state values.
 
 #### Scenario: Skip completes animations instantly
 
@@ -67,10 +76,24 @@ The runner SHALL expose a `skip()` operation that instantly completes in-progres
 
 ### Requirement: TimelineRunner exposes reactive playhead state
 
-The runner SHALL expose signals indicating whether the timeline is running, paused at a wait, or complete, so step chrome (footer controls, skip affordance) can react.
+The runner SHALL expose signals indicating whether the timeline is running, paused at a wait, or complete, plus `progress`, `elapsedMs`, and `beatMarkers`, so step chrome can react.
 
 #### Scenario: Playhead reflects wait state
 
 - **WHEN** the runner is paused at a `userAdvance` wait
 - **THEN** a `waitingForUser` signal (or equivalent) reads true
 
+### Requirement: Playback transport controls timeline playback
+
+The runner SHALL support pause/resume, rewind (reset animatable targets to `initial` and replay from the start), and fast-forward (equivalent to skip).
+
+#### Scenario: Pause freezes mid-narration
+
+- **WHEN** the user pauses during an in-progress narrate event
+- **THEN** letter reveal stops until resume
+
+#### Scenario: Rewind replays from the first event
+
+- **WHEN** the user triggers rewind mid-step
+- **THEN** animatable targets reset to their `initial` values
+- **AND** the timeline replays from the first event

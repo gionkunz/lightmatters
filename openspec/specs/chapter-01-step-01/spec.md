@@ -1,7 +1,8 @@
 # chapter-01-step-01 Specification
 
 ## Purpose
-TBD - created by archiving change chapter-01-step-01. Update Purpose after archive.
+
+Chapter 1 feature library: lazy-loaded routing at `/ch/01` and Step 1 ("What is position?") as the first vertical slice on the engine.
 ## Requirements
 ### Requirement: Chapter 1 feature is lazy-loaded at /ch/01
 

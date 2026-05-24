@@ -66,7 +66,7 @@ lightmatters/                          ← workspace root
 
   libs/
     design/                            ← tokens, ThemeService, brand components, lmInteractive
-    engine/                            ← timeline runner, narrator, step-host, chapter-host, rendering abstractions
+    engine/                            ← timeline runner, narrator, step frame, playback bar, step-page host
     physics/                           ← pure functions: lorentz, time-dilation, doppler, geodesics
     primitives/
       spacetime-diagram/               ← the reusable 2D spacetime diagram (time vertical)
@@ -104,19 +104,19 @@ import type { Routes } from '@angular/router';
 
 export const chapter01Routes: Routes = [
   { path: '', component: ChapterShellComponent, children: [
-    { path: 'step/:step', component: StepHostComponent },
+    { path: 'step/:step', component: StepPageComponent },
     { path: '', redirectTo: 'step/1', pathMatch: 'full' },
   ]},
 ];
 
 // apps/lightmatters/src/app/app.routes.ts
 export const appRoutes: Routes = [
-  { path: '',            loadChildren: () => import('@lightmatters/feature-landing').then(m => m.landingRoutes) },
-  { path: 'chapters',    loadChildren: () => import('@lightmatters/feature-chapter-index').then(m => m.chapterIndexRoutes) },
-  { path: 'design-sheet',loadChildren: () => import('@lightmatters/feature-design-sheet').then(m => m.designSheetRoutes) },
-  { path: 'ch/01',       loadChildren: () => import('@lightmatters/feature-chapter-01-position-time').then(m => m.chapter01Routes) },
+  { path: '',            loadChildren: () => import('@lm/feature-landing').then(m => m.landingRoutes) },
+  { path: 'chapters',    loadChildren: () => import('@lm/feature-chapter-index').then(m => m.chapterIndexRoutes) },
+  { path: 'design-sheet',loadChildren: () => import('@lm/feature-design-sheet').then(m => m.designSheetRoutes) },
+  { path: 'ch/01',       loadChildren: () => import('@lm/feature-chapter-01-position-time').then(m => m.chapter01Routes) },
   // ...
-  { path: '**',          redirectTo: 'chapters' },
+  { path: '**',          redirectTo: '' },
 ];
 ```
 
@@ -192,9 +192,17 @@ A `TimelineRunner` is a small state machine that:
 1. Walks the event list in order.
 2. For time-based events, schedules them against `requestAnimationFrame`.
 3. For wait conditions, subscribes to the relevant signal (animation completion, user input) and pauses progression.
-4. Exposes the current "playhead" as a signal so UI elements (progress bar, skip controls) can react.
+4. Exposes reactive playhead state — `waitingForUser`, `progress`, `elapsedMs`, `beatMarkers` — so step chrome (playback bar, footer controls) can react.
 
-Crucially, the runner exposes a **skip** operation: a user pressing the advance key should fast-forward to the next wait/interaction boundary, completing intermediate animations instantly. This makes the linear narrative skimmable without breaking state.
+**Narrate events** reveal text character by character, then hold for a configurable **read pause** (`pauseAfter`, default 2400ms) before advancing. Space or skip during the read pause jumps past the hold.
+
+**Playback controls** (top `LmPlaybackBar` in the step frame):
+
+- **Pause / resume** — freezes mid-narration or mid-tween.
+- **Rewind** — resets animatable targets to their `initial` values and replays from the first event.
+- **Fast-forward** — same as skip: complete in-progress work instantly and jump to the next `wait` boundary.
+
+Crucially, the runner exposes a **skip** operation: a user pressing Space at a wait boundary (or during narration) fast-forwards to the next wait/interaction boundary, completing intermediate animations instantly. This makes the linear narrative skimmable without breaking state.
 
 ### Why a custom timeline (rather than GSAP/Anime.js/etc.)
 
@@ -219,6 +227,8 @@ The single most important primitive. It is essentially:
 - A configurable viewport (zoom, pan, axis ranges).
 - A set of slots into which other primitives (vectors, light circles, worldlines, points) can be inserted.
 - Optionally, a "fold" transform that can morph the diagram from a flat plane into a cylinder or cone — this is the bridge between Chapter 1's flat diagram and Chapter 3's cone geometry. The 2D and 3D renderings of the spacetime diagram should be the **same conceptual object**, just rendered differently.
+
+**Incremental variants.** Chapter 1 Step 1 ships a **`position-only`** variant first: horizontal spatial axis, tick marks, a movable point — no time axis yet. Later steps add the vertical time axis and the rest of the full diagram vocabulary from `visual-guidelines.md`.
 
 ### The curved surface
 
@@ -287,7 +297,7 @@ Per-step URLs: `/ch/:chapter/step/:step`, plus `/` (landing), `/chapters` (journ
 
 **Route ownership is distributed.** The app shell's `app.routes.ts` declares one top-level entry per feature, each using `loadChildren` to import that feature's exported `Routes` array. The feature owns its own URL space below its mount point — child routes, redirects, route-level resolvers, route-scoped providers all live in the feature lib. The shell never knows what `step/:step` means; chapter features do.
 
-On invalid routes, fall back to the chapter index with a small "we couldn't find that step" notice (a `**` catch-all in `app.routes.ts`).
+On invalid **app-level** routes, redirect to `/` (landing). Unknown **step numbers within a chapter** are handled by the chapter feature — e.g. `/ch/01/step/99` shows a brief not-found message with links back to Step 1 or home.
 
 ## State and persistence
 
@@ -344,16 +354,15 @@ Fully responsive interaction design is deferred past v1.
 
 ## Build order (engineering plan, condensed)
 
-1. **Nx workspace scaffold.** `npx create-nx-workspace@latest lightmatters --preset=angular-monorepo` (integrated). Pick the `lightmatters` app name, SCSS, esbuild. Generate the initial libs — `design`, `engine`, `physics` — with `nx g @nx/angular:lib`. Configure Nx tags + `@nx/enforce-module-boundaries` per the rules above. Wire Tailwind v4 into the app via PostCSS (`@tailwindcss/postcss`) and add `@source` directives for the libs. Wire deploy pipeline to Cloudflare Pages at `lightmatters.app`.
-2. **Design system foundation.** In `libs/design`: port the prototype's tokens, themes (light/dark + toggle), EB Garamond + IBM Plex Mono web fonts, brand components (Wordmark, Kicker, Button, Slider), and the `lmInteractive` glow directive.
-3. **App shell.** Wire `app.component.ts` to render the layout chrome (wordmark + theme toggle + `<router-outlet/>`) using `libs/design` brand components. `app.routes.ts` starts with a single `loadChildren` to the landing feature plus a `**` catch-all.
-4. **Landing feature** at `libs/features/landing` (translated from `visual-design-prototype/project/landing.jsx`) — proves the design system and the feature/lazy-route pattern on a real page.
-5. **The `TimelineRunner`** in `libs/engine` with the smallest event set (`narrate`, `animate`, `wait` for next).
-6. **The `Narrator` component** in `libs/engine` — progressive text reveal driven by the timeline.
-7. **One end-to-end step** using a single primitive (a static spacetime diagram with one moving vector), hosted inside a throwaway feature lib. Proves the engine.
-8. **The spacetime diagram** as `libs/primitives/spacetime-diagram` in SVG (port the look from `primitives.jsx`).
-9. **Chapter 1** as `libs/features/chapter-01-position-time`, fully authored on top of the engine. Add a `nx g chapter` generator while we're here so chapters 2+ are one command (scaffolds the feature lib, route config, registry entry, and first step).
-10. **Chapter-index and design-sheet features** at `libs/features/chapter-index` and `libs/features/design-sheet`, both lazy-loaded from the shell.
-11. **WebGL rendering** — wireframe aesthetic prototyped on a sphere in ogl, then `libs/primitives/curved-surface` for the cone visualizations.
-12. **Expand the timeline event set** (`bind`, `branch`, `trigger`) as Chapter 2 and Chapter 3 demand them.
-13. **Chapter 2, then Chapter 3.** At this point the engine should be stable; further chapters are mostly content.
+1. ~~**Nx workspace scaffold.**~~ Done.
+2. ~~**Design system foundation.**~~ Done — tokens, themes, Wordmark, Kicker, Button, ThemeToggle, `lmInteractive`.
+3. ~~**App shell.**~~ Done — wordmark, theme toggle, lazy routes.
+4. ~~**Landing feature**~~ at `libs/features/landing`. Done.
+5. ~~**The `TimelineRunner`**~~ in `libs/engine` with `narrate`, `animate`, `wait`, skip, read pause, pause/resume, rewind, and progress tracking. Done.
+6. ~~**The `Narrator` component**~~ in `libs/engine` — per-letter fade-in reveal driven by the timeline. Done.
+7. ~~**End-to-end step + spacetime diagram primitive.**~~ Done as Chapter 1 Step 1 (`position-only` variant + `LmSlider`).
+8. **Chapter 1** as `libs/features/chapter-01-position-time` — Step 1 authored; steps 2–6 remain. Add an `nx g chapter` generator while authoring the rest so chapters 2+ are one command.
+9. **Chapter-index and design-sheet features** at `libs/features/chapter-index` and `libs/features/design-sheet`, both lazy-loaded from the shell.
+10. **WebGL rendering** — wireframe aesthetic prototyped on a sphere in ogl, then `libs/primitives/curved-surface` for the cone visualizations.
+11. **Expand the timeline event set** (`bind`, `branch`, `trigger`) as Chapter 2 and Chapter 3 demand them.
+12. **Chapter 2, then Chapter 3.** At this point the engine should be stable; further chapters are mostly content.

@@ -1,7 +1,8 @@
 # spacetime-diagram Specification
 
 ## Purpose
-TBD - created by archiving change chapter-01-step-01. Update Purpose after archive.
+
+SVG spacetime diagram primitive with incremental variants, starting with `position-only` for Chapter 1 Step 1.
 ## Requirements
 ### Requirement: Spacetime diagram renders position-only variant
 
