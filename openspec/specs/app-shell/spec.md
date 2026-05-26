@@ -1,3 +1,8 @@
+# app-shell Specification
+
+## Purpose
+
+Angular application shell: bootstrap, routing, lazy-loaded features, theme initialization, and module-boundary enforcement.
 ## Requirements
 ### Requirement: App shell bootstraps theme on startup
 
@@ -85,4 +90,47 @@ The spacetime-diagram primitive library SHALL be tagged `scope:primitive`. ESLin
 - **WHEN** a file in `libs/primitives/spacetime-diagram` imports from `@lm/engine`
 - **AND** an operator runs `nx lint spacetime-diagram --tui=false`
 - **THEN** the lint command passes
+
+### Requirement: Chapter 3 routes resolve to real components
+
+The application shell SHALL register routes `/ch/03/step/1` through `/ch/03/step/5` resolving to the corresponding step components from `@lm/feature-chapter-03-light-information`. The previous placeholder route SHALL be removed or replaced.
+
+#### Scenario: Routes resolve to real components
+- **WHEN** the reader navigates to any of `/ch/03/step/{1..5}`
+- **THEN** the router loads the matching step component (not a placeholder)
+
+### Requirement: Chapter 4 placeholder route exists
+
+The shell SHALL provide at least a placeholder route at `/ch/04/step/1` so that Chapter 3 Step 5's "next" navigation does not 404.
+
+#### Scenario: Outro forward navigation succeeds
+- **WHEN** the reader advances from Chapter 3 Step 5
+- **THEN** the router resolves `/ch/04/step/1` without error
+- **AND** the response is at least a placeholder component
+
+### Requirement: Chapter 4 routes
+
+The application SHALL register `/ch/04/step/1` through `/ch/04/step/5` lazy-loading `@lm/feature-chapter-04-ether-was-wrong`. The inline Chapter 4 placeholder SHALL be removed.
+
+#### Scenario: Routes resolve
+- **WHEN** navigating to `/ch/04/step/1`
+- **THEN** the Chapter 4 Step 1 component loads
+
+### Requirement: Chapter 5 routes
+
+The application SHALL register `/ch/05/step/1` through `/ch/05/step/5` lazy-loading `@lm/feature-chapter-05-doppler-seeing-motion`. The inline Chapter 5 placeholder SHALL be removed.
+
+#### Scenario: Routes resolve
+
+- **WHEN** navigating to `/ch/05/step/1`
+- **THEN** the Chapter 5 Step 1 component loads
+
+### Requirement: Chapter 6 placeholder route
+
+The shell SHALL provide at least a placeholder route at `/ch/06/step/1` so that Chapter 5 Step 5 forward navigation does not 404.
+
+#### Scenario: Outro forward navigation succeeds
+
+- **WHEN** advancing from Chapter 5 Step 5
+- **THEN** the router resolves `/ch/06/step/1` without error
 

@@ -10,15 +10,26 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@lm/design": ["./libs/design/src/index.ts"],
-      "@lm/engine": ["./libs/engine/src/index.ts"],
-      "@lm/physics": ["./libs/physics/src/index.ts"],
-      "@lm/feature-landing": ["./libs/features/landing/src/index.ts"],
+      "@lm/design": [
+        "./libs/design/src/index.ts"
+      ],
+      "@lm/engine": [
+        "./libs/engine/src/index.ts"
+      ],
+      "@lm/physics": [
+        "./libs/physics/src/index.ts"
+      ],
+      "@lm/feature-landing": [
+        "./libs/features/landing/src/index.ts"
+      ],
       "@lm/spacetime-diagram": [
         "./libs/primitives/spacetime-diagram/src/index.ts"
       ],
@@ -27,8 +38,23 @@
       ],
       "@lm/feature-chapter-02-speed-budget": [
         "./libs/features/chapter-02-speed-budget/src/index.ts"
+      ],
+      "@lm/feature-chapter-03-light-information": [
+        "./libs/features/chapter-03-light-information/src/index.ts"
+      ],
+      "@lm/feature-chapter-04-ether-was-wrong": [
+        "./libs/features/chapter-04-ether-was-wrong/src/index.ts"
+      ],
+      "@lm/feature-chapter-05-doppler-seeing-motion": [
+        "./libs/features/chapter-05-doppler-seeing-motion/src/index.ts"
+      ],
+      "@lm/light-scene": [
+        "./libs/primitives/light-scene/src/index.ts"
       ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

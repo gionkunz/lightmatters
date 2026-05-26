@@ -5,7 +5,11 @@
 @source '../../../libs/features/landing/src';
 @source '../../../libs/features/chapter-01-position-time/src';
 @source '../../../libs/features/chapter-02-speed-budget/src';
+@source '../../../libs/features/chapter-03-light-information/src';
+@source '../../../libs/features/chapter-04-ether-was-wrong/src';
+@source '../../../libs/features/chapter-05-doppler-seeing-motion/src';
 @source '../../../libs/primitives/spacetime-diagram/src';
+@source '../../../libs/primitives/light-scene/src';
 
 @theme inline {
   --font-serif: 'EB Garamond', 'Iowan Old Style', serif;
