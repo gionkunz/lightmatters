@@ -1,0 +1,13 @@
+{
+  "name": "feature-chapter-05-doppler-seeing-motion",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/features/chapter-05-doppler-seeing-motion/src",
+  "prefix": "lm",
+  "projectType": "library",
+  "tags": ["scope:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
