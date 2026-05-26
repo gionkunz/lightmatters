@@ -1,0 +1,13 @@
+{
+  "name": "feature-chapter-04-ether-was-wrong",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/features/chapter-04-ether-was-wrong/src",
+  "prefix": "lm",
+  "projectType": "library",
+  "tags": ["scope:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
