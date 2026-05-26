@@ -15,6 +15,7 @@ export interface ChapterPreview {
   readonly mini: DiagramVariant;
 }
 
+/** Chapters 1–5: flat spacetime (SR). Chapters 6–8: curved spacetime (GR). */
 export const CHAPTERS: readonly ChapterPreview[] = [
   {
     n: 1,
@@ -31,36 +32,36 @@ export const CHAPTERS: readonly ChapterPreview[] = [
   },
   {
     n: 3,
-    title: 'Rolling the diagram',
-    blurb: 'Bend the paper into a cone. Gravity is the geometry, not a force.',
-    mini: 'cone',
-  },
-  {
-    n: 4,
-    title: 'The center of the Earth',
-    blurb:
-      'A gravity well that bottoms out in weightlessness. Drop a particle and watch.',
-    mini: 'well',
-  },
-  {
-    n: 5,
     title: 'Light and information',
     blurb:
       'Wavefronts and observers. Why simultaneity is in the eye of the beholder.',
     mini: 'wavefront',
   },
   {
-    n: 6,
+    n: 4,
     title: 'The ether was wrong',
     blurb:
       'Light does not inherit the motion of its source. Why c is the same for everyone.',
     mini: 'doppler',
   },
   {
-    n: 7,
+    n: 5,
     title: 'Doppler and seeing motion',
     blurb: 'Compress the wavefronts and watch the clock change colour.',
     mini: 'doppler',
+  },
+  {
+    n: 6,
+    title: 'Rolling the diagram',
+    blurb: 'Bend the paper into a cone. Gravity is the geometry, not a force.',
+    mini: 'cone',
+  },
+  {
+    n: 7,
+    title: 'The center of the Earth',
+    blurb:
+      'A gravity well that bottoms out in weightlessness. Drop a particle and watch.',
+    mini: 'well',
   },
   {
     n: 8,

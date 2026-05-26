@@ -386,4 +386,4 @@ Fully responsive interaction design is deferred past v1.
 10. **Chapter-index and design-sheet features** at `libs/features/chapter-index` and `libs/features/design-sheet`, both lazy-loaded from the shell.
 11. **WebGL rendering** — wireframe aesthetic prototyped on a sphere in ogl, then `libs/primitives/curved-surface` for the cone visualizations.
 12. **Expand the timeline event set** (`bind`, `branch`, `trigger`) as Chapter 2 and Chapter 3 demand them.
-13. **Chapter 2, then Chapter 3.** At this point the engine should be stable; further chapters are mostly content.
+13. **Chapter 2, then Chapter 3.** Chapter 2 (speed budget) and the bridge step are authored. Chapter 3 (light and information) is authored on a new `libs/primitives/light-scene` primitive — top-down 2-D space, expanding pulse circles, no time axis — alongside `@lm/physics` reception helpers (`pulseReachesStationary`, `pulseReachesMoving`). The Epstein spacetime diagram returns in Chapter 6. From here, further chapters are mostly content on top of `light-scene`, `spacetime-diagram`, and (later) `curved-surface`.

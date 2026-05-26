@@ -43,7 +43,9 @@ The visual design is mocked up in `visual-design-prototype/` and is the source o
 
 The product is organized as a sequence of **chapters**, each containing several **steps**. A step is the atomic unit — one visual, one beat of narration, one interaction.
 
-The chapter list below is the **initial draft** discussed in the founder's interview. It is intended as a starting skeleton; the engine is designed so chapters and steps can be reordered, added, or rewritten without touching the core.
+The chapter list below is the **working journey skeleton**. It is intended as a starting point; the engine is designed so chapters and steps can be reordered, added, or rewritten without touching the core.
+
+**Structure:** Chapters 1–5 build **flat spacetime** (special relativity intuition). Chapters 6–8 turn to **curved spacetime** (general relativity). Finish the speed-budget arc in Chapter 2 before opening Chapter 3.
 
 ### Chapter 1 — Position, time, spacetime
 
@@ -65,7 +67,49 @@ The single most powerful idea in the journey: you are always moving through spac
 - Two-vector comparison: catch-up problems become straightforward graphical exercises.
 - The realization that we — at everyday speeds — are essentially moving through time at the speed of light.
 
-### Chapter 3 — Rolling the diagram: gravity as geometry
+**Bridge to Chapter 3.** The final step of Chapter 2 is a short handoff: two stationary observers, B sends one flash toward A along a light ray, both clocks agree. One forward-looking question — what changes with motion, or with many flashes? — then continue to Chapter 3, which introduces wavefronts, moving observers, and relativity of simultaneity.
+
+### Chapter 3 — Light and information
+
+We **change cameras**. The Epstein spacetime diagram is set aside; both axes here are **space**, viewed from above. Light expands as visible circles in space. Time is the animation, not a dimension on the page. The diagram returns intact in Chapter 6.
+
+- **Step 1 — Light through space.** Camera-switch beat. One source $S$, one observer $A$. The wavefront expands at $c$ in every direction and reaches $A$.
+- **Step 2 — Two listeners.** Stationary $A$ and $B$, equidistant from $S$. The pulse arrives at both at the same instant — symmetry on display.
+- **Step 3 — One of them moves.** Same scene, but $B$ is moving toward $S$ at $0.4\,c$. $B$ hears the flash before $A$. Motion changed when the news arrived, not how fast it travelled.
+- **Step 4 — Two flashes, one witness.** Two equidistant sources flash simultaneously. A stationary witness in the middle sees both arrive together; a witness drifting rightward sees the right flash first. Relativity of simultaneity, made visible.
+- **Step 5 — Outro.** Tie back to Chapter 2's clocks; flag what is coming next: source motion and the constancy of $c$ (Chapter 4), Doppler and aberration (Chapter 5).
+
+Aberration ("rain on the windshield") and Doppler shift live in Chapter 5, not here. Chapter 3 is the conceptual unlock; later chapters reuse the same spatial primitive to add colour, rhythm, and source-motion.
+
+### Chapter 4 — The ether was wrong
+
+A short detour with high payoff: dismantle the medium intuition, then show what light actually does.
+
+- **Step 1 — The ether.** Sound needs air; people assumed light needed an invisible "luminiferous ether." Narration-led; the old picture stated plainly.
+- **Step 2 — Michelson–Morley.** Split-beam thought experiment schematic; expected fringe shift vs null result. No detectable ether wind.
+- **Step 3 — Light at rest.** Back on `lm-light-scene`: stationary source, one pulse expanding at $c$ — baseline before the pivot.
+- **Step 4 — Moving source.** Source moving at $0.4\,c$ when it flashes; pulse circle anchored at the **birth point**, still expanding at $c$. Light does not inherit source velocity. FactLines track source position vs fixed emission origin.
+- **Step 5 — Outro.** Self-propagating EM wave; $c$ invariant for everyone; bridge to Chapter 5 Doppler.
+
+The Michelson–Morley apparatus is a step-local schematic, not a reusable primitive. Moving-source pulse origin is implemented in `lm-light-scene` (`source.velocity` + emission-position rendering).
+
+### Chapter 5 — Doppler and seeing motion
+
+Combine the constancy of $c$ with source motion on `lm-light-scene` — pulse trains, observed tick rhythm, redshift and blueshift.
+
+- **Step 1 — Each pulse is a tick.** Stationary source S and observer A; periodic pulses; count arrivals as clock ticks.
+- **Step 2 — Receding — redshift.** S moves away at $0.5\,c$; wavefronts space out; mean tick interval at A grows.
+- **Step 3 — Approaching — blueshift.** S moves toward A at $0.5\,c$; wavefronts compress; mean tick interval shrinks.
+- **Step 4 — Extreme recession.** S at $0.9\,c$ receding; ticks arrive nearly frozen; "since last tick" stretches dramatically.
+- **Step 5 — Outro.** Tie rhythm to Doppler, time dilation, and what you *see*; bridge to Chapter 6 (gravity as geometry).
+
+Physics helpers: `buildPeriodicEmissions`, `pulseArrivalSceneTimes`, `meanPulseInterval` in `@lm/physics`.
+
+---
+
+*Chapters 6–8 leave flat spacetime and introduce curved geometry.*
+
+### Chapter 6 — Rolling the diagram: gravity as geometry
 
 The cone visualization from Epstein, brought to life.
 
@@ -74,7 +118,7 @@ The cone visualization from Epstein, brought to life.
 - A straight worldline drawn on the cone curves spatially in the unrolled view: **this is gravity**. Not a force, just geodesics on warped spacetime.
 - Newton's apple: place a tiny house on the rim of the cone, draw an apple's worldline. Place the same house further around the cone — the apple falls the same way. Gravity is the geometry, not the apple.
 
-### Chapter 4 — Why the center of the Earth is weightless
+### Chapter 7 — Why the center of the Earth is weightless
 
 A continuation of the cone idea, answering a question the founder asked himself as a child.
 
@@ -82,35 +126,6 @@ A continuation of the cone idea, answering a question the founder asked himself 
 - Smooth that piecewise shape into a single bezier-curved gravity well.
 - Animate a particle dropped into the well: it spirals in, passes through the weightless center, climbs the far side, and either falls back or escapes depending on its energy.
 - Interactive: let the user dial initial energy and watch the trajectory change. The notion of escape velocity becomes a visual threshold, not a formula.
-
-### Chapter 5 — Light and information
-
-Set the stage for special relativity by visualizing how information travels.
-
-- Two points on the spacetime diagram emitting pulses of light (expanding circles).
-- Stationary observers see synchronized arrival.
-- One observer accelerates — the rings hit at irregular intervals. Relativity of simultaneity, made visible.
-- Aberration: an accelerating observer sees light from a distant star tilt forward, like rain on a windshield. Animate the starfield shifting as acceleration ramps up.
-
-### Chapter 6 — The ether was wrong
-
-A small detour with high payoff: kill the intuition that light needs a medium.
-
-- Introduce the historical idea of the ether.
-- Michelson–Morley as a thought experiment, visualized.
-- Pivot: a stationary source emits expanding circles at c. A moving source emits expanding circles at c — *from the spacetime point where the photon was emitted*, regardless of source velocity. Light does not inherit the source's motion.
-- Light propagates as a self-sustaining electromagnetic wave. No medium needed.
-- This closes the loop: the speed of light is the same for every observer because that is simply how light is born into spacetime.
-
-### Chapter 7 — Doppler and seeing motion
-
-Combine the constancy of c with source motion.
-
-- A pulsing emitter on the spacetime diagram. Each wavefront is a "frame" — every time it reaches an observer, the observer sees one tick of the emitter's clock.
-- Source moves away → wavefronts space out → observer sees the clock run slow → redshift.
-- Source moves toward → wavefronts compress → observer sees the clock run fast → blueshift.
-- Push the source to 99.999% c receding: the observer sees the clock frozen on a single final wavefront.
-- This is Doppler shift, time dilation, and the visual experience of relativistic motion, all from the same diagram.
 
 ### Chapter 8 — Light bending around mass
 
