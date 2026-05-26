@@ -9,66 +9,35 @@ function formatMs(ms: number): string {
   return `${min}:${sec.toString().padStart(2, '0')}`;
 }
 
-/** Music-player-style transport bar: controls + progress track + elapsed time. */
+/** Music-player-style transport bar: progress track + centered transport controls. */
 @Component({
   selector: 'lm-playback-bar',
   imports: [LmInteractiveDirective],
+  styles: [
+    `
+      @keyframes lm-play-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 var(--lm-glow-1);
+        }
+        50% {
+          box-shadow: 0 0 0 8px transparent, 0 0 18px var(--lm-glow-1);
+        }
+      }
+
+      .lm-play-pulse {
+        animation: lm-play-pulse 2s ease-in-out infinite;
+      }
+    `,
+  ],
   template: `
     @if (visible()) {
       <div
-        class="flex items-center gap-4 border-b border-ink-faint px-10 py-3"
+        class="flex flex-col gap-3 border-b border-ink-faint px-10 py-3"
         role="group"
         aria-label="Step playback"
       >
-        <div class="flex shrink-0 items-center gap-1.5">
-          <button
-            type="button"
-            lmInteractive
-            class="flex size-8 cursor-pointer items-center justify-center bg-transparent font-mono text-sm text-ink opacity-40 transition-opacity hover:opacity-75 disabled:cursor-default disabled:opacity-20"
-            [disabled]="!canGoPrevious()"
-            (click)="goPrevious.emit()"
-            aria-label="Previous checkpoint"
-          >
-            ⏮
-          </button>
-
-          @if (showPause()) {
-            <button
-              type="button"
-              lmInteractive
-              class="flex size-8 cursor-pointer items-center justify-center bg-transparent font-mono text-sm text-ink opacity-45 transition-opacity hover:opacity-75"
-              (click)="pauseRequested.emit()"
-              aria-label="Pause"
-            >
-              ⏸
-            </button>
-          }
-
-          @if (showPlay()) {
-            <button
-              type="button"
-              lmInteractive
-              class="flex size-8 cursor-pointer items-center justify-center bg-transparent font-mono text-sm text-ink opacity-45 transition-opacity hover:opacity-75"
-              (click)="playRequested.emit()"
-              aria-label="Play"
-            >
-              ▶
-            </button>
-          }
-
-          <button
-            type="button"
-            lmInteractive
-            class="flex size-8 cursor-pointer items-center justify-center bg-transparent font-mono text-sm text-ink opacity-40 transition-opacity hover:opacity-75 disabled:cursor-default disabled:opacity-20"
-            [disabled]="!canGoNext()"
-            (click)="goNext.emit()"
-            aria-label="Next checkpoint"
-          >
-            ⏭
-          </button>
-        </div>
-
-        <div class="flex min-w-0 flex-1 items-center gap-3">
+        <div class="flex min-w-0 items-center gap-3">
           <span
             class="shrink-0 font-mono text-[10.5px] tabular-nums tracking-wide text-ink opacity-35"
             >{{ formatMs(elapsedMs()) }}</span
@@ -88,7 +57,7 @@ function formatMs(ms: number): string {
               <button
                 type="button"
                 lmInteractive
-                class="group absolute top-1/2 z-10 flex size-7 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center transition-transform duration-150 hover:scale-110"
+                class="group absolute top-1/2 z-10 flex size-7 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full outline-none transition-transform duration-150 hover:scale-110 focus-visible:shadow-[0_0_0_4px_var(--lm-glow-1)]"
                 [style.left.%]="checkpoint.position * 100"
                 [attr.aria-label]="'Go to checkpoint ' + ($index + 1)"
                 [attr.aria-current]="
@@ -107,6 +76,61 @@ function formatMs(ms: number): string {
             class="shrink-0 font-mono text-[10.5px] tabular-nums tracking-wide text-ink opacity-35"
             >{{ formatMs(totalMs()) }}</span
           >
+        </div>
+
+        <div class="flex items-center justify-center gap-4">
+          <button
+            type="button"
+            lmInteractive
+            class="flex size-12 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-xl text-ink opacity-70 transition-opacity hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+            [disabled]="!canGoPrevious()"
+            (click)="goPrevious.emit()"
+            aria-label="Previous checkpoint"
+          >
+            ⏮
+          </button>
+
+          @if (showPause()) {
+            <button
+              type="button"
+              lmInteractive
+              class="flex size-12 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-xl text-ink opacity-75 transition-opacity hover:opacity-100"
+              (click)="pauseRequested.emit()"
+              aria-label="Pause"
+            >
+              ⏸
+            </button>
+          } @else if (showPlay()) {
+            <button
+              type="button"
+              lmInteractive
+              class="lm-play-pulse flex size-12 cursor-pointer items-center justify-center rounded-full border-2 border-accent-1 bg-transparent font-mono text-xl text-accent-1 transition-opacity hover:opacity-100"
+              (click)="playRequested.emit()"
+              aria-label="Play"
+            >
+              ▶
+            </button>
+          } @else {
+            <button
+              type="button"
+              disabled
+              class="flex size-12 cursor-default items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-xl text-ink opacity-25"
+              aria-label="Play"
+            >
+              ▶
+            </button>
+          }
+
+          <button
+            type="button"
+            lmInteractive
+            class="flex size-12 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-xl text-ink opacity-70 transition-opacity hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+            [disabled]="!canGoNext()"
+            (click)="goNext.emit()"
+            aria-label="Next checkpoint"
+          >
+            ⏭
+          </button>
         </div>
       </div>
     }

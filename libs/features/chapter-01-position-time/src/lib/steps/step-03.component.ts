@@ -37,7 +37,7 @@ import { STEP_03_SPACETIME } from './step-03-spacetime';
       [step]="3"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(3)"
-      [showPlayback]="!runner.isComplete()"
+      [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
       [totalMs]="totalDurationMs"
@@ -141,8 +141,6 @@ export class Step03Component implements OnInit, OnDestroy {
     event.preventDefault();
     if (this.runner.isPaused()) {
       this.runner.resume();
-    } else if (this.runner.atReadPause()) {
-      this.runner.skipReadPause();
     } else if (this.runner.waitingForUser()) {
       this.runner.advance();
     } else if (this.runner.playbackActive()) {

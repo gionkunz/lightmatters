@@ -37,7 +37,7 @@ import { STEP_02_TIME } from './step-02-time';
       [step]="2"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(2)"
-      [showPlayback]="!runner.isComplete()"
+      [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
       [totalMs]="totalDurationMs"
@@ -128,8 +128,6 @@ export class Step02Component implements OnInit, OnDestroy {
     event.preventDefault();
     if (this.runner.isPaused()) {
       this.runner.resume();
-    } else if (this.runner.atReadPause()) {
-      this.runner.skipReadPause();
     } else if (this.runner.waitingForUser()) {
       this.runner.advance();
     } else if (this.runner.playbackActive()) {

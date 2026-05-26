@@ -98,18 +98,18 @@ import { LmPlaybackBarComponent } from './lm-playback-bar.component';
               class="inline-flex min-w-[22px] items-center justify-center border border-ink-faint px-1.5 py-0.5 font-mono text-[11px] opacity-70"
               >␣</span
             >
-            <lm-kicker [opacity]="0.45">pause / skip</lm-kicker>
+            <lm-kicker [opacity]="0.45">play / pause</lm-kicker>
           </div>
         </div>
         <div class="flex shrink-0 items-center gap-3.5">
           <lm-button [emphasis]="true" (click)="back.emit()">← back</lm-button>
           @if (hasNextStep()) {
-            <lm-button
-              [primary]="true"
-              [emphasis]="true"
-              (click)="next.emit()"
-              >{{ nextChapter() ? 'next chapter →' : 'continue →' }}</lm-button
-            >
+          <lm-button
+            [primary]="true"
+            [emphasis]="true"
+            (click)="next.emit()"
+            >{{ nextChapter() ? 'next chapter →' : 'continue →' }}</lm-button
+          >
           }
         </div>
       </footer>

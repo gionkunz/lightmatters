@@ -37,7 +37,7 @@ import { STEP_04_MOVING_SPACETIME } from './step-04-moving-spacetime';
       [stepsTotal]="stepsTotal"
       [hasNextStep]="true"
       [nextChapter]="true"
-      [showPlayback]="!runner.isComplete()"
+      [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
       [totalMs]="totalDurationMs"
@@ -127,8 +127,6 @@ export class Step04Component implements OnInit, OnDestroy {
     event.preventDefault();
     if (this.runner.isPaused()) {
       this.runner.resume();
-    } else if (this.runner.atReadPause()) {
-      this.runner.skipReadPause();
     } else if (this.runner.waitingForUser()) {
       this.runner.advance();
     } else if (this.runner.playbackActive()) {

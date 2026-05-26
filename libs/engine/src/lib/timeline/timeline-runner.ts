@@ -10,7 +10,7 @@ import type {
 import { narrateTextTypingUnits } from './narrate-text';
 import { TargetRegistry } from './target-registry';
 
-/** Default hold after a narrate beat finishes typing (not applied before exploration wait). */
+/** @deprecated Timed read pauses replaced by checkpoint hold; kept for authored timelines. */
 export const DEFAULT_NARRATE_READ_PAUSE_MS = 4000;
 
 /** Default milliseconds between typewriter character reveals. */
@@ -19,8 +19,6 @@ export const DEFAULT_NARRATE_SPEED_MS = 34;
 interface NarratePlayback {
   event: NarrateEvent;
   count: number;
-  phase: 'typing' | 'read';
-  readRemainingMs: number;
   charStartedAt: number;
 }
 
@@ -36,7 +34,7 @@ export class TimelineRunner {
   readonly narrationText = signal('');
   readonly narrationVisibleCount = signal(0);
   readonly atExplorationWait = signal(false);
-  readonly atReadPause = signal(false);
+  readonly atCheckpointHold = signal(false);
   readonly completedNarrateTexts = signal<string[]>([]);
   readonly progress = signal(0);
   readonly elapsedMs = signal(0);
@@ -60,8 +58,6 @@ export class TimelineRunner {
   private animateResolve: (() => void) | null = null;
   private narratePlayback: NarratePlayback | null = null;
   private animatePlayback: AnimatePlayback | null = null;
-  private readPauseStartedAt = 0;
-  private readPauseTotalMs = 0;
   private readonly totalDurationMs: number;
   private readonly eventOffsets: number[];
   private readonly checkpointEventIndices: number[];
@@ -84,9 +80,14 @@ export class TimelineRunner {
     return this.totalDurationMs;
   }
 
-  /** Timeline is actively playing (typing, tweening, or read pause). */
+  /** Timeline is actively playing (typing or tweening). */
   isPlaying(): boolean {
     return this.playbackActive();
+  }
+
+  /** @deprecated Use {@link atCheckpointHold}. */
+  atReadPause(): boolean {
+    return this.atCheckpointHold();
   }
 
   canGoToPreviousCheckpoint(): boolean {
@@ -123,7 +124,7 @@ export class TimelineRunner {
     this.narrationText.set('');
     this.narrationVisibleCount.set(0);
     this.atExplorationWait.set(false);
-    this.atReadPause.set(false);
+    this.atCheckpointHold.set(false);
     this.completedNarrateTexts.set([]);
     this.narratePlayback = null;
     this.animatePlayback = null;
@@ -142,14 +143,6 @@ export class TimelineRunner {
       return;
     }
 
-    if (this.narratePlayback?.phase === 'read') {
-      const elapsed = performance.now() - this.readPauseStartedAt;
-      this.narratePlayback = {
-        ...this.narratePlayback,
-        readRemainingMs: Math.max(0, this.readPauseTotalMs - elapsed),
-      };
-    }
-
     this.cancelTimers();
     this.isPaused.set(true);
   }
@@ -159,12 +152,15 @@ export class TimelineRunner {
       return;
     }
 
+    if (this.atCheckpointHold()) {
+      this.advanceFromCheckpointHold();
+      return;
+    }
+
     this.isPaused.set(false);
 
     if (this.narratePlayback) {
-      if (this.narratePlayback.phase === 'typing') {
-        this.narratePlayback.charStartedAt = performance.now();
-      }
+      this.narratePlayback.charStartedAt = performance.now();
       this.continueNarrate();
       return;
     }
@@ -198,6 +194,11 @@ export class TimelineRunner {
       return;
     }
 
+    if (this.atCheckpointHold()) {
+      this.advanceFromCheckpointHold();
+      return;
+    }
+
     const cps = this.checkpointEventIndices;
     const active = this.getActiveCheckpointIndex();
 
@@ -228,7 +229,7 @@ export class TimelineRunner {
     this.isComplete.set(false);
     this.waitingForUser.set(false);
     this.atExplorationWait.set(false);
-    this.atReadPause.set(false);
+    this.atCheckpointHold.set(false);
     this.rebuildCompletedNarrateTexts();
     this.narratePlayback = null;
     this.animatePlayback = null;
@@ -248,15 +249,24 @@ export class TimelineRunner {
     this.goToNextCheckpoint();
   }
 
-  skipReadPause(): void {
-    if (!this.atReadPause()) {
+  advanceFromCheckpointHold(): void {
+    if (!this.atCheckpointHold()) {
       return;
     }
-    this.atReadPause.set(false);
+    this.atCheckpointHold.set(false);
+    this.isPaused.set(false);
     this.narratePlayback = null;
+    this.animatePlayback = null;
     this.cancelTimers();
     this.narrateResolve?.();
     this.narrateResolve = null;
+    this.animateResolve?.();
+    this.animateResolve = null;
+  }
+
+  /** @deprecated Use {@link advanceFromCheckpointHold}. */
+  skipReadPause(): void {
+    this.advanceFromCheckpointHold();
   }
 
   advance(): void {
@@ -347,7 +357,7 @@ export class TimelineRunner {
 
   private executeEventInstantly(event: TimelineEvent): void {
     if (event.type === 'narrate') {
-      this.atReadPause.set(false);
+      this.atCheckpointHold.set(false);
       this.narrationText.set(event.text);
       this.narrationVisibleCount.set(narrateTextTypingUnits(event.text));
       return;
@@ -366,7 +376,7 @@ export class TimelineRunner {
     }
 
     if (event.type === 'narrate') {
-      this.atReadPause.set(false);
+      this.atCheckpointHold.set(false);
       this.narrationText.set(event.text);
       this.narrationVisibleCount.set(narrateTextTypingUnits(event.text));
       this.narratePlayback = null;
@@ -400,8 +410,6 @@ export class TimelineRunner {
       this.narratePlayback = {
         event,
         count: 0,
-        phase: 'typing',
-        readRemainingMs: 0,
         charStartedAt: performance.now(),
       };
     }
@@ -417,58 +425,29 @@ export class TimelineRunner {
       return;
     }
 
-    const { event, phase } = this.narratePlayback;
+    const { event } = this.narratePlayback;
     const speed = event.speed ?? DEFAULT_NARRATE_SPEED_MS;
-    const pauseAfter = this.narratePauseAfter(event, this.index);
 
-    if (phase === 'typing') {
-      const count = this.narratePlayback.count;
-      const totalUnits = narrateTextTypingUnits(event.text);
-      if (count >= totalUnits) {
-        if (this.isPreExplorationNarrate(this.index)) {
-          this.atExplorationWait.set(true);
-        }
-        this.startReadPause(event, pauseAfter);
-        return;
+    const count = this.narratePlayback.count;
+    const totalUnits = narrateTextTypingUnits(event.text);
+    if (count >= totalUnits) {
+      if (this.isPreExplorationEvent(this.index)) {
+        this.atExplorationWait.set(true);
       }
-
-      this.narratePlayback.count = count + 1;
-      this.narratePlayback.charStartedAt = performance.now();
-      this.narrationVisibleCount.set(this.narratePlayback.count);
-      this.timeoutId = setTimeout(() => this.continueNarrate(), speed);
+      if (this.shouldHoldAfterEvent(this.index, event)) {
+        this.startCheckpointHold();
+      } else {
+        this.narratePlayback = null;
+        this.narrateResolve?.();
+        this.narrateResolve = null;
+      }
       return;
     }
 
-    const remaining = this.narratePlayback.readRemainingMs;
-    this.readPauseStartedAt = performance.now();
-    this.readPauseTotalMs = remaining;
-    this.timeoutId = setTimeout(() => {
-      this.atReadPause.set(false);
-      this.narratePlayback = null;
-      this.narrateResolve?.();
-      this.narrateResolve = null;
-    }, remaining);
-  }
-
-  private startReadPause(event: NarrateEvent, pauseAfter: number): void {
-    if (pauseAfter <= 0) {
-      this.narratePlayback = null;
-      this.narrateResolve?.();
-      this.narrateResolve = null;
-      return;
-    }
-
-    this.narratePlayback = {
-      event,
-      count: narrateTextTypingUnits(event.text),
-      phase: 'read',
-      readRemainingMs: pauseAfter,
-      charStartedAt: performance.now(),
-    };
-    this.readPauseTotalMs = pauseAfter;
-    this.readPauseStartedAt = performance.now();
-    this.atReadPause.set(true);
-    this.continueNarrate();
+    this.narratePlayback.count = count + 1;
+    this.narratePlayback.charStartedAt = performance.now();
+    this.narrationVisibleCount.set(this.narratePlayback.count);
+    this.timeoutId = setTimeout(() => this.continueNarrate(), speed);
   }
 
   private beginAnimate(event: AnimateEvent): Promise<void> {
@@ -526,9 +505,13 @@ export class TimelineRunner {
       this.animatePlayback = { event, elapsedMs: elapsed };
 
       if (t >= 1) {
-        this.animatePlayback = null;
-        this.animateResolve?.();
-        this.animateResolve = null;
+        if (this.shouldHoldAfterEvent(this.index, event)) {
+          this.startCheckpointHold();
+        } else {
+          this.animatePlayback = null;
+          this.animateResolve?.();
+          this.animateResolve = null;
+        }
         return;
       }
 
@@ -538,10 +521,18 @@ export class TimelineRunner {
     this.rafId = requestAnimationFrame(frame);
   }
 
+  private startCheckpointHold(): void {
+    this.atCheckpointHold.set(true);
+    this.isPaused.set(true);
+    this.cancelTimers();
+    this.syncProgress();
+  }
+
   private finish(): void {
     this._running.set(false);
     this.isComplete.set(true);
     this.isPaused.set(false);
+    this.atCheckpointHold.set(false);
     this.waitingForUser.set(false);
     this.narratePlayback = null;
     this.animatePlayback = null;
@@ -561,9 +552,7 @@ export class TimelineRunner {
 
   private hasPartialCurrentEvent(): boolean {
     if (this.narratePlayback) {
-      return (
-        this.narratePlayback.count > 0 || this.narratePlayback.phase === 'read'
-      );
+      return this.narratePlayback.count > 0;
     }
     if (this.animatePlayback) {
       return this.animatePlayback.elapsedMs > 0;
@@ -586,7 +575,7 @@ export class TimelineRunner {
 
     for (let i = 0; i < this.events.length; i++) {
       offsets.push(offset);
-      offset += this.eventDurationMs(this.events[i], i);
+      offset += this.eventDurationMs(this.events[i]);
     }
 
     const totalMs = offset;
@@ -607,12 +596,11 @@ export class TimelineRunner {
     return { offsets, totalMs, checkpointEventIndices, checkpoints };
   }
 
-  private eventDurationMs(event: TimelineEvent, eventIndex: number): number {
+  private eventDurationMs(event: TimelineEvent): number {
     if (event.type === 'narrate') {
-      const pauseAfter = this.narratePauseAfter(event, eventIndex);
       return (
-        narrateTextTypingUnits(event.text) * (event.speed ?? DEFAULT_NARRATE_SPEED_MS) +
-        (pauseAfter > 0 ? pauseAfter : 0)
+        narrateTextTypingUnits(event.text) *
+        (event.speed ?? DEFAULT_NARRATE_SPEED_MS)
       );
     }
     if (event.type === 'animate') {
@@ -621,16 +609,22 @@ export class TimelineRunner {
     return 0;
   }
 
-  private isPreExplorationNarrate(eventIndex: number): boolean {
+  private isPreExplorationEvent(eventIndex: number): boolean {
     const next = this.events[eventIndex + 1];
     return next?.type === 'wait' && next.for === 'userAdvance';
   }
 
-  private narratePauseAfter(event: NarrateEvent, eventIndex: number): number {
-    if (this.isPreExplorationNarrate(eventIndex)) {
-      return 0;
+  private shouldHoldAfterEvent(
+    eventIndex: number,
+    event: NarrateEvent | AnimateEvent,
+  ): boolean {
+    if (this.isPreExplorationEvent(eventIndex)) {
+      return false;
     }
-    return event.pauseAfter ?? DEFAULT_NARRATE_READ_PAUSE_MS;
+    if (event.type === 'narrate' && event.pauseAfter === 0) {
+      return false;
+    }
+    return true;
   }
 
   private setProgress(ms: number): void {
@@ -651,22 +645,20 @@ export class TimelineRunner {
     let ms = this.eventOffsets[this.index] ?? 0;
     const event = this.events[this.index];
 
+    if (this.atCheckpointHold() && event) {
+      ms += this.eventDurationMs(event);
+      this.setProgress(ms);
+      return;
+    }
+
     if (event?.type === 'narrate' && this.narratePlayback) {
       const speed = this.narratePlayback.event.speed ?? DEFAULT_NARRATE_SPEED_MS;
-      if (this.narratePlayback.phase === 'typing') {
-        const count = this.narratePlayback.count;
-        ms += Math.max(0, count - 1) * speed;
-        if (count > 0) {
-          ms += Math.min(
-            speed,
-            performance.now() - this.narratePlayback.charStartedAt,
-          );
-        }
-      } else {
-        ms += this.narratePlayback.count * speed;
+      const count = this.narratePlayback.count;
+      ms += Math.max(0, count - 1) * speed;
+      if (count > 0) {
         ms += Math.min(
-          this.readPauseTotalMs,
-          performance.now() - this.readPauseStartedAt,
+          speed,
+          performance.now() - this.narratePlayback.charStartedAt,
         );
       }
     } else if (event?.type === 'animate' && this.animatePlayback) {
@@ -707,6 +699,7 @@ export class TimelineRunner {
 
   private abortPending(): void {
     this.cancelTimers();
+    this.atCheckpointHold.set(false);
     this.narrateResolve = null;
     this.animateResolve = null;
   }
