@@ -1,7 +1,20 @@
 import { Component, input } from '@angular/core';
-import { speedBudgetTipLabel } from '@lm/physics';
+import {
+  observerPositionAtProperTime,
+  observerPositionAtTime,
+  observerProperTimeAtCoordinate,
+  speedBudgetTipLabel,
+  STEP3_MAX_TIME,
+  type WavefrontLayout,
+} from '@lm/physics';
 
-type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single' | 'pair';
+type DiagramVariant =
+  | 'position-only'
+  | 'time-only'
+  | 'full'
+  | 'single'
+  | 'pair'
+  | 'wavefront';
 
 /** SVG spacetime diagram — position-only, time-only, full, and single variants for Chapter 1. */
 @Component({
@@ -280,6 +293,152 @@ type DiagramVariant = 'position-only' | 'time-only' | 'full' | 'single' | 'pair'
             t
           </text>
         }
+      } @else if (variant() === 'wavefront') {
+        <g
+          class="stroke-ink"
+          fill="none"
+          stroke-width="1"
+          [attr.opacity]="axisOpacity()"
+        >
+          <line [attr.x1]="left" [attr.y1]="fullBottom" [attr.x2]="right" [attr.y2]="fullBottom" />
+          <line [attr.x1]="left" [attr.y1]="fullBottom" [attr.x2]="left" [attr.y2]="fullTop" />
+          @for (tick of ticks; track tick) {
+            <line
+              [attr.x1]="left + tick * axisSpan"
+              [attr.y1]="fullBottom"
+              [attr.x2]="left + tick * axisSpan"
+              [attr.y2]="fullBottom + 5"
+            />
+          }
+          @for (tick of ticks; track tick) {
+            <line
+              [attr.x1]="left - 5"
+              [attr.y1]="fullBottom - tick * fullTimeAxisSpan"
+              [attr.x2]="left"
+              [attr.y2]="fullBottom - tick * fullTimeAxisSpan"
+            />
+          }
+        </g>
+
+        @for (wl of wavefrontWorldlines(); track wl.id) {
+          <line
+            [attr.x1]="wl.x1"
+            [attr.y1]="wl.y1"
+            [attr.x2]="wl.x2"
+            [attr.y2]="wl.y2"
+            fill="none"
+            [attr.stroke]="wl.color"
+            [attr.stroke-width]="wl.id === 'b' ? 1.2 : 1.5"
+            stroke-linecap="round"
+            [attr.opacity]="wl.id === 'b' ? 0.75 : 1"
+          />
+          <text
+            [attr.x]="wl.labelX"
+            [attr.y]="wl.labelY"
+            class="font-mono text-[11px] uppercase tracking-wider"
+            [attr.fill]="wl.color"
+            opacity="0.7"
+          >
+            {{ wl.id }}
+          </text>
+        }
+
+        @if (wavefrontSignal() === 'ray' && wavefrontLightRayPx(); as ray) {
+          <line
+            [attr.x1]="ray.x1"
+            [attr.y1]="ray.y1"
+            [attr.x2]="ray.x2"
+            [attr.y2]="ray.y2"
+            class="stroke-ink"
+            fill="none"
+            stroke-width="1.4"
+            opacity="0.85"
+          />
+        }
+
+        @if (wavefrontSignal() === 'horizontal' && wavefrontHorizontalLightPx(); as seg) {
+          <line
+            [attr.x1]="seg.x1"
+            [attr.y1]="seg.y1"
+            [attr.x2]="seg.x2"
+            [attr.y2]="seg.y2"
+            class="stroke-ink"
+            fill="none"
+            stroke-width="1.4"
+            opacity="0.85"
+          />
+          @if (seg.lift) {
+            <line
+              [attr.x1]="seg.lift.x1"
+              [attr.y1]="seg.lift.y1"
+              [attr.x2]="seg.lift.x2"
+              [attr.y2]="seg.lift.y2"
+              class="stroke-ink"
+              fill="none"
+              stroke-width="1"
+              stroke-dasharray="3 4"
+              opacity="0.4"
+            />
+          }
+        }
+
+        @if (wavefrontSignal() === 'ring' && wavefrontCirclePx(); as ring) {
+          <circle
+            [attr.cx]="ring.cx"
+            [attr.cy]="ring.cy"
+            [attr.r]="ring.r"
+            class="stroke-ink"
+            fill="none"
+            stroke-width="1.4"
+            opacity="0.85"
+          />
+        }
+
+        @for (dot of wavefrontObserverDots(); track dot.id) {
+          <circle
+            [attr.cx]="dot.x"
+            [attr.cy]="dot.y"
+            r="4.5"
+            [attr.class]="dot.dotClass"
+          />
+        }
+
+        @if (showWavefrontReceptionA()) {
+          <circle
+            [attr.cx]="wavefrontReceptionAPx().x"
+            [attr.cy]="wavefrontReceptionAPx().y"
+            r="5"
+            class="fill-accent-1"
+            [style.filter]="'drop-shadow(0 0 4px var(--lm-glow-1))'"
+          />
+        }
+
+        @if (wavefrontShowObserverC() && showWavefrontReceptionC()) {
+          <circle
+            [attr.cx]="wavefrontReceptionCPx().x"
+            [attr.cy]="wavefrontReceptionCPx().y"
+            r="5"
+            class="fill-accent-2"
+            [style.filter]="'drop-shadow(0 0 4px var(--lm-glow-2))'"
+          />
+        }
+
+        @if (showLabels()) {
+          <text
+            [attr.x]="right + 8"
+            [attr.y]="fullBottom + 4"
+            class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
+          >
+            x
+          </text>
+          <text
+            [attr.x]="left - 4"
+            [attr.y]="fullTop - 8"
+            class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
+          >
+            t
+          </text>
+        }
       }
     </svg>
   `,
@@ -303,6 +462,23 @@ export class LmSpacetimeDiagramComponent {
   readonly budgetArc = input(false);
   readonly showTipLabel = input(false);
   readonly tipProperYears = input(1);
+  /** Elapsed coordinate time (c = 1); observers and light cone advance together. */
+  readonly wavefrontTime = input(0);
+  /** @deprecated Use wavefrontTime */
+  readonly wavefrontRadius = input(0);
+  readonly observerXA = input(0.25);
+  readonly observerXB = input(0.5);
+  readonly observerXC = input(0.75);
+  readonly observerVOverC = input(0.5);
+  readonly wavefrontTimeAtA = input(0.25);
+  readonly wavefrontTimeAtC = input(0.5);
+  /** @deprecated Use wavefrontTimeAtA */
+  readonly wavefrontRadiusAtA = input(0.25);
+  /** @deprecated Use wavefrontTimeAtC */
+  readonly wavefrontRadiusAtC = input(0.5);
+  readonly wavefrontTMax = input(STEP3_MAX_TIME);
+  readonly wavefrontShowObserverC = input(true);
+  readonly wavefrontSignal = input<'ray' | 'ring' | 'horizontal'>('ring');
 
   protected readonly left = 70;
   protected readonly right = 610;
@@ -457,5 +633,245 @@ export class LmSpacetimeDiagramComponent {
       `${tipX},${tipY}`,
       `${tipX + bx * back - px * wing},${tipY + by * back - py * wing}`,
     ].join(' ');
+  }
+
+  protected wavefrontWorldlines(): {
+    id: string;
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    color: string;
+    labelX: number;
+    labelY: number;
+  }[] {
+    const layout = this.wavefrontLayout();
+    const tauMax = this.wavefrontTMax();
+    const a0 = this.spacetimePx(layout.xA, 0);
+    const a1 = this.spacetimePx(layout.xA, tauMax);
+    const b0 = this.spacetimePx(layout.xB, 0);
+    const b1 = this.spacetimePx(layout.xB, tauMax);
+    const c0 = this.spacetimePx(layout.xC, 0);
+    const cEndX = observerPositionAtProperTime(layout, 'c', tauMax);
+    const c1 = this.spacetimePx(cEndX, tauMax);
+
+    const lines = [
+      {
+        id: 'a',
+        x1: a0.x,
+        y1: a0.y,
+        x2: a1.x,
+        y2: a1.y,
+        color: 'var(--lm-accent-1)',
+        labelX: a1.x - 4,
+        labelY: a1.y - 4,
+      },
+      {
+        id: 'b',
+        x1: b0.x,
+        y1: b0.y,
+        x2: b1.x,
+        y2: b1.y,
+        color: 'var(--lm-ink)',
+        labelX: b1.x - 4,
+        labelY: b1.y - 4,
+      },
+    ];
+
+    if (this.wavefrontShowObserverC()) {
+      lines.push({
+        id: 'c',
+        x1: c0.x,
+        y1: c0.y,
+        x2: c1.x,
+        y2: c1.y,
+        color: 'var(--lm-accent-2)',
+        labelX: c1.x - 4,
+        labelY: c1.y - 4,
+      });
+    }
+
+    return lines;
+  }
+
+  protected wavefrontObserverDots(): {
+    id: string;
+    x: number;
+    y: number;
+    dotClass: string;
+  }[] {
+    const tCoord = this.effectiveWavefrontTime();
+    const specs = [
+      { id: 'a' as const, dotClass: 'fill-accent-1' },
+      { id: 'b' as const, dotClass: 'fill-ink' },
+      ...(this.wavefrontShowObserverC()
+        ? [{ id: 'c' as const, dotClass: 'fill-accent-2' }]
+        : []),
+    ];
+
+    return specs.map(({ id, dotClass }) => {
+      const event = this.wavefrontObserverEvent(id, tCoord);
+      const dotPx = this.spacetimePx(event.x, event.tau);
+      return { id, x: dotPx.x, y: dotPx.y, dotClass };
+    });
+  }
+
+  protected wavefrontArcLeftData(t: number): { x: number; y: number } {
+    const layout = this.wavefrontLayout();
+    const xLeft = layout.xB - t;
+    if (xLeft >= 0) {
+      return { x: xLeft, y: t };
+    }
+    const yAtOrigin =
+      t - Math.sqrt(Math.max(0, t * t - layout.xB * layout.xB));
+    return { x: 0, y: yAtOrigin };
+  }
+
+  protected wavefrontLightRayPx(): {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+  } | null {
+    const t = this.effectiveWavefrontTime();
+    if (t <= 0) {
+      return null;
+    }
+    const layout = this.wavefrontLayout();
+    const tReach = this.milestoneTimeAtA();
+    const tTip = Math.min(t, tReach);
+    const from = this.spacetimePx(layout.xB, 0);
+    const to = this.spacetimePx(layout.xB - tTip, tTip);
+    return { x1: from.x, y1: from.y, x2: to.x, y2: to.y };
+  }
+
+  /**
+   * Epstein-style light: the photon spends its full c on space — proper time τ stays at 0
+   * along its worldline. We draw a horizontal segment from B at the bottom, growing in −x.
+   * After reception, a faint dashed line "lifts" from the segment tip to A's reception event
+   * on A's worldline at τ = Δx/c, marking the transition from the photon-frame to A's frame.
+   */
+  protected wavefrontHorizontalLightPx(): {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    lift?: { x1: number; y1: number; x2: number; y2: number };
+  } | null {
+    const t = this.effectiveWavefrontTime();
+    if (t <= 0) {
+      return null;
+    }
+    const layout = this.wavefrontLayout();
+    const tReach = this.milestoneTimeAtA();
+    const tip = Math.min(t, tReach);
+    const from = this.spacetimePx(layout.xB, 0);
+    const to = this.spacetimePx(layout.xB - tip, 0);
+    const segment = { x1: from.x, y1: from.y, x2: to.x, y2: to.y };
+    if (t < tReach) {
+      return segment;
+    }
+    const liftTop = this.spacetimePx(layout.xA, tReach);
+    return {
+      ...segment,
+      lift: { x1: to.x, y1: to.y, x2: liftTop.x, y2: liftTop.y },
+    };
+  }
+
+  protected wavefrontCirclePx(): { cx: number; cy: number; r: number } | null {
+    const t = this.effectiveWavefrontTime();
+    if (t <= 0) {
+      return null;
+    }
+    const layout = this.wavefrontLayout();
+    const center = this.spacetimePx(layout.xB, t);
+    return { cx: center.x, cy: center.y, r: t * this.wavefrontUnit };
+  }
+
+  protected showWavefrontReceptionA(): boolean {
+    return this.effectiveWavefrontTime() >= this.milestoneTimeAtA() - 1e-6;
+  }
+
+  protected showWavefrontReceptionC(): boolean {
+    return this.effectiveWavefrontTime() >= this.milestoneTimeAtC() - 1e-6;
+  }
+
+  protected wavefrontReceptionAPx(): { x: number; y: number } {
+    const t = this.milestoneTimeAtA();
+    const left = this.wavefrontArcLeftData(t);
+    return this.spacetimePx(left.x, left.y);
+  }
+
+  protected wavefrontReceptionCPx(): { x: number; y: number } {
+    const t = this.milestoneTimeAtC();
+    const layout = this.wavefrontLayout();
+    const x = observerPositionAtTime(layout, 'c', t);
+    return this.spacetimePx(x, t);
+  }
+
+  private wavefrontObserverEvent(
+    id: 'a' | 'b' | 'c',
+    tCoord: number,
+  ): { x: number; tWorld: number; tau: number } {
+    const layout = this.wavefrontLayout();
+    const tA = this.milestoneTimeAtA();
+    const tC = this.milestoneTimeAtC();
+    let tWorld = tCoord;
+    if (id === 'a' && tCoord >= tA) {
+      tWorld = tA;
+    }
+    if (id === 'c' && tCoord >= tC) {
+      tWorld = tC;
+    }
+    const v = id === 'c' ? layout.vOverC : 0;
+    const tau = observerProperTimeAtCoordinate(tWorld, v);
+    const x = observerPositionAtTime(layout, id, tWorld);
+    return { x, tWorld, tau };
+  }
+
+  protected get wavefrontUnit(): number {
+    const layout = this.wavefrontLayout();
+    const tMax = this.wavefrontTMax();
+    const signal = this.wavefrontSignal();
+    const xExtent =
+      Math.max(
+        layout.xB + (signal === 'ring' ? tMax : 0),
+        this.wavefrontShowObserverC()
+          ? observerPositionAtTime(layout, 'c', tMax)
+          : layout.xB,
+      ) + 0.05;
+    const timeExtent = signal === 'ring' ? 2 * tMax : tMax;
+    return Math.min(this.axisSpan / xExtent, this.fullTimeAxisSpan / timeExtent);
+  }
+
+  protected effectiveWavefrontTime(): number {
+    return this.wavefrontTime() > 0
+      ? this.wavefrontTime()
+      : this.wavefrontRadius();
+  }
+
+  protected milestoneTimeAtA(): number {
+    return this.wavefrontTimeAtA() || this.wavefrontRadiusAtA();
+  }
+
+  protected milestoneTimeAtC(): number {
+    return this.wavefrontTimeAtC() || this.wavefrontRadiusAtC();
+  }
+
+  protected wavefrontLayout(): WavefrontLayout {
+    return {
+      xA: this.observerXA(),
+      xB: this.observerXB(),
+      xC: this.observerXC(),
+      vOverC: this.observerVOverC(),
+      tEmit: 0,
+    };
+  }
+
+  protected spacetimePx(x: number, t: number): { x: number; y: number } {
+    return {
+      x: this.left + x * this.wavefrontUnit,
+      y: this.fullBottom - t * this.wavefrontUnit,
+    };
   }
 }

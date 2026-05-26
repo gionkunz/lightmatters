@@ -300,4 +300,130 @@ describe('LmSpacetimeDiagramComponent', () => {
       expect(fixture.nativeElement.querySelector('rect[fill-opacity="0.6"]')).toBeTruthy();
     });
   });
+
+  describe('wavefront', () => {
+    let fixture: ComponentFixture<LmSpacetimeDiagramComponent>;
+
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        imports: [LmSpacetimeDiagramComponent],
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(LmSpacetimeDiagramComponent);
+      fixture.componentRef.setInput('variant', 'wavefront');
+      fixture.componentRef.setInput('width', 560);
+      fixture.componentRef.setInput('height', 460);
+      fixture.detectChanges();
+    });
+
+    it('renders three observer worldlines and axis labels', () => {
+      const svg = fixture.nativeElement.querySelector('svg');
+      expect(svg.textContent).toContain('a');
+      expect(svg.textContent).toContain('b');
+      expect(svg.textContent).toContain('c');
+      expect(svg.textContent).toContain('x');
+      expect(svg.textContent).toContain('t');
+    });
+
+    it('places all observer dots at the bottom when time is zero', () => {
+      const dots = fixture.nativeElement.querySelectorAll(
+        'circle.fill-accent-1, circle.fill-ink, circle.fill-accent-2',
+      );
+      expect(dots.length).toBe(3);
+      const ys = Array.from(dots).map((d: Element) =>
+        Number.parseFloat(d.getAttribute('cy') ?? '0'),
+      );
+      expect(new Set(ys).size).toBe(1);
+    });
+
+    it('horizontal light segment grows along the bottom (τ = 0)', () => {
+      fixture.componentRef.setInput('wavefrontSignal', 'horizontal');
+      fixture.componentRef.setInput('wavefrontShowObserverC', false);
+      fixture.componentRef.setInput('wavefrontTime', 0.1);
+      fixture.componentRef.setInput('wavefrontTimeAtA', 0.25);
+      fixture.componentRef.setInput('wavefrontTMax', 0.35);
+      fixture.detectChanges();
+      const seg = fixture.nativeElement.querySelector(
+        'line.stroke-ink[stroke-width="1.4"]',
+      );
+      const y1 = Number.parseFloat(seg?.getAttribute('y1') ?? '0');
+      const y2 = Number.parseFloat(seg?.getAttribute('y2') ?? '0');
+      expect(y1).toBeCloseTo(y2, 5);
+      const x1 = Number.parseFloat(seg?.getAttribute('x1') ?? '0');
+      const x2 = Number.parseFloat(seg?.getAttribute('x2') ?? '0');
+      expect(x2).toBeLessThan(x1);
+    });
+
+    it('horizontal light reception lifts dashed line to A worldline at τ = Δx/c', () => {
+      fixture.componentRef.setInput('wavefrontSignal', 'horizontal');
+      fixture.componentRef.setInput('wavefrontShowObserverC', false);
+      fixture.componentRef.setInput('wavefrontTime', 0.25);
+      fixture.componentRef.setInput('wavefrontTimeAtA', 0.25);
+      fixture.componentRef.setInput('wavefrontTMax', 0.35);
+      fixture.detectChanges();
+      const lift = fixture.nativeElement.querySelector(
+        'line.stroke-ink[stroke-dasharray="3 4"]',
+      );
+      expect(lift).toBeTruthy();
+      const aDot = fixture.nativeElement.querySelector('circle.fill-accent-1');
+      const dotY = Number.parseFloat(aDot?.getAttribute('cy') ?? '0');
+      const liftTopY = Number.parseFloat(lift?.getAttribute('y2') ?? '0');
+      expect(liftTopY).toBeCloseTo(dotY, 0);
+    });
+
+    it('hides observer C when wavefrontShowObserverC is false', () => {
+      fixture.componentRef.setInput('wavefrontShowObserverC', false);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).not.toContain('c');
+      expect(
+        fixture.nativeElement.querySelector('circle.fill-accent-2'),
+      ).toBeNull();
+    });
+
+    it('places C dot below B at the same coordinate time (proper time lags)', () => {
+      fixture.componentRef.setInput('wavefrontTime', 0.5);
+      fixture.componentRef.setInput('wavefrontTimeAtA', 0.25);
+      fixture.componentRef.setInput('wavefrontTimeAtC', 0.5);
+      fixture.detectChanges();
+      const bDot = fixture.nativeElement.querySelector('circle.fill-ink');
+      const cDot = fixture.nativeElement.querySelector('circle.fill-accent-2');
+      const yB = Number.parseFloat(bDot?.getAttribute('cy') ?? '0');
+      const yC = Number.parseFloat(cDot?.getAttribute('cy') ?? '0');
+      expect(yC).toBeGreaterThan(yB);
+    });
+
+    it('shows reception markers at milestone times', () => {
+      fixture.componentRef.setInput('wavefrontTime', 0.5);
+      fixture.componentRef.setInput('wavefrontTimeAtA', 0.25);
+      fixture.componentRef.setInput('wavefrontTimeAtC', 0.5);
+      fixture.detectChanges();
+      const markers = fixture.nativeElement.querySelectorAll(
+        'circle[r="5"]',
+      );
+      expect(markers.length).toBe(2);
+    });
+
+    it('places A and C equidistant from B on the diagram at t = 0', () => {
+      const dots = fixture.nativeElement.querySelectorAll(
+        'circle.fill-accent-1, circle.fill-ink, circle.fill-accent-2',
+      );
+      const xs = Array.from(dots).map((d: Element) =>
+        Number.parseFloat(d.getAttribute('cx') ?? '0'),
+      );
+      xs.sort((a, b) => a - b);
+      expect(xs[1] - xs[0]).toBeCloseTo(xs[2] - xs[1], 0);
+    });
+
+    it('moves C dot upward as proper time advances', () => {
+      fixture.componentRef.setInput('wavefrontTime', 0.1);
+      fixture.detectChanges();
+      const dotAtEarly = fixture.nativeElement.querySelector('circle.fill-accent-2');
+      const yEarly = Number.parseFloat(dotAtEarly?.getAttribute('cy') ?? '0');
+      fixture.componentRef.setInput('wavefrontTime', 0.3);
+      fixture.detectChanges();
+      const dotAtLate = fixture.nativeElement.querySelector('circle.fill-accent-2');
+      const yLate = Number.parseFloat(dotAtLate?.getAttribute('cy') ?? '0');
+      expect(yLate).toBeLessThan(yEarly);
+    });
+  });
 });
