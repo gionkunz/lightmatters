@@ -9,6 +9,8 @@ import { Component, input } from '@angular/core';
         class="h-0.5 w-4"
         [class.bg-accent-1]="color() === 'accent-1'"
         [class.bg-accent-2]="color() === 'accent-2'"
+        [class.bg-ink]="color() === 'neutral'"
+        [class.opacity-70]="color() === 'neutral'"
       ></span>
       <span
         class="font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink opacity-85"
@@ -18,6 +20,6 @@ import { Component, input } from '@angular/core';
   `,
 })
 export class LmLegendComponent {
-  readonly color = input.required<'accent-1' | 'accent-2'>();
+  readonly color = input.required<'accent-1' | 'accent-2' | 'neutral'>();
   readonly label = input.required<string>();
 }

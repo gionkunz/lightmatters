@@ -8,3 +8,7 @@ export { LmThemeToggleComponent } from './lib/components/lm-theme-toggle.compone
 export { LmSliderComponent } from './lib/components/lm-slider.component';
 export { LmFactLineComponent } from './lib/components/lm-fact-line.component';
 export { LmLegendComponent } from './lib/components/lm-legend.component';
+export {
+  LmPredictionChoiceComponent,
+  type PredictionOption,
+} from './lib/components/lm-prediction-choice.component';
