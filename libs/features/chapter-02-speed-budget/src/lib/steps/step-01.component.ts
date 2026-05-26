@@ -37,7 +37,7 @@ import { STEP_01_ALWAYS_AT_C } from './step-01-always-at-c';
       [step]="1"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(1)"
-      [showPlayback]="!runner.isComplete()"
+      [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
       [totalMs]="totalDurationMs"
@@ -130,8 +130,6 @@ export class Step01Component implements OnInit, OnDestroy {
     event.preventDefault();
     if (this.runner.isPaused()) {
       this.runner.resume();
-    } else if (this.runner.atReadPause()) {
-      this.runner.skipReadPause();
     } else if (this.runner.waitingForUser()) {
       this.runner.advance();
     } else if (this.runner.playbackActive()) {

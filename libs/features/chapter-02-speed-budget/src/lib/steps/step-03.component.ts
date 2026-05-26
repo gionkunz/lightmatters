@@ -18,24 +18,28 @@ import {
   LmFactLineComponent,
   LmKickerComponent,
   LmLegendComponent,
-  LmSliderComponent,
 } from '@lm/design';
-import { travellerReadout } from '@lm/physics';
+import {
+  observerProperTimeAtCoordinate,
+  signalClockLabel,
+  STEP3_BRIDGE_LAYOUT,
+  STEP3_BRIDGE_MAX_TIME,
+  STEP3_BRIDGE_TIME_AT_A,
+} from '@lm/physics';
 import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
 import {
   CHAPTER_02_TITLE,
   CHAPTER_02_TOTAL_STEPS,
   hasNextStep,
 } from '../step-registry';
-import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
+import { STEP_03_BRIDGE_TO_LIGHT } from './step-03-bridge-to-light';
 
 @Component({
-  selector: 'lm-step-02',
+  selector: 'lm-step-03',
   imports: [
     LmStepFrameComponent,
     LmNarratorChatFeedComponent,
     LmSpacetimeDiagramComponent,
-    LmSliderComponent,
     LmFactLineComponent,
     LmLegendComponent,
     LmKickerComponent,
@@ -44,9 +48,10 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
     <lm-step-frame
       [chapter]="2"
       [chapterTitle]="chapterTitle"
-      [step]="2"
+      [step]="3"
       [stepsTotal]="stepsTotal"
-      [hasNextStep]="hasNextStep(2)"
+      [hasNextStep]="true"
+      [nextChapter]="true"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -58,7 +63,7 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
       (back)="goPrevStep()"
-      (next)="goNextStep()"
+      (next)="goNextChapter()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -75,101 +80,79 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
             [currentText]="runner.narrationText()"
             [visibleCount]="runner.narrationVisibleCount()"
           />
-
-          <div
-            class="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 border-t border-ink-faint pt-[22px]"
-          >
-            <lm-fact-line
-              label="traveller A"
-              [value]="readoutA().vOverCLabel"
-              accent="accent-1"
-            />
-            <lm-fact-line
-              label="traveller B"
-              [value]="readoutB().vOverCLabel"
-              accent="accent-2"
-            />
-            <lm-fact-line label="A's clock" [value]="readoutA().clockLabel" />
-            <lm-fact-line label="B's clock" [value]="readoutB().clockLabel" />
-          </div>
         </div>
 
         <div class="flex flex-col">
           <div
             class="flex flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px] transition-colors duration-400"
           >
-            <div
-              class="mb-3.5 flex items-baseline justify-between gap-4"
-            >
-              <lm-kicker [opacity]="0.55">spacetime · normalized to c</lm-kicker>
+            <div class="mb-3.5 flex items-baseline justify-between gap-4">
+              <lm-kicker [opacity]="0.55">light = pure spatial motion</lm-kicker>
               <div class="flex gap-3.5">
                 <lm-legend color="accent-1" label="A" />
-                <lm-legend color="accent-2" label="B" />
+                <lm-legend color="neutral" label="B" />
               </div>
             </div>
             <div class="flex flex-1 items-center justify-center">
               <lm-spacetime-diagram
-                variant="pair"
-                [velocityA]="velocityA()"
-                [velocityB]="velocityB()"
-                [budgetArc]="true"
+                variant="wavefront"
+                wavefrontSignal="ring"
+                [wavefrontShowObserverC]="false"
+                [wavefrontTime]="wavefrontTime()"
+                [observerXA]="layout.xA"
+                [observerXB]="layout.xB"
+                [wavefrontTimeAtA]="timeAtA"
+                [wavefrontTMax]="timeMax"
                 [width]="560"
                 [height]="460"
-                [showDot]="false"
-                [showTipLabel]="true"
-                [tipProperYears]="1"
               />
             </div>
           </div>
 
-          <div class="mt-[22px] grid grid-cols-2 gap-7">
-            <lm-slider
-              label="A · v / c"
+          <div
+            class="mt-[22px] grid grid-cols-2 gap-x-6 gap-y-2 border-t border-ink-faint pt-[22px]"
+          >
+            <lm-fact-line
+              label="A · proper time"
+              [value]="clockA()"
               accent="accent-1"
-              [value]="velocityA()"
-              [disabled]="true"
             />
-            <lm-slider
-              label="B · v / c"
-              accent="accent-2"
-              [value]="velocityB()"
-              [disabled]="!runner.atExplorationWait()"
-              (valueChange)="onVelocityBChange($event)"
-            />
+            <lm-fact-line label="B · proper time" [value]="clockB()" />
           </div>
         </div>
       </div>
     </lm-step-frame>
   `,
 })
-export class Step02Component implements OnInit, OnDestroy {
+export class Step03Component implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
-  protected readonly step = STEP_02_TWO_TRAVELLERS;
+  protected readonly step = STEP_03_BRIDGE_TO_LIGHT;
   protected readonly chapterTitle = CHAPTER_02_TITLE;
   protected readonly stepsTotal = CHAPTER_02_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;
-  protected readonly velocityA = signal(0.01);
-  protected readonly velocityB = signal(0);
-  protected readonly readoutA = computed(() =>
-    travellerReadout(this.velocityA(), 1),
+  protected readonly layout = STEP3_BRIDGE_LAYOUT;
+  protected readonly timeAtA = STEP3_BRIDGE_TIME_AT_A;
+  protected readonly timeMax = STEP3_BRIDGE_MAX_TIME;
+
+  protected readonly wavefrontTime = signal(0);
+
+  protected readonly clockA = computed(() =>
+    this.clockAtRest(this.wavefrontTime(), STEP3_BRIDGE_TIME_AT_A),
   );
-  protected readonly readoutB = computed(() =>
-    travellerReadout(this.velocityB(), 1),
+
+  protected readonly clockB = computed(() =>
+    this.clockAtRest(this.wavefrontTime(), STEP3_BRIDGE_TIME_AT_A),
   );
+
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
 
   constructor() {
-    this.registry.register('diagram.velocityA', {
-      get: () => this.velocityA(),
-      set: (v) => this.velocityA.set(v),
-      initial: 0.01,
-    });
-    this.registry.register('diagram.velocityB', {
-      get: () => this.velocityB(),
-      set: (v) => this.velocityB.set(v),
+    this.registry.register('wavefront.time', {
+      get: () => this.wavefrontTime(),
+      set: (v) => this.wavefrontTime.set(v),
       initial: 0,
     });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
@@ -206,17 +189,20 @@ export class Step02Component implements OnInit, OnDestroy {
     }
   }
 
-  protected onVelocityBChange(value: number): void {
-    if (this.runner.atExplorationWait()) {
-      this.velocityB.set(value);
-    }
-  }
-
   protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/02/step/1');
+    void this.router.navigateByUrl('/ch/02/step/2');
   }
 
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/02/step/3');
+  protected goNextChapter(): void {
+    void this.router.navigateByUrl('/ch/03/step/1');
+  }
+
+  private clockAtRest(t: number, freezeAt: number): string {
+    if (t <= 0) {
+      return '—';
+    }
+    return signalClockLabel(
+      observerProperTimeAtCoordinate(Math.min(t, freezeAt), 0),
+    );
   }
 }

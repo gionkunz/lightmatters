@@ -46,13 +46,37 @@ The step host SHALL listen for Space and Enter key presses to trigger timeline s
 
 ### Requirement: Step frame provides playback transport
 
-The step frame SHALL render an `LmPlaybackBar` above the nav with progress, beat markers, and rewind / pause / fast-forward controls wired to the timeline runner.
+The step frame SHALL render an `LmPlaybackBar` below the nav with a progress track on the first row and rewind / play / pause / fast-forward transport controls centered on a second row below the track, wired to the timeline runner. Transport controls SHALL be visually prominent (large hit targets, readable icons, clear active/disabled states).
 
 #### Scenario: Playback bar shows progress during narration
 
 - **WHEN** Step 1's timeline is playing through narrate events
 - **THEN** the playback bar progress indicator advances
-- **AND** beat markers are visible on the progress track
+- **AND** checkpoint markers are visible on the progress track
+
+#### Scenario: Transport controls on second row
+
+- **WHEN** a step with a timeline is active
+- **THEN** the progress track and elapsed/total times appear on the top row of the playback bar
+- **AND** rewind, play/pause, and forward controls appear centered on a separate row below the track
+
+#### Scenario: Prominent transport controls
+
+- **WHEN** the playback bar is visible
+- **THEN** each transport control has a hit target of at least 48×48 CSS pixels
+- **AND** the play control is visually emphasized relative to rewind and forward
+
+#### Scenario: Play visible at checkpoint hold
+
+- **WHEN** the timeline is paused at a checkpoint hold
+- **THEN** the Play control is shown
+- **AND** the Pause control is hidden
+
+#### Scenario: Pause visible during active playback
+
+- **WHEN** the timeline is actively playing (typing, tweening)
+- **THEN** the Pause control is shown
+- **AND** the Play control is hidden
 
 ### Requirement: StepHost resolves step from route parameter
 
@@ -177,4 +201,49 @@ When Chapter 2 Step 2 is active, the footer back control SHALL navigate to `/ch/
 
 - **WHEN** a user clicks the back control on Chapter 2 Step 2
 - **THEN** the router navigates to `/ch/02/step/1`
+
+### Requirement: Step frame supports disabled continue control
+
+`LmStepFrame` SHALL accept an optional `continueDisabled` input. When `continueDisabled` is true and a next step or chapter exists, the footer continue button SHALL render in a disabled state and SHALL NOT emit navigation on click.
+
+#### Scenario: Disabled continue ignores clicks
+
+- **WHEN** `continueDisabled` is true
+- **AND** the user clicks the continue button
+- **THEN** no navigation occurs
+
+#### Scenario: Enabled continue navigates normally
+
+- **WHEN** `continueDisabled` is false or unset
+- **AND** the user clicks the continue button
+- **THEN** the step emits its `next` output as today
+
+### Requirement: Chapter 2 Step 2 advances to Chapter 2 Step 3
+
+When Chapter 2 Step 3 is authored, Chapter 2 Step 2 SHALL show a continue control in the footer that navigates to `/ch/02/step/3`.
+
+#### Scenario: Continue from Chapter 2 Step 2 reaches Step 3
+
+- **WHEN** a user clicks continue on Chapter 2 Step 2
+- **THEN** the router navigates to `/ch/02/step/3`
+- **AND** Chapter 2 Step 3 mounts fresh with default parameter state
+
+### Requirement: Chapter 2 Step 3 back navigates to Chapter 2 Step 2
+
+When Chapter 2 Step 3 is active, the footer back control SHALL navigate to `/ch/02/step/2`.
+
+#### Scenario: Back from Chapter 2 Step 3 returns to Step 2
+
+- **WHEN** a user clicks the back control on Chapter 2 Step 3
+- **THEN** the router navigates to `/ch/02/step/2`
+
+### Requirement: Chapter 2 Step 3 advances to Chapter 3 Step 1
+
+When Chapter 3 Step 1 is routed, Chapter 2 Step 3 SHALL show a continue control labeled for the next chapter that navigates to `/ch/03/step/1`. The continue control SHALL remain disabled until the step's prediction gate is satisfied.
+
+#### Scenario: Continue from Chapter 2 Step 3 reaches Chapter 3 Step 1
+
+- **WHEN** a user has selected both predictions on Chapter 2 Step 3
+- **AND** clicks the enabled continue control
+- **THEN** the router navigates to `/ch/03/step/1`
 

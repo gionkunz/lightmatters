@@ -5,10 +5,11 @@ import { map } from 'rxjs/operators';
 import { LmButtonComponent } from '@lm/design';
 import { Step01Component } from './steps/step-01.component';
 import { Step02Component } from './steps/step-02.component';
+import { Step03Component } from './steps/step-03.component';
 
 @Component({
   selector: 'lm-step-page',
-  imports: [Step01Component, Step02Component, LmButtonComponent, RouterLink],
+  imports: [Step01Component, Step02Component, Step03Component, LmButtonComponent, RouterLink],
   template: `
     @switch (stepNumber()) {
       @case (1) {
@@ -16,6 +17,9 @@ import { Step02Component } from './steps/step-02.component';
       }
       @case (2) {
         <lm-step-02 />
+      }
+      @case (3) {
+        <lm-step-03 />
       }
       @default {
         <div
