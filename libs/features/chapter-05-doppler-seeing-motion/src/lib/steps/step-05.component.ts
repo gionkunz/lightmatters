@@ -83,6 +83,7 @@ import { STEP_05_OUTRO } from './step-05-outro';
                 [height]="diagramVp.size().height"
               [time]="2.5"
               [extent]="1.1"
+              [fixedViewBox]="true"
               [observers]="observers"
               [sources]="sources"
             />

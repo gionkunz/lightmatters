@@ -87,6 +87,7 @@ import { STEP_01_PULSE_TICKS } from './step-01-pulse-ticks';
                 [height]="diagramVp.size().height"
                 [time]="time()"
                 [extent]="1.1"
+                [fixedViewBox]="true"
                 [observers]="observers"
                 [sources]="sources"
                 (reception)="onReception($event)"

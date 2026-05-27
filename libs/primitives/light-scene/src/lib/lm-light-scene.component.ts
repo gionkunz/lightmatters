@@ -83,7 +83,7 @@ interface SourceRender {
     <svg
       [attr.width]="width()"
       [attr.height]="height()"
-      [attr.viewBox]="svgViewBox"
+      [attr.viewBox]="svgViewBox()"
       class="block"
     >
       @for (pulse of pulses(); track pulse.id) {
@@ -159,6 +159,11 @@ export class LmLightSceneComponent {
   readonly observers = input<readonly LightSceneObserver[]>([]);
   readonly sources = input<readonly LightSceneSource[]>([]);
   readonly showLabels = input(true);
+  /**
+   * When true, viewBox is locked to the initial layout (extent, actors at t = 0,
+   * emission origins) and does not expand as pulse circles grow.
+   */
+  readonly fixedViewBox = input(false);
   /** Speed of light in scene units per scene-time unit. Default 1. */
   readonly c = input(1);
 
@@ -323,13 +328,32 @@ export class LmLightSceneComponent {
   }
 
   /** Tight bounds in layout pixels; display width/height scale the cropped region. */
-  protected get svgViewBox(): string {
+  protected readonly svgViewBox = computed(() => {
     const pad = 12;
-    const b = this.sceneBounds();
+    const b = this.fixedViewBox()
+      ? this.staticSceneBounds()
+      : this.computeSceneBounds({
+          includePulses: true,
+          actorTime: this.time(),
+          includeEmissionOrigins: false,
+        });
     return `${b.minX - pad} ${b.minY - pad} ${b.width + pad * 2} ${b.height + pad * 2}`;
-  }
+  });
 
-  private sceneBounds(): {
+  /** Layout-only bounds (independent of scene time). */
+  private readonly staticSceneBounds = computed(() =>
+    this.computeSceneBounds({
+      includePulses: false,
+      actorTime: 0,
+      includeEmissionOrigins: true,
+    }),
+  );
+
+  private computeSceneBounds(options: {
+    includePulses: boolean;
+    actorTime: number;
+    includeEmissionOrigins: boolean;
+  }): {
     minX: number;
     minY: number;
     width: number;
@@ -359,21 +383,58 @@ export class LmLightSceneComponent {
       add(px.x, px.y, 8);
     }
 
-    for (const pulse of this.pulses()) {
-      add(pulse.cx, pulse.cy, pulse.r + 2);
-    }
-    for (const src of this.renderedSources()) {
-      add(src.cx, src.cy, 10);
-      if (this.showLabels() && src.label) {
-        add(src.cx + 8, src.cy - 8, labelPadX);
-        add(src.cx, src.cy, labelPadY);
+    if (options.includeEmissionOrigins) {
+      for (const src of this.sources()) {
+        const vSrc = src.velocity ?? { x: 0, y: 0 };
+        for (const emission of src.emissions) {
+          const emitPos = emissionPosition(
+            { x: src.x, y: src.y },
+            vSrc,
+            emission.atTime,
+          );
+          const px = this.toPx(emitPos.x, emitPos.y);
+          add(px.x, px.y, 10);
+        }
       }
     }
-    for (const obs of this.renderedObservers()) {
-      add(obs.cx, obs.cy, obs.received ? 14 : 10);
+
+    if (options.includePulses) {
+      for (const pulse of this.pulses()) {
+        add(pulse.cx, pulse.cy, pulse.r + 2);
+      }
+    }
+
+    const actorTime = options.actorTime;
+    const overrides = this.overrides();
+    for (const src of this.sources()) {
+      const v = src.velocity ?? { x: 0, y: 0 };
+      const x = src.x + v.x * actorTime;
+      const y = src.y + v.y * actorTime;
+      const px = this.toPx(x, y);
+      add(px.x, px.y, 10);
+      if (this.showLabels() && (src.label ?? src.id)) {
+        add(px.x + 8, px.y - 8, labelPadX);
+        add(px.x, px.y, labelPadY);
+      }
+    }
+
+    const received =
+      actorTime === this.time()
+        ? this.activeReceptions()
+        : this.receptionTimes().filter((event) => actorTime >= event.atTime - 1e-9);
+    const receivedSet = new Set(received.map((r) => r.observerId));
+
+    for (const obs of this.observers()) {
+      const v = obs.velocity ?? { x: 0, y: 0 };
+      const override = overrides[obs.id] ?? {};
+      const x = override.x !== undefined ? override.x : obs.x + v.x * actorTime;
+      const y = override.y !== undefined ? override.y : obs.y + v.y * actorTime;
+      const px = this.toPx(x, y);
+      const gotPulse = receivedSet.has(obs.id);
+      add(px.x, px.y, gotPulse ? 14 : 10);
       if (this.showLabels()) {
-        add(obs.cx + 10, obs.cy + 4, labelPadX);
-        add(obs.cx, obs.cy, labelPadY);
+        add(px.x + 10, px.y + 4, labelPadX);
+        add(px.x, px.y, labelPadY);
       }
     }
 

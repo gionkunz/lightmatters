@@ -11,6 +11,7 @@ import {
   APPLE_TREE_THETA,
   APPLE_RELEASE_SPACE_T,
 } from './curved-surface';
+import { APPLE_TREE_STROKES } from './apple-tree-glyph';
 
 describe('curved-surface physics', () => {
   it('places a point on the cylinder at θ = 0 on the +y rim', () => {
@@ -54,6 +55,29 @@ describe('curved-surface physics', () => {
     expect(start.z).toBeCloseTo(end.z, 1);
   });
 
+  it('moves along the bottom time edge when time-only and fully unrolled', () => {
+    const start = morphSurfacePoint(
+      1,
+      0,
+      0,
+      DEFAULT_CURVED_SURFACE_PARAMS,
+      'time-only',
+      1,
+    );
+    const end = morphSurfacePoint(
+      1,
+      0,
+      0.85,
+      DEFAULT_CURVED_SURFACE_PARAMS,
+      'time-only',
+      1,
+    );
+    expect(start.z).toBeCloseTo(0, 5);
+    expect(end.z).toBeCloseTo(0, 5);
+    expect(Math.abs(end.y - start.y)).toBeLessThan(0.08);
+    expect(Math.hypot(end.x - start.x, end.y - start.y)).toBeGreaterThan(0.15);
+  });
+
   it('returns the requested number of trail samples with increasing age', () => {
     const samples = worldlineTrailSamples(1, 0, 0.5, 32);
     expect(samples).toHaveLength(32);
@@ -74,7 +98,11 @@ describe('curved-surface physics', () => {
 
   it('builds an apple geodesic from the stem apple to the same tree projected in proper time', () => {
     const scene = buildAppleTreeScene(0.4, DEFAULT_CURVED_SURFACE_PARAMS);
-    expect(scene.treeStrips.length).toBeGreaterThan(0);
+    expect(scene.nearTreeStrips.length).toBe(APPLE_TREE_STROKES.length);
+    expect(scene.projectedTreeStrips.length).toBe(APPLE_TREE_STROKES.length);
+    expect(scene.treeStrips.length).toBe(
+      scene.nearTreeStrips.length + scene.projectedTreeStrips.length,
+    );
     expect(scene.appleGeodesic.length).toBeGreaterThan(10);
     const start = appleFallPoint(0.4, 0, DEFAULT_CURVED_SURFACE_PARAMS);
     const end = appleFallPoint(0.4, 1, DEFAULT_CURVED_SURFACE_PARAMS);

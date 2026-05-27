@@ -12,7 +12,8 @@ import {
     TargetRegistry,
   TimelineRunner
 } from '@lm/engine';
-import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
+import { LmKickerComponent } from '@lm/design';
+import { LmCurvedSurfaceComponent } from '@lm/curved-surface';
 import {
   CHAPTER_06_TITLE,
   CHAPTER_06_TOTAL_STEPS,
@@ -26,7 +27,8 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
     LmStepFrameComponent,
     LmDiagramViewportComponent,
         LmNarratorChatFeedComponent,
-    LmSpacetimeDiagramComponent,
+    LmCurvedSurfaceComponent,
+    LmKickerComponent,
   ],
   template: `
     <lm-step-frame
@@ -63,17 +65,25 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
           [visibleCount]="runner.narrationVisibleCount()"
         />
         </div>
-        <div class="flex min-h-0 flex-1 items-center justify-center bg-paper-alt px-[26px] py-[22px]">
-          <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
-            <lm-spacetime-diagram
+        <div class="flex min-h-0 flex-col bg-paper-alt px-[26px] py-[22px]">
+          <lm-kicker [opacity]="0.55" class="mb-3.5">laid flat, then rolled</lm-kicker>
+          <div class="flex min-h-0 flex-1 items-center justify-center">
+              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
+                <lm-curved-surface
                 [width]="diagramVp.size().width"
                 [height]="diagramVp.size().height"
-            variant="full"
-            [position]="0"
-            [time]="time()"
-            [showLightCone]="false"
-          />
+              [fold]="1"
+              [curvature]="0"
+              [time]="time()"
+              [unfold]="unfold()"
+              [showTrail]="true"
+              [showAxisLabels]="true"
+              [trailLength]="120"
+              [trailSpan]="0.85"
+              worldlineMode="time-only"
+            />
               </lm-diagram-viewport>
+          </div>
         </div>
       </div>
     </lm-step-frame>
@@ -87,14 +97,20 @@ export class Step01Component implements OnInit, OnDestroy {
   protected readonly stepsTotal = CHAPTER_06_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;
   protected readonly time = signal(0);
+  protected readonly unfold = signal(1);
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
 
   constructor() {
-    this.registry.register('diagram.time', {
+    this.registry.register('surface.time', {
       get: () => this.time(),
       set: (v) => this.time.set(v),
       initial: 0
+});
+    this.registry.register('surface.unfold', {
+      get: () => this.unfold(),
+      set: (v) => this.unfold.set(v),
+      initial: 1
 });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();

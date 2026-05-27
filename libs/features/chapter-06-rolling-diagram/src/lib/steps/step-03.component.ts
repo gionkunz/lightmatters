@@ -76,6 +76,7 @@ import { STEP_03_CONE } from './step-03-cone';
               [curvature]="curvature()"
               [time]="0.35"
               [showTrail]="false"
+              [showAxisLabels]="true"
               worldlineMode="orbit"
             />
               </lm-diagram-viewport>

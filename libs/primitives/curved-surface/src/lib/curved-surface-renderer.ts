@@ -12,10 +12,18 @@ import {
 import * as THREE from 'three';
 import { readThemeColors, type Rgb, type ThemeColors } from './read-theme-colors';
 import {
+  buildAxisStrips,
+  computeAxisLabelAnchors,
+  type AxisLabelAnchor,
+} from './axis-labels';
+import {
   applyOrbitOffset,
   easeOutCubic,
   ORBIT_SENSITIVITY,
 } from './camera-orbit';
+import { WidePolylineOverlay, WidePolylineStrips, WideWireframeLines, OVERLAY_LINE_WIDTH } from './wide-lines';
+
+export type { AxisLabelAnchor };
 
 export interface CurvedSurfaceState {
   fold: number;
@@ -188,52 +196,6 @@ function buildWireframeStrips(
   return strips;
 }
 
-function buildAxisLabelStrips(
-  fold: number,
-  curvature: number,
-  params: CurvedSurfaceParams,
-): Vec3[][] {
-  if (fold < 0.5) return [];
-
-  const radius = rimRadius(0.5, curvature, params);
-  const half = params.height / 2;
-  const strips: Vec3[][] = [];
-
-  // Space axis (x) through the cylinder centre.
-  strips.push([
-    { x: -half - 0.08, y: 0, z: 0 },
-    { x: half + 0.12, y: 0, z: 0 },
-  ]);
-
-  // Time (t) arc on the near end cap — about a quarter turn.
-  const arc: Vec3[] = [];
-  const segments = 14;
-  for (let i = 0; i <= segments; i++) {
-    const theta = Math.PI * 0.55 + (i / segments) * Math.PI * 0.55;
-    arc.push({
-      x: -half,
-      y: radius * Math.cos(theta),
-      z: radius * Math.sin(theta),
-    });
-  }
-  strips.push(arc);
-
-  return strips;
-}
-
-function buildWireframeStripsWithAxes(
-  fold: number,
-  curvature: number,
-  unfold: number,
-  params: CurvedSurfaceParams,
-  showAxisLabels: boolean,
-): Vec3[][] {
-  const strips = buildWireframeStrips(fold, curvature, unfold, params);
-  if (showAxisLabels && unfold < 0.5) {
-    strips.push(...buildAxisLabelStrips(fold, curvature, params));
-  }
-  return strips;
-}
 
 interface SurfaceMeshData {
   positions: Float32Array;
@@ -349,57 +311,6 @@ function stripToLinePositions(strips: Vec3[][]): Float32Array {
   return data;
 }
 
-/** Offset each segment sideways to fake line thickness (WebGL ignores linewidth). */
-function thickenStrips(strips: Vec3[][], halfWidth: number): Vec3[][] {
-  if (halfWidth <= 0) return strips;
-  const out: Vec3[][] = [];
-  for (const strip of strips) {
-    for (let i = 0; i < strip.length - 1; i++) {
-      const a = strip[i];
-      const b = strip[i + 1];
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const dz = b.z - a.z;
-      const len = Math.hypot(dx, dy, dz) || 1;
-      const tx = dx / len;
-      const ty = dy / len;
-      const tz = dz / len;
-      const n = surfaceOutwardNormal({
-        x: (a.x + b.x) / 2,
-        y: (a.y + b.y) / 2,
-        z: (a.z + b.z) / 2,
-      });
-      let bx = ty * n.z - tz * n.y;
-      let by = tz * n.x - tx * n.z;
-      let bz = tx * n.y - ty * n.x;
-      const blen = Math.hypot(bx, by, bz) || 1;
-      bx = (bx / blen) * halfWidth;
-      by = (by / blen) * halfWidth;
-      bz = (bz / blen) * halfWidth;
-      out.push([a, b]);
-      out.push([
-        { x: a.x + bx, y: a.y + by, z: a.z + bz },
-        { x: b.x + bx, y: b.y + by, z: b.z + bz },
-      ]);
-      out.push([
-        { x: a.x - bx, y: a.y - by, z: a.z - bz },
-        { x: b.x - bx, y: b.y - by, z: b.z - bz },
-      ]);
-    }
-  }
-  return out;
-}
-
-function pointsToFlatArray(points: Vec3[]): Float32Array {
-  const data = new Float32Array(points.length * 3);
-  for (let i = 0; i < points.length; i++) {
-    data[i * 3] = points[i].x;
-    data[i * 3 + 1] = points[i].y;
-    data[i * 3 + 2] = points[i].z;
-  }
-  return data;
-}
-
 function buildGeodesicPoints(
   curvature: number,
   unfold: number,
@@ -474,7 +385,6 @@ class WireframeLines {
     opacity: number,
     renderOrder = 0,
     alwaysOnTop = false,
-    private readonly thickness = 0,
   ) {
     const material = new THREE.LineBasicMaterial({
       color: rgbToColor(rgb),
@@ -488,9 +398,7 @@ class WireframeLines {
   }
 
   setStrips(strips: Vec3[][]): void {
-    const drawStrips =
-      this.thickness > 0 ? thickenStrips(strips, this.thickness) : strips;
-    const positions = stripToLinePositions(drawStrips);
+    const positions = stripToLinePositions(strips);
     this.geometry.setAttribute(
       'position',
       new THREE.BufferAttribute(positions, 3),
@@ -511,74 +419,6 @@ class WireframeLines {
   }
 }
 
-class PolylineOverlay {
-  readonly line: THREE.Line;
-  private readonly geometry = new THREE.BufferGeometry();
-
-  constructor(
-    scene: THREE.Scene,
-    rgb: Rgb,
-    opacity: number,
-    alwaysOnTop = false,
-  ) {
-    const material = new THREE.LineBasicMaterial({
-      color: rgbToColor(rgb),
-      transparent: opacity < 1,
-      opacity,
-      vertexColors: true,
-      depthTest: !alwaysOnTop,
-    });
-    this.line = new THREE.Line(this.geometry, material);
-    if (alwaysOnTop) {
-      this.line.renderOrder = 2;
-    }
-    scene.add(this.line);
-  }
-
-  setPoints(points: Vec3[], colorFn?: (index: number, total: number) => number): void {
-    if (points.length < 2) {
-      this.line.visible = false;
-      return;
-    }
-    this.line.visible = true;
-    this.geometry.setAttribute(
-      'position',
-      new THREE.BufferAttribute(pointsToFlatArray(points), 3),
-    );
-
-    if (colorFn) {
-      const base = (this.line.material as THREE.LineBasicMaterial).color;
-      const colors = new Float32Array(points.length * 3);
-      for (let i = 0; i < points.length; i++) {
-        const alpha = colorFn(i, points.length);
-        colors[i * 3] = base.r * alpha;
-        colors[i * 3 + 1] = base.g * alpha;
-        colors[i * 3 + 2] = base.b * alpha;
-      }
-      this.geometry.setAttribute(
-        'color',
-        new THREE.BufferAttribute(colors, 3),
-      );
-    } else {
-      this.geometry.deleteAttribute('color');
-    }
-
-    this.geometry.computeBoundingSphere();
-  }
-
-  setColor(rgb: Rgb, opacity: number): void {
-    const material = this.line.material as THREE.LineBasicMaterial;
-    material.color.copy(rgbToColor(rgb));
-    material.opacity = opacity;
-    material.transparent = opacity < 1;
-  }
-
-  dispose(): void {
-    this.geometry.dispose();
-    (this.line.material as THREE.Material).dispose();
-  }
-}
-
 export class CurvedSurfaceRenderer {
   readonly renderer: THREE.WebGLRenderer;
   readonly camera: THREE.PerspectiveCamera;
@@ -586,14 +426,20 @@ export class CurvedSurfaceRenderer {
   private readonly surface: TranslucentSurface;
   private readonly wireLinesFront: WireframeLines;
   private readonly wireLinesBack: WireframeLines;
-  private readonly geodesicLine: PolylineOverlay;
-  private readonly appleGeodesicLines: WireframeLines;
-  private readonly trailLine: PolylineOverlay;
-  private readonly appleTreeLines: WireframeLines;
-  private readonly appleAccentLines: WireframeLines;
+  private readonly axisLines: WideWireframeLines;
+  private readonly geodesicLine: WidePolylineOverlay;
+  private readonly appleGeodesicLines: WideWireframeLines;
+  private readonly trailLine: WidePolylineOverlay;
+  private readonly appleTreeNearLines: WidePolylineStrips;
+  private readonly appleTreeProjectedLines: WidePolylineStrips;
   private readonly dotMesh: THREE.Mesh;
   private colors: ThemeColors = readThemeColors();
   private readonly params: CurvedSurfaceParams = DEFAULT_CURVED_SURFACE_PARAMS;
+  private viewportWidth = 720;
+  private viewportHeight = 520;
+  private axisLabelAnchors: AxisLabelAnchor[] = [];
+  /** Fired whenever projected axis label positions change. */
+  onAxisLabelsUpdated?: (anchors: AxisLabelAnchor[]) => void;
   private orbitAzimuth = 0;
   private orbitElevation = 0;
   private dragging = false;
@@ -665,31 +511,51 @@ export class CurvedSurfaceRenderer {
     this.surface = new TranslucentSurface(this.scene, colors.ink, 0.14);
     this.wireLinesBack = new WireframeLines(this.scene, colors.ink, 0.09, -2);
     this.wireLinesFront = new WireframeLines(this.scene, colors.ink, 0.52, 0);
-    this.geodesicLine = new PolylineOverlay(this.scene, colors.accent1, 0.35, true);
-    this.appleGeodesicLines = new WireframeLines(
+    this.axisLines = new WideWireframeLines(
+      this.scene,
+      colors.ink,
+      0.82,
+      OVERLAY_LINE_WIDTH,
+      1,
+      true,
+    );
+    this.geodesicLine = new WidePolylineOverlay(
+      this.scene,
+      colors.accent1,
+      0.35,
+      OVERLAY_LINE_WIDTH,
+      true,
+    );
+    this.appleGeodesicLines = new WideWireframeLines(
       this.scene,
       colors.accent1,
       0.55,
+      OVERLAY_LINE_WIDTH,
       2,
       true,
-      0.004,
     );
-    this.trailLine = new PolylineOverlay(this.scene, colors.accent1, 0.95, true);
-    this.appleTreeLines = new WireframeLines(
-      this.scene,
-      colors.ink,
-      0.85,
-      2,
-      true,
-      0.007,
-    );
-    this.appleAccentLines = new WireframeLines(
+    this.trailLine = new WidePolylineOverlay(
       this.scene,
       colors.accent1,
       0.95,
+      OVERLAY_LINE_WIDTH,
+      true,
+    );
+    this.appleTreeNearLines = new WidePolylineStrips(
+      this.scene,
+      colors.ink,
+      0.85,
+      OVERLAY_LINE_WIDTH,
       2,
       true,
-      0.005,
+    );
+    this.appleTreeProjectedLines = new WidePolylineStrips(
+      this.scene,
+      colors.ink,
+      0.85,
+      OVERLAY_LINE_WIDTH,
+      2,
+      true,
     );
 
     const dotGeometry = new THREE.SphereGeometry(0.028, 16, 16);
@@ -759,7 +625,13 @@ export class CurvedSurfaceRenderer {
     );
   }
 
+  getAxisLabelAnchors(): AxisLabelAnchor[] {
+    return this.axisLabelAnchors;
+  }
+
   resize(width: number, height: number): void {
+    this.viewportWidth = width;
+    this.viewportHeight = height;
     this.renderer.setSize(width, height, false);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
@@ -771,11 +643,12 @@ export class CurvedSurfaceRenderer {
     this.surface.setColor(colors.ink, 0.14);
     this.wireLinesBack.setColor(colors.ink, 0.09);
     this.wireLinesFront.setColor(colors.ink, 0.52);
+    this.axisLines.setColor(colors.ink, 0.82);
     this.geodesicLine.setColor(colors.accent1, 0.35);
     this.appleGeodesicLines.setColor(colors.accent1, 0.55);
     this.trailLine.setColor(colors.accent1, 0.95);
-    this.appleTreeLines.setColor(colors.ink, 0.85);
-    this.appleAccentLines.setColor(colors.accent1, 0.95);
+    this.appleTreeNearLines.setColor(colors.ink, 0.85);
+    this.appleTreeProjectedLines.setColor(colors.ink, 0.85);
     (this.dotMesh.material as THREE.MeshBasicMaterial).color.copy(
       rgbToColor(colors.accent1),
     );
@@ -822,26 +695,36 @@ export class CurvedSurfaceRenderer {
       this.surface.setVisible(false);
     }
 
-    const strips = buildWireframeStripsWithAxes(
-      fold,
-      curvature,
-      unfold,
-      this.params,
-      showAxisLabels,
-    );
+    const strips = buildWireframeStrips(fold, curvature, unfold, this.params);
     const { front, back } = splitStripsByFacing(strips, this.camera);
     this.wireLinesBack.setStrips(back);
     this.wireLinesFront.setStrips(front);
+
+    if (showAxisLabels) {
+      const axisStrips = buildAxisStrips(
+        fold,
+        curvature,
+        unfold,
+        this.params,
+      );
+      this.axisLines.setStrips([axisStrips.space, axisStrips.time]);
+      this.updateAxisLabelAnchors(axisStrips);
+    } else {
+      this.axisLines.setStrips([]);
+      this.setAxisLabelAnchors([]);
+    }
 
     if (showAppleTree) {
       const scene = buildAppleTreeScene(
         curvature,
         this.params,
         unfold,
-        showProjectedTree,
+        true,
       );
-      this.appleTreeLines.setStrips(scene.treeStrips);
-      this.appleAccentLines.setStrips(scene.accentStrips);
+      this.appleTreeNearLines.setStrips(scene.nearTreeStrips);
+      this.appleTreeProjectedLines.setStrips(
+        showProjectedTree ? scene.projectedTreeStrips : [],
+      );
       const geodesicStrips: Vec3[][] = [];
       for (let i = 0; i < scene.appleGeodesic.length - 1; i++) {
         geodesicStrips.push([
@@ -852,8 +735,8 @@ export class CurvedSurfaceRenderer {
       this.appleGeodesicLines.setStrips(geodesicStrips);
       this.geodesicLine.setPoints([]);
     } else {
-      this.appleTreeLines.setStrips([]);
-      this.appleAccentLines.setStrips([]);
+      this.appleTreeNearLines.setStrips([]);
+      this.appleTreeProjectedLines.setStrips([]);
       this.appleGeodesicLines.setStrips([]);
       if (showGeodesic || worldlineMode === 'geodesic-fall') {
         this.geodesicLine.setPoints(
@@ -895,8 +778,34 @@ export class CurvedSurfaceRenderer {
     }
   }
 
+  private updateAxisLabelAnchors(
+    strips: ReturnType<typeof buildAxisStrips>,
+  ): void {
+    const anchors = computeAxisLabelAnchors(
+      strips,
+      this.camera,
+      this.viewportWidth,
+      this.viewportHeight,
+    );
+    this.setAxisLabelAnchors(anchors);
+  }
+
+  private setAxisLabelAnchors(anchors: AxisLabelAnchor[]): void {
+    this.axisLabelAnchors = anchors;
+    this.onAxisLabelsUpdated?.(anchors);
+  }
+
   private render(): void {
     this.renderer.render(this.scene, this.camera);
+    if (this.state.showAxisLabels) {
+      const strips = buildAxisStrips(
+        this.state.fold,
+        this.state.curvature,
+        this.state.unfold,
+        this.params,
+      );
+      this.updateAxisLabelAnchors(strips);
+    }
   }
 
   dispose(): void {
@@ -911,11 +820,12 @@ export class CurvedSurfaceRenderer {
     this.surface.dispose();
     this.wireLinesBack.dispose();
     this.wireLinesFront.dispose();
+    this.axisLines.dispose();
     this.geodesicLine.dispose();
     this.appleGeodesicLines.dispose();
     this.trailLine.dispose();
-    this.appleTreeLines.dispose();
-    this.appleAccentLines.dispose();
+    this.appleTreeNearLines.dispose();
+    this.appleTreeProjectedLines.dispose();
     this.dotMesh.geometry.dispose();
     (this.dotMesh.material as THREE.Material).dispose();
     this.renderer.dispose();

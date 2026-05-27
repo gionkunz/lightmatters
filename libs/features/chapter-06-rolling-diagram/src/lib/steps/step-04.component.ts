@@ -80,6 +80,7 @@ import { STEP_04_GEODESICS } from './step-04-geodesics';
               [trailLength]="120"
               [trailSpan]="1"
               [showGeodesic]="true"
+              [showAxisLabels]="true"
               worldlineMode="geodesic-fall"
             />
               </lm-diagram-viewport>

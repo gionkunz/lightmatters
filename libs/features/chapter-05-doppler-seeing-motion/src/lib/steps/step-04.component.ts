@@ -86,6 +86,7 @@ import { STEP_04_EXTREME_RECESSION } from './step-04-extreme-recession';
                 [height]="diagramVp.size().height"
                 [time]="time()"
                 [extent]="1.8"
+                [fixedViewBox]="true"
                 [observers]="observers"
                 [sources]="sources"
                 (reception)="onReception($event)"

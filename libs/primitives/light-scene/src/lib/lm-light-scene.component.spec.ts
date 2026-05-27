@@ -124,6 +124,39 @@ describe('LmLightSceneComponent', () => {
     expect(sourceCx).toBeGreaterThan(pulseCx);
   });
 
+  it('keeps viewBox fixed when fixedViewBox is true and time advances', () => {
+    fixture.componentRef.setInput('fixedViewBox', true);
+    fixture.componentRef.setInput('observers', [
+      { id: 'a', x: -0.55, y: 0, label: 'A' },
+    ]);
+    fixture.componentRef.setInput('sources', [
+      {
+        id: 's',
+        x: 0,
+        y: 0,
+        label: 'S',
+        emissions: [
+          { atTime: 0, pulseId: 'p1' },
+          { atTime: 0.45, pulseId: 'p2' },
+          { atTime: 0.9, pulseId: 'p3' },
+        ],
+      },
+    ]);
+    fixture.componentRef.setInput('extent', 1.1);
+    fixture.componentRef.setInput('time', 0);
+    fixture.detectChanges();
+
+    const viewBoxAtStart =
+      fixture.nativeElement.querySelector('svg')?.getAttribute('viewBox') ?? '';
+
+    fixture.componentRef.setInput('time', 3.2);
+    fixture.detectChanges();
+
+    const viewBoxAfter =
+      fixture.nativeElement.querySelector('svg')?.getAttribute('viewBox') ?? '';
+    expect(viewBoxAfter).toBe(viewBoxAtStart);
+  });
+
   it('uses a square-ish viewBox tighter than the layout slot', () => {
     fixture.componentRef.setInput('observers', [
       { id: 'w', x: 0, y: 0, label: 'W' },

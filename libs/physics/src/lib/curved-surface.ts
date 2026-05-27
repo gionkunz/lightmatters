@@ -36,7 +36,7 @@ export const APPLE_STEM_SPACE_T = 0.1 * APPLE_TREE_SCALE;
 export const APPLE_RELEASE_SPACE_T =
   APPLE_RELEASE_GLYPH[1] * APPLE_STEM_SPACE_T;
 
-export type WorldlineMode = 'orbit' | 'geodesic-fall' | 'apple-fall';
+export type WorldlineMode = 'orbit' | 'time-only' | 'geodesic-fall' | 'apple-fall';
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -96,6 +96,26 @@ function radiiAtCurvature(
 function flatWorldlinePoint(properTime: number, params: CurvedSurfaceParams): Vec3 {
   const y = lerp(-params.height / 2, params.height / 2, properTime);
   return { x: 0, y, z: 0 };
+}
+
+/** Bottom rim: fixed space (t = 0), motion purely in θ / time. */
+function timeOnlyWorldlinePoint(
+  curvature: number,
+  properTime: number,
+  params: CurvedSurfaceParams,
+): Vec3 {
+  const { top, bottom } = radiiAtCurvature(curvature, params);
+  const theta = properTime * 2 * Math.PI;
+  return coneSurfacePoint(theta, 0, top, bottom, params.height);
+}
+
+function timeOnlyWorldlinePointUnrolled(
+  curvature: number,
+  properTime: number,
+  params: CurvedSurfaceParams,
+): Vec3 {
+  const theta = properTime * 2 * Math.PI;
+  return unrolledSurfacePoint(theta, 0, curvature, params);
 }
 
 /** Starting 3D theta of the geodesic-fall worldline (front of the cone). */
@@ -196,6 +216,9 @@ function curvedWorldlinePoint(
   }
   if (mode === 'geodesic-fall') {
     return geodesicFallPoint(curvature, properTime, params);
+  }
+  if (mode === 'time-only') {
+    return timeOnlyWorldlinePoint(curvature, properTime, params);
   }
 
   const { top, bottom } = radiiAtCurvature(curvature, params);
@@ -369,6 +392,9 @@ function curvedWorldlinePointUnrolled(
   if (mode === 'geodesic-fall') {
     return unrolledGeodesicFallPoint(curvature, properTime, params);
   }
+  if (mode === 'time-only') {
+    return timeOnlyWorldlinePointUnrolled(curvature, properTime, params);
+  }
   // Cylinder orbit unrolled: horizontal line at y = 0 (wide rim center), x sweeps
   // theta·R across the strip width.
   const frame = buildConeUnrollFrame(curvature, params);
@@ -396,6 +422,11 @@ export function morphSurfacePoint(
   const curved = curvedWorldlinePoint(curvature, properTime, params, mode, unfold);
   const folded = lerpVec3(flat, curved, fold);
   if (mode === 'apple-fall') return curved;
+  if (mode === 'time-only') {
+    if (unfold <= 0) return folded;
+    const unrolled = timeOnlyWorldlinePointUnrolled(curvature, properTime, params);
+    return lerpVec3(folded, unrolled, unfold);
+  }
   if (unfold <= 0) return folded;
   const unrolled = curvedWorldlinePointUnrolled(
     curvature,
@@ -605,6 +636,9 @@ export function appleGeodesicPoints(
 }
 
 export interface AppleTreeScene {
+  nearTreeStrips: Vec3[][];
+  projectedTreeStrips: Vec3[][];
+  /** @deprecated Prefer nearTreeStrips / projectedTreeStrips. */
   treeStrips: Vec3[][];
   accentStrips: Vec3[][];
   /** Straight geodesic on the unrolled net: apple → projected tree floor. */
@@ -616,19 +650,14 @@ function buildComicTree(
   theta: number,
   curvature: number,
   params: CurvedSurfaceParams,
-  includeApple: boolean,
+  _includeApple: boolean,
   unfold = 0,
 ): { tree: Vec3[][]; accent: Vec3[][] } {
   const tree: Vec3[][] = [];
   const accent: Vec3[][] = [];
 
-  APPLE_TREE_STROKES.forEach((stroke, index) => {
-    const mapped = treeGlyphStroke(stroke, theta, curvature, params, unfold);
-    if (index === 0) {
-      tree.push(mapped);
-    } else if (includeApple) {
-      accent.push(mapped);
-    }
+  APPLE_TREE_STROKES.forEach((stroke) => {
+    tree.push(treeGlyphStroke(stroke, theta, curvature, params, unfold));
   });
 
   return { tree, accent };
@@ -662,6 +691,8 @@ export function buildAppleTreeScene(
     ? [...t1.tree, ...projected.tree]
     : t1.tree;
   return {
+    nearTreeStrips: t1.tree,
+    projectedTreeStrips: projected.tree,
     treeStrips,
     accentStrips: [],
     appleGeodesic,

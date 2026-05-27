@@ -22,7 +22,7 @@ export const STEP_03_APPROACHING_BLUESHIFT: Step = {
       type: 'animate',
       target: 'scene.time',
       from: 0,
-      to: 2.8,
+      to: 1.75,
       duration: 4.5,
       easing: 'linear',
     },

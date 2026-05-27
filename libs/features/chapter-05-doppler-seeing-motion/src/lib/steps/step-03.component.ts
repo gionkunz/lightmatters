@@ -88,6 +88,7 @@ import { STEP_03_APPROACHING_BLUESHIFT } from './step-03-approaching-blueshift';
                 [height]="diagramVp.size().height"
                 [time]="time()"
                 [extent]="1.1"
+                [fixedViewBox]="true"
                 [observers]="observers"
                 [sources]="sources"
                 (reception)="onReception($event)"
@@ -118,7 +119,7 @@ export class Step03Component implements OnInit, OnDestroy {
   protected readonly sources: LightSceneSource[] = [
     {
       id: 's',
-      x: 0.45,
+      x: 0.55,
       y: 0,
       label: 'S',
       velocity: { x: -0.5, y: 0 },

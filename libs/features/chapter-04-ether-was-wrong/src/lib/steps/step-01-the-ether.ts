@@ -25,7 +25,7 @@ export const STEP_01_THE_ETHER: Step = {
     },
     {
       type: 'narrate',
-      text: 'First: the most famous experiment that tried to catch Earth moving through the ether.',
+      text: 'First: feel what moving through the ether would mean — then the experiment that tried to catch Earth in the act.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

@@ -92,6 +92,7 @@ import { STEP_02_RECEDING_REDSHIFT } from './step-02-receding-redshift';
                 [height]="diagramVp.size().height"
                 [time]="time()"
                 [extent]="1.2"
+                [fixedViewBox]="true"
                 [observers]="observers"
                 [sources]="sources"
                 (reception)="onReception($event)"

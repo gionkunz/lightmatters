@@ -6,10 +6,12 @@ import {
   inject,
   input,
   OnDestroy,
+  signal,
   viewChild,
 } from '@angular/core';
 import { ThemeService } from '@lm/design';
 import type { WorldlineMode } from '@lm/physics';
+import { axisArrowPoints, type AxisLabelAnchor } from './axis-labels';
 import {
   CurvedSurfaceRenderer,
   type CurvedSurfaceState,
@@ -33,7 +35,7 @@ import { readThemeColors } from './read-theme-colors';
         [style.width.px]="width()"
         [style.height.px]="height()"
       ></canvas>
-      @if (showAxisLabels() && fold() <= 0.45 && unfold() < 0.5) {
+      @if (showAxisLabels() && axisAnchors().length > 0) {
         <svg
           class="pointer-events-none absolute inset-0 overflow-visible"
           [attr.width]="width()"
@@ -41,44 +43,25 @@ import { readThemeColors } from './read-theme-colors';
           [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
           aria-hidden="true"
         >
-          <text
-            [attr.x]="width() * 0.54"
-            [attr.y]="height() * 0.9"
-            class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
-          >
-            x
-          </text>
-          <text
-            [attr.x]="width() * 0.54"
-            [attr.y]="height() * 0.1"
-            class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
-          >
-            t
-          </text>
-        </svg>
-      }
-      @if (showAxisLabels() && fold() > 0.45 && unfold() < 0.5) {
-        <svg
-          class="pointer-events-none absolute inset-0 overflow-visible"
-          [attr.width]="width()"
-          [attr.height]="height()"
-          [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
-          aria-hidden="true"
-        >
-          <text
-            [attr.x]="width() * 0.82"
-            [attr.y]="height() * 0.52"
-            class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
-          >
-            x
-          </text>
-          <text
-            [attr.x]="width() * 0.12"
-            [attr.y]="height() * 0.42"
-            class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
-          >
-            t
-          </text>
+          @for (anchor of axisAnchors(); track anchor.id) {
+            <polyline
+              [attr.points]="arrowPoints(anchor)"
+              class="fill-none stroke-ink"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              opacity="0.65"
+            />
+            <text
+              [attr.x]="anchor.x"
+              [attr.y]="anchor.y"
+              [attr.text-anchor]="textAnchor(anchor)"
+              [attr.dominant-baseline]="textBaseline(anchor)"
+              class="fill-ink font-mono text-[11px] tracking-wider opacity-65"
+            >
+              {{ anchor.label }}
+            </text>
+          }
         </svg>
       }
       <button
@@ -125,12 +108,16 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
   readonly width = input(720);
   readonly height = input(520);
 
+  protected readonly axisAnchors = signal<AxisLabelAnchor[]>([]);
+
   private renderer: CurvedSurfaceRenderer | null = null;
 
   constructor() {
     afterNextRender(() => {
       const canvas = this.canvasRef().nativeElement;
       this.renderer = new CurvedSurfaceRenderer(canvas);
+      this.renderer.onAxisLabelsUpdated = (anchors) =>
+        this.axisAnchors.set(anchors);
       this.renderer.resize(this.width(), this.height());
       this.renderer.setThemeColors(readThemeColors());
       this.renderer.update({
@@ -182,6 +169,22 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.renderer?.dispose();
     this.renderer = null;
+  }
+
+  protected arrowPoints(anchor: AxisLabelAnchor): string {
+    return axisArrowPoints(anchor);
+  }
+
+  protected textAnchor(anchor: AxisLabelAnchor): 'start' | 'middle' | 'end' {
+    if (anchor.dirX > 0.35) return 'start';
+    if (anchor.dirX < -0.35) return 'end';
+    return 'middle';
+  }
+
+  protected textBaseline(anchor: AxisLabelAnchor): 'auto' | 'middle' | 'hanging' {
+    if (anchor.dirY > 0.35) return 'hanging';
+    if (anchor.dirY < -0.35) return 'auto';
+    return 'middle';
   }
 
   protected resetCamera(event: MouseEvent): void {

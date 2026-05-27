@@ -1,6 +1,7 @@
 import type { Step } from '@lm/engine';
 
 const BEAT_PAUSE_MS = 6500;
+const ORBIT_END_PHASE2 = (3 * Math.PI) / 2;
 
 export const STEP_02_MICHELSON_MORLEY: Step = {
   id: 'michelson-morley',
@@ -10,17 +11,64 @@ export const STEP_02_MICHELSON_MORLEY: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'Michelson and Morley split a beam of light into two paths — one along Earth\'s motion through the ether, one across it — then recombined them. If Earth ploughs through a stationary ether, the two arms should take **different times**.',
+      text: 'Imagine the ether as a stationary sea filling all of space. When we share its rest frame, we feel nothing — no wind, no resistance.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
-      text: 'Different times mean **interference fringes** — bright and dark bands where the waves add or cancel. Shift the apparatus and the fringes should slide. That was the expected signal.',
+      text: 'Move forward through the ether and the medium pushes back. Everywhere you look, the wind points **against** your motion — a headwind you can never outrun.',
+      pauseAfter: 0,
+    },
+    {
+      type: 'animate',
+      target: 'ether.frameSpeed',
+      from: 0,
+      to: 0.4,
+      duration: 3.5,
+      easing: 'ease-out',
+    },
+    {
+      type: 'narrate',
+      text: 'Follow a circular path and the wind keeps changing direction — but it always blows **against** how you are moving right now.',
+      pauseAfter: 0,
+    },
+    {
+      type: 'animate',
+      target: 'ether.orbitAngle',
+      from: 0,
+      to: ORBIT_END_PHASE2,
+      duration: 4,
+      easing: 'linear',
+    },
+    {
+      type: 'animate',
+      target: 'ether.dragScene',
+      from: 0,
+      to: 1,
+      duration: 5,
+      easing: 'linear',
+    },
+    {
+      type: 'narrate',
+      text: 'The ether picture says light should inherit your speed — each flash dragged forward along with you, leaning into the direction you traveled.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
-      text: 'They saw **nothing**. Rotate the table, repeat at different seasons — the fringes stayed put. No ether wind. No detectable motion through any medium at all.',
+      text: 'Michelson and Morley looked for that ether wind in Earth\'s orbit. At different seasons, our motion through the ether should favor one direction over another — the interference pattern should **shift**.',
+      pauseAfter: 0,
+    },
+    {
+      type: 'animate',
+      target: 'ether.earthOrbitIndex',
+      from: 0,
+      to: 3,
+      duration: 5,
+      easing: 'linear',
+    },
+    {
+      type: 'narrate',
+      text: 'They saw **nothing**. Repeat at every season — the pattern stayed put. No ether wind. No detectable motion through any medium at all.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

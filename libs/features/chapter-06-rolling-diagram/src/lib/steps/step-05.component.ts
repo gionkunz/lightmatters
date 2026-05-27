@@ -83,6 +83,7 @@ import { STEP_05_APPLE } from './step-05-apple';
               [trailSpan]="1"
               [showAppleTree]="true"
               [showProjectedTree]="showProjectedTree()"
+              [showAxisLabels]="true"
               worldlineMode="apple-fall"
             />
               </lm-diagram-viewport>
@@ -103,9 +104,9 @@ export class Step05Component implements OnInit, OnDestroy {
   protected readonly unfold = signal(0);
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
-  /** Second tree copy appears once the first narrate beat has finished. */
+  /** Second tree copy appears from the second narrate checkpoint onward. */
   protected readonly showProjectedTree = computed(
-    () => this.runner.completedNarrateTexts().length >= 1,
+    () => this.runner.activeCheckpointIndex() >= 1,
   );
 
   constructor() {

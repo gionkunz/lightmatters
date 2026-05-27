@@ -87,7 +87,7 @@ Aberration ("rain on the windshield") and Doppler shift live in Chapter 5, not h
 A short detour with high payoff: dismantle the medium intuition, then show what light actually does.
 
 - **Step 1 — The ether.** Sound needs air; people assumed light needed an invisible "luminiferous ether." Narration-led; the old picture stated plainly.
-- **Step 2 — Michelson–Morley.** Split-beam thought experiment schematic; expected fringe shift vs null result. No detectable ether wind.
+- **Step 2 — Ether wind and Michelson–Morley.** Animated ether vector field: at rest (dots), moving (headwind arrows), circular motion, ether-dragged light prediction, then Earth's orbital null result (expected fringe shift vs nothing observed). No apparatus schematic.
 - **Step 3 — Light at rest.** Back on `lm-light-scene`: stationary source, one pulse expanding at $c$ — baseline before the pivot.
 - **Step 4 — Moving source.** Source moving at $0.4\,c$ when it flashes; pulse circle anchored at the **birth point**, still expanding at $c$. Light does not inherit source velocity. FactLines track source position vs fixed emission origin.
 - **Step 5 — Outro.** Self-propagating EM wave; $c$ invariant for everyone; bridge to Chapter 5 Doppler.
@@ -114,7 +114,7 @@ Physics helpers: `buildPeriodicEmissions`, `pulseArrivalSceneTimes`, `meanPulseI
 
 The cone visualization from Epstein, brought to life. Returns to the Epstein spacetime diagram and introduces WebGL (`lm-curved-surface`).
 
-- **Step 1 — A point in time.** Flat `time-only` diagram recap: a body at rest in space moves only through time.
+- **Step 1 — A point in time.** Unrolled cylinder with **Space** / **time** axes; a body at rest moves along the time axis, then the sheet **rolls into a tube** (reverse of unroll).
 - **Step 2 — Roll the paper.** Fold the diagram into a **cylinder**; the dot orbits the surface leaving a **fading trail**.
 - **Step 3 — Bend into a cone.** Morph cylinder → cone; wide end = strong gravity, point = weak gravity.
 - **Step 4 — Gravity as geometry.** A straight geodesic on the cone curves spatially when unrolled.
