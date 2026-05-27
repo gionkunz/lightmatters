@@ -2,30 +2,29 @@ import {
   Component,
   computed,
   HostListener,
-  inject,
   OnDestroy,
   OnInit,
-  signal,
+  signal
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  TargetRegistry,
-  TimelineRunner,
+  LmDiagramViewportComponent,
+    TargetRegistry,
+  TimelineRunner
 } from '@lm/engine';
 import {
   LmFactLineComponent,
   LmKickerComponent,
   LmLegendComponent,
-  LmSliderComponent,
+  LmSliderComponent
 } from '@lm/design';
 import { travellerReadout } from '@lm/physics';
 import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
 import {
   CHAPTER_02_TITLE,
   CHAPTER_02_TOTAL_STEPS,
-  hasNextStep,
+  hasNextStep
 } from '../step-registry';
 import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
 
@@ -33,7 +32,8 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
   selector: 'lm-step-02',
   imports: [
     LmStepFrameComponent,
-    LmNarratorChatFeedComponent,
+    LmDiagramViewportComponent,
+        LmNarratorChatFeedComponent,
     LmSpacetimeDiagramComponent,
     LmSliderComponent,
     LmFactLineComponent,
@@ -44,9 +44,12 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
     <lm-step-frame
       [chapter]="2"
       [chapterTitle]="chapterTitle"
+      [stepTitle]="step.title"
       [step]="2"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(2)"
+      [prevStepUrl]="'/ch/02/step/1'"
+      [nextStepUrl]="'/ch/02/step/3'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -57,8 +60,6 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
       [playbackPaused]="runner.isPaused()"
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
-      (back)="goPrevStep()"
-      (next)="goNextStep()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -77,7 +78,7 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
           />
 
           <div
-            class="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 border-t border-ink-faint pt-[22px]"
+            class="mt-6 shrink-0 grid grid-cols-2 gap-x-6 gap-y-2 border-t border-ink-faint pt-[22px]"
           >
             <lm-fact-line
               label="traveller A"
@@ -94,9 +95,9 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
           </div>
         </div>
 
-        <div class="flex flex-col">
+        <div class="flex min-h-0 flex-col">
           <div
-            class="flex flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px] transition-colors duration-400"
+            class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px] transition-colors duration-400"
           >
             <div
               class="mb-3.5 flex items-baseline justify-between gap-4"
@@ -107,18 +108,20 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
                 <lm-legend color="accent-2" label="B" />
               </div>
             </div>
-            <div class="flex flex-1 items-center justify-center">
-              <lm-spacetime-diagram
-                variant="pair"
-                [velocityA]="velocityA()"
-                [velocityB]="velocityB()"
-                [budgetArc]="true"
-                [width]="560"
-                [height]="460"
-                [showDot]="false"
-                [showTipLabel]="true"
-                [tipProperYears]="1"
-              />
+            <div class="flex min-h-0 flex-1 items-center justify-center">
+              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 460">
+                <lm-spacetime-diagram
+                [width]="diagramVp.size().width"
+                [height]="diagramVp.size().height"
+                  variant="pair"
+                  [velocityA]="velocityA()"
+                  [velocityB]="velocityB()"
+                  [budgetArc]="true"
+                  [showDot]="false"
+                  [showTipLabel]="true"
+                  [tipProperYears]="1"
+                />
+              </lm-diagram-viewport>
             </div>
           </div>
 
@@ -140,10 +143,9 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
         </div>
       </div>
     </lm-step-frame>
-  `,
+  `
 })
 export class Step02Component implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_02_TWO_TRAVELLERS;
@@ -165,13 +167,12 @@ export class Step02Component implements OnInit, OnDestroy {
     this.registry.register('diagram.velocityA', {
       get: () => this.velocityA(),
       set: (v) => this.velocityA.set(v),
-      initial: 0.01,
-    });
+      initial: 0.01});
     this.registry.register('diagram.velocityB', {
       get: () => this.velocityB(),
       set: (v) => this.velocityB.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -212,11 +213,4 @@ export class Step02Component implements OnInit, OnDestroy {
     }
   }
 
-  protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/02/step/1');
-  }
-
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/02/step/3');
-  }
 }

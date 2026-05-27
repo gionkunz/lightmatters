@@ -1,29 +1,28 @@
 import {
   Component,
   HostListener,
-  inject,
   OnDestroy,
   OnInit,
-  signal,
+  signal
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  TargetRegistry,
-  TimelineRunner,
+  LmDiagramViewportComponent,
+    TargetRegistry,
+  TimelineRunner
 } from '@lm/engine';
 import { LmFactLineComponent, LmKickerComponent } from '@lm/design';
 import {
   LmLightSceneComponent,
   type LightSceneObserver,
   type LightSceneReception,
-  type LightSceneSource,
+  type LightSceneSource
 } from '@lm/light-scene';
 import {
   CHAPTER_03_TITLE,
   CHAPTER_03_TOTAL_STEPS,
-  hasNextStep,
+  hasNextStep
 } from '../step-registry';
 import { STEP_02_TWO_LISTENERS } from './step-02-two-listeners';
 
@@ -31,7 +30,8 @@ import { STEP_02_TWO_LISTENERS } from './step-02-two-listeners';
   selector: 'lm-ch3-step-02',
   imports: [
     LmStepFrameComponent,
-    LmNarratorChatFeedComponent,
+    LmDiagramViewportComponent,
+        LmNarratorChatFeedComponent,
     LmLightSceneComponent,
     LmFactLineComponent,
     LmKickerComponent,
@@ -40,9 +40,12 @@ import { STEP_02_TWO_LISTENERS } from './step-02-two-listeners';
     <lm-step-frame
       [chapter]="3"
       [chapterTitle]="chapterTitle"
+      [stepTitle]="step.title"
       [step]="2"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(2)"
+      [prevStepUrl]="'/ch/03/step/1'"
+      [nextStepUrl]="'/ch/03/step/3'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -53,8 +56,6 @@ import { STEP_02_TWO_LISTENERS } from './step-02-two-listeners';
       [playbackPaused]="runner.isPaused()"
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
-      (back)="goPrevStep()"
-      (next)="goNextStep()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -73,23 +74,25 @@ import { STEP_02_TWO_LISTENERS } from './step-02-two-listeners';
           />
         </div>
 
-        <div class="flex flex-col">
+        <div class="flex min-h-0 flex-col">
           <div
-            class="flex flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]"
+            class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]"
           >
             <div class="mb-3.5 flex items-baseline justify-between gap-4">
-              <lm-kicker [opacity]="0.55">two listeners · symmetric</lm-kicker>
+              <lm-kicker [opacity]="0.55">two observers · symmetric</lm-kicker>
             </div>
-            <div class="flex flex-1 items-center justify-center">
-              <lm-light-scene
+            <div class="flex min-h-0 flex-1 items-center justify-center">
+              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
+                <lm-light-scene
+                [width]="diagramVp.size().width"
+                [height]="diagramVp.size().height"
                 [time]="time()"
                 [extent]="0.95"
                 [observers]="observers"
                 [sources]="sources"
-                [width]="560"
-                [height]="380"
                 (reception)="onReception($event)"
               />
+              </lm-diagram-viewport>
             </div>
           </div>
 
@@ -110,10 +113,9 @@ import { STEP_02_TWO_LISTENERS } from './step-02-two-listeners';
         </div>
       </div>
     </lm-step-frame>
-  `,
+  `
 })
 export class Step02Component implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_02_TWO_LISTENERS;
@@ -151,8 +153,8 @@ export class Step02Component implements OnInit, OnDestroy {
     this.registry.register('scene.time', {
       get: () => this.time(),
       set: (v) => this.time.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -175,12 +177,5 @@ export class Step02Component implements OnInit, OnDestroy {
     else if (this.runner.waitingForUser()) this.runner.advance();
     else if (this.runner.playbackActive()) this.runner.pause();
     else if (!this.runner.isComplete()) this.runner.goToNextCheckpoint();
-  }
-
-  protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/03/step/1');
-  }
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/03/step/3');
   }
 }

@@ -15,7 +15,7 @@ export const STEP_05_APPLE: Step = {
     },
     {
       type: 'narrate',
-      text: 'Project the same tree further around the cone — the same shape, but farther along **proper time**. An apple hangs on the first tree.',
+      text: 'Project the **same tree** further around the cone — the same shape, but farther along **proper time**. Not a second tree: one tree, two moments.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -28,7 +28,7 @@ export const STEP_05_APPLE: Step = {
     },
     {
       type: 'narrate',
-      text: 'Release the apple. Its worldline is a **geodesic** — curving across the cone when rolled up. It lands on the floor of the **same tree**, projected forward along proper time.',
+      text: 'Release the apple. Its worldline is a **geodesic**, curving across the cone when rolled up. It lands at the foot of that **same tree**, projected forward in proper time.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

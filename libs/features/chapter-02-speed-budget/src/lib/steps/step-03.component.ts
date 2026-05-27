@@ -2,35 +2,34 @@ import {
   Component,
   computed,
   HostListener,
-  inject,
   OnDestroy,
   OnInit,
-  signal,
+  signal
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  TargetRegistry,
-  TimelineRunner,
+  LmDiagramViewportComponent,
+    TargetRegistry,
+  TimelineRunner
 } from '@lm/engine';
 import {
   LmFactLineComponent,
   LmKickerComponent,
-  LmLegendComponent,
+  LmLegendComponent
 } from '@lm/design';
 import {
   observerProperTimeAtCoordinate,
   signalClockLabel,
   STEP3_BRIDGE_LAYOUT,
   STEP3_BRIDGE_MAX_TIME,
-  STEP3_BRIDGE_TIME_AT_A,
+  STEP3_BRIDGE_TIME_AT_A
 } from '@lm/physics';
 import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
 import {
   CHAPTER_02_TITLE,
   CHAPTER_02_TOTAL_STEPS,
-  hasNextStep,
+  hasNextStep
 } from '../step-registry';
 import { STEP_03_BRIDGE_TO_LIGHT } from './step-03-bridge-to-light';
 
@@ -38,7 +37,8 @@ import { STEP_03_BRIDGE_TO_LIGHT } from './step-03-bridge-to-light';
   selector: 'lm-step-03',
   imports: [
     LmStepFrameComponent,
-    LmNarratorChatFeedComponent,
+    LmDiagramViewportComponent,
+        LmNarratorChatFeedComponent,
     LmSpacetimeDiagramComponent,
     LmFactLineComponent,
     LmLegendComponent,
@@ -48,10 +48,13 @@ import { STEP_03_BRIDGE_TO_LIGHT } from './step-03-bridge-to-light';
     <lm-step-frame
       [chapter]="2"
       [chapterTitle]="chapterTitle"
+      [stepTitle]="step.title"
       [step]="3"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="true"
       [nextChapter]="true"
+      [prevStepUrl]="'/ch/02/step/2'"
+      [nextStepUrl]="'/ch/03/step/1'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -62,8 +65,6 @@ import { STEP_03_BRIDGE_TO_LIGHT } from './step-03-bridge-to-light';
       [playbackPaused]="runner.isPaused()"
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
-      (back)="goPrevStep()"
-      (next)="goNextChapter()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -82,9 +83,9 @@ import { STEP_03_BRIDGE_TO_LIGHT } from './step-03-bridge-to-light';
           />
         </div>
 
-        <div class="flex flex-col">
+        <div class="flex min-h-0 flex-col">
           <div
-            class="flex flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px] transition-colors duration-400"
+            class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px] transition-colors duration-400"
           >
             <div class="mb-3.5 flex items-baseline justify-between gap-4">
               <lm-kicker [opacity]="0.55">light = pure spatial motion</lm-kicker>
@@ -93,8 +94,11 @@ import { STEP_03_BRIDGE_TO_LIGHT } from './step-03-bridge-to-light';
                 <lm-legend color="neutral" label="B" />
               </div>
             </div>
-            <div class="flex flex-1 items-center justify-center">
-              <lm-spacetime-diagram
+            <div class="flex min-h-0 flex-1 items-center justify-center">
+              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 460">
+                <lm-spacetime-diagram
+                [width]="diagramVp.size().width"
+                [height]="diagramVp.size().height"
                 variant="wavefront"
                 wavefrontSignal="ring"
                 [wavefrontShowObserverC]="false"
@@ -103,9 +107,8 @@ import { STEP_03_BRIDGE_TO_LIGHT } from './step-03-bridge-to-light';
                 [observerXB]="layout.xB"
                 [wavefrontTimeAtA]="timeAtA"
                 [wavefrontTMax]="timeMax"
-                [width]="560"
-                [height]="460"
               />
+              </lm-diagram-viewport>
             </div>
           </div>
 
@@ -122,10 +125,9 @@ import { STEP_03_BRIDGE_TO_LIGHT } from './step-03-bridge-to-light';
         </div>
       </div>
     </lm-step-frame>
-  `,
+  `
 })
 export class Step03Component implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_03_BRIDGE_TO_LIGHT;
@@ -153,8 +155,8 @@ export class Step03Component implements OnInit, OnDestroy {
     this.registry.register('wavefront.time', {
       get: () => this.wavefrontTime(),
       set: (v) => this.wavefrontTime.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -189,13 +191,6 @@ export class Step03Component implements OnInit, OnDestroy {
     }
   }
 
-  protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/02/step/2');
-  }
-
-  protected goNextChapter(): void {
-    void this.router.navigateByUrl('/ch/03/step/1');
-  }
 
   private clockAtRest(t: number, freezeAt: number): string {
     if (t <= 0) {

@@ -1,24 +1,23 @@
 import {
   Component,
   HostListener,
-  inject,
   OnDestroy,
   OnInit,
-  signal,
+  signal
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   LmNarratorComponent,
   LmStepFrameComponent,
-  TargetRegistry,
-  TimelineRunner,
+  LmDiagramViewportComponent,
+    TargetRegistry,
+  TimelineRunner
 } from '@lm/engine';
 import { LmSliderComponent } from '@lm/design';
 import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
 import {
   CHAPTER_02_TITLE,
   CHAPTER_02_TOTAL_STEPS,
-  hasNextStep,
+  hasNextStep
 } from '../step-registry';
 import { STEP_01_ALWAYS_AT_C } from './step-01-always-at-c';
 
@@ -26,7 +25,8 @@ import { STEP_01_ALWAYS_AT_C } from './step-01-always-at-c';
   selector: 'lm-step-01',
   imports: [
     LmStepFrameComponent,
-    LmNarratorComponent,
+    LmDiagramViewportComponent,
+        LmNarratorComponent,
     LmSpacetimeDiagramComponent,
     LmSliderComponent,
   ],
@@ -34,9 +34,12 @@ import { STEP_01_ALWAYS_AT_C } from './step-01-always-at-c';
     <lm-step-frame
       [chapter]="2"
       [chapterTitle]="chapterTitle"
+      [stepTitle]="step.title"
       [step]="1"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(1)"
+      [prevStepUrl]="'/ch/01/step/4'"
+      [nextStepUrl]="'/ch/02/step/2'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -47,8 +50,6 @@ import { STEP_01_ALWAYS_AT_C } from './step-01-always-at-c';
       [playbackPaused]="runner.isPaused()"
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
-      (back)="goPrevStep()"
-      (next)="goNextStep()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -64,15 +65,17 @@ import { STEP_01_ALWAYS_AT_C } from './step-01-always-at-c';
           [visibleCount]="runner.narrationVisibleCount()"
         />
 
-        <div class="flex items-center justify-center">
-          <lm-spacetime-diagram
+        <div class="flex min-h-0 flex-1 items-center justify-center">
+          <lm-diagram-viewport #diagramVp [aspectRatio]="680 / 460">
+            <lm-spacetime-diagram
+                [width]="diagramVp.size().width"
+                [height]="diagramVp.size().height"
             variant="single"
             [velocity]="velocity()"
             [budgetArc]="true"
             [showTipLabel]="true"
-            [width]="680"
-            [height]="460"
           />
+              </lm-diagram-viewport>
         </div>
 
         <div class="mx-auto w-full max-w-[520px]">
@@ -85,10 +88,9 @@ import { STEP_01_ALWAYS_AT_C } from './step-01-always-at-c';
         </div>
       </div>
     </lm-step-frame>
-  `,
+  `
 })
 export class Step01Component implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_01_ALWAYS_AT_C;
@@ -103,8 +105,8 @@ export class Step01Component implements OnInit, OnDestroy {
     this.registry.register('diagram.velocity', {
       get: () => this.velocity(),
       set: (v) => this.velocity.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -145,11 +147,4 @@ export class Step01Component implements OnInit, OnDestroy {
     }
   }
 
-  protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/01/step/4');
-  }
-
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/02/step/2');
-  }
 }

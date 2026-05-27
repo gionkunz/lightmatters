@@ -1,17 +1,16 @@
 import {
   Component,
   HostListener,
-  inject,
   OnDestroy,
   OnInit,
-  signal,
+  signal
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  TargetRegistry,
-  TimelineRunner,
+  LmDiagramViewportComponent,
+    TargetRegistry,
+  TimelineRunner
 } from '@lm/engine';
 import { LmFactLineComponent, LmKickerComponent } from '@lm/design';
 import { buildPeriodicEmissions } from '@lm/physics';
@@ -19,16 +18,16 @@ import {
   LmLightSceneComponent,
   type LightSceneObserver,
   type LightSceneReception,
-  type LightSceneSource,
+  type LightSceneSource
 } from '@lm/light-scene';
 import {
   CH5_OBSERVER_X,
-  CH5_PULSE_INTERVAL,
+  CH5_PULSE_INTERVAL
 } from '../pulse-train.constants';
 import {
   CHAPTER_05_TITLE,
   CHAPTER_05_TOTAL_STEPS,
-  hasNextStep,
+  hasNextStep
 } from '../step-registry';
 import { STEP_04_EXTREME_RECESSION } from './step-04-extreme-recession';
 
@@ -36,7 +35,8 @@ import { STEP_04_EXTREME_RECESSION } from './step-04-extreme-recession';
   selector: 'lm-ch5-step-04',
   imports: [
     LmStepFrameComponent,
-    LmNarratorChatFeedComponent,
+    LmDiagramViewportComponent,
+        LmNarratorChatFeedComponent,
     LmLightSceneComponent,
     LmFactLineComponent,
     LmKickerComponent,
@@ -45,9 +45,12 @@ import { STEP_04_EXTREME_RECESSION } from './step-04-extreme-recession';
     <lm-step-frame
       [chapter]="5"
       [chapterTitle]="chapterTitle"
+      [stepTitle]="step.title"
       [step]="4"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(4)"
+      [prevStepUrl]="'/ch/05/step/3'"
+      [nextStepUrl]="'/ch/05/step/5'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -58,8 +61,6 @@ import { STEP_04_EXTREME_RECESSION } from './step-04-extreme-recession';
       [playbackPaused]="runner.isPaused()"
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
-      (back)="goPrevStep()"
-      (next)="goNextStep()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -67,25 +68,29 @@ import { STEP_04_EXTREME_RECESSION } from './step-04-extreme-recession';
       (checkpointSeek)="runner.goToCheckpoint($event)"
     >
       <div class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]">
+        <div class="flex min-h-0 h-full min-w-0 flex-col overflow-hidden">
         <lm-narrator-chat-feed
           [kicker]="step.kicker"
           [pastBeats]="runner.completedNarrateTexts()"
           [currentText]="runner.narrationText()"
           [visibleCount]="runner.narrationVisibleCount()"
         />
-        <div class="flex flex-col">
-          <div class="flex flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]">
+        </div>
+        <div class="flex min-h-0 flex-col">
+          <div class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]">
             <lm-kicker [opacity]="0.55" class="mb-3.5">S receding at 0.9 c · clock nearly frozen</lm-kicker>
-            <div class="flex flex-1 items-center justify-center">
-              <lm-light-scene
+            <div class="flex min-h-0 flex-1 items-center justify-center">
+              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
+                <lm-light-scene
+                [width]="diagramVp.size().width"
+                [height]="diagramVp.size().height"
                 [time]="time()"
                 [extent]="1.8"
                 [observers]="observers"
                 [sources]="sources"
-                [width]="560"
-                [height]="380"
                 (reception)="onReception($event)"
               />
+              </lm-diagram-viewport>
             </div>
           </div>
           <div class="mt-[22px] grid grid-cols-2 gap-x-6 gap-y-2 border-t border-ink-faint pt-[22px]">
@@ -95,10 +100,9 @@ import { STEP_04_EXTREME_RECESSION } from './step-04-extreme-recession';
         </div>
       </div>
     </lm-step-frame>
-  `,
+  `
 })
 export class Step04Component implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_04_EXTREME_RECESSION;
@@ -116,8 +120,8 @@ export class Step04Component implements OnInit, OnDestroy {
       y: 0,
       label: 'S',
       velocity: { x: 0.9, y: 0 },
-      emissions: buildPeriodicEmissions(8, CH5_PULSE_INTERVAL),
-    },
+      emissions: buildPeriodicEmissions(8, CH5_PULSE_INTERVAL)
+},
   ];
 
   protected readonly time = signal(0);
@@ -132,8 +136,8 @@ export class Step04Component implements OnInit, OnDestroy {
     this.registry.register('scene.time', {
       get: () => this.time(),
       set: (v) => this.time.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -169,12 +173,5 @@ export class Step04Component implements OnInit, OnDestroy {
     else if (this.runner.waitingForUser()) this.runner.advance();
     else if (this.runner.playbackActive()) this.runner.pause();
     else if (!this.runner.isComplete()) this.runner.goToNextCheckpoint();
-  }
-
-  protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/05/step/3');
-  }
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/05/step/5');
   }
 }

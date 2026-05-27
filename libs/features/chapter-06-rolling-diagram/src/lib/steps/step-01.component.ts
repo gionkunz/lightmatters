@@ -1,23 +1,22 @@
 import {
   Component,
   HostListener,
-  inject,
   OnDestroy,
   OnInit,
-  signal,
+  signal
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  TargetRegistry,
-  TimelineRunner,
+  LmDiagramViewportComponent,
+    TargetRegistry,
+  TimelineRunner
 } from '@lm/engine';
 import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
 import {
   CHAPTER_06_TITLE,
   CHAPTER_06_TOTAL_STEPS,
-  hasNextStep,
+  hasNextStep
 } from '../step-registry';
 import { STEP_01_TIME_ONLY } from './step-01-time-only';
 
@@ -25,16 +24,20 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
   selector: 'lm-ch6-step-01',
   imports: [
     LmStepFrameComponent,
-    LmNarratorChatFeedComponent,
+    LmDiagramViewportComponent,
+        LmNarratorChatFeedComponent,
     LmSpacetimeDiagramComponent,
   ],
   template: `
     <lm-step-frame
       [chapter]="6"
       [chapterTitle]="chapterTitle"
+      [stepTitle]="step.title"
       [step]="1"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(1)"
+      [prevStepUrl]="'/ch/05/step/5'"
+      [nextStepUrl]="'/ch/06/step/2'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -45,8 +48,6 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
       [playbackPaused]="runner.isPaused()"
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
-      (back)="goPrevChapter()"
-      (next)="goNextStep()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -54,28 +55,31 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
       (checkpointSeek)="runner.goToCheckpoint($event)"
     >
       <div class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]">
+        <div class="flex min-h-0 h-full min-w-0 flex-col overflow-hidden">
         <lm-narrator-chat-feed
           [kicker]="step.kicker"
           [pastBeats]="runner.completedNarrateTexts()"
           [currentText]="runner.narrationText()"
           [visibleCount]="runner.narrationVisibleCount()"
         />
-        <div class="flex items-center justify-center bg-paper-alt px-[26px] py-[22px]">
-          <lm-spacetime-diagram
+        </div>
+        <div class="flex min-h-0 flex-1 items-center justify-center bg-paper-alt px-[26px] py-[22px]">
+          <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
+            <lm-spacetime-diagram
+                [width]="diagramVp.size().width"
+                [height]="diagramVp.size().height"
             variant="full"
             [position]="0"
             [time]="time()"
             [showLightCone]="false"
-            [width]="560"
-            [height]="380"
           />
+              </lm-diagram-viewport>
         </div>
       </div>
     </lm-step-frame>
-  `,
+  `
 })
 export class Step01Component implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_01_TIME_ONLY;
@@ -90,8 +94,8 @@ export class Step01Component implements OnInit, OnDestroy {
     this.registry.register('diagram.time', {
       get: () => this.time(),
       set: (v) => this.time.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -117,11 +121,4 @@ export class Step01Component implements OnInit, OnDestroy {
     else if (!this.runner.isComplete()) this.runner.goToNextCheckpoint();
   }
 
-  protected goPrevChapter(): void {
-    void this.router.navigateByUrl('/ch/05/step/5');
-  }
-
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/06/step/2');
-  }
 }

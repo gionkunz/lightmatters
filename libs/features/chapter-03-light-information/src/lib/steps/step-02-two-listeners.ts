@@ -4,18 +4,18 @@ const BEAT_PAUSE_MS = 6500;
 
 export const STEP_02_TWO_LISTENERS: Step = {
   id: 'two-listeners',
-  title: 'Two listeners',
-  kicker: 'two listeners',
+  title: 'Two observers',
+  kicker: 'two observers',
   layout: 'chat-feed',
   timeline: [
     {
       type: 'narrate',
-      text: 'Same source, two listeners. $A$ sits to the left and $B$ to the right — equally far from $S$.',
+      text: 'Same source, two observers. $A$ sits to the left and $B$ to the right — equally far from $S$.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
-      text: 'When does each of them hear the flash?',
+      text: 'When does each of them see the flash?',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

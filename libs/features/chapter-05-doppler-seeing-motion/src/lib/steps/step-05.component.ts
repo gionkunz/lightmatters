@@ -1,32 +1,31 @@
 import {
   Component,
   HostListener,
-  inject,
   OnDestroy,
-  OnInit,
+  OnInit
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  TargetRegistry,
-  TimelineRunner,
+  LmDiagramViewportComponent,
+    TargetRegistry,
+  TimelineRunner
 } from '@lm/engine';
 import { LmKickerComponent } from '@lm/design';
 import { buildPeriodicEmissions } from '@lm/physics';
 import {
   LmLightSceneComponent,
   type LightSceneObserver,
-  type LightSceneSource,
+  type LightSceneSource
 } from '@lm/light-scene';
 import {
   CH5_OBSERVER_X,
-  CH5_PULSE_INTERVAL,
+  CH5_PULSE_INTERVAL
 } from '../pulse-train.constants';
 import {
   CHAPTER_05_TITLE,
   CHAPTER_05_TOTAL_STEPS,
-  hasNextStep,
+  hasNextStep
 } from '../step-registry';
 import { STEP_05_OUTRO } from './step-05-outro';
 
@@ -34,7 +33,8 @@ import { STEP_05_OUTRO } from './step-05-outro';
   selector: 'lm-ch5-step-05',
   imports: [
     LmStepFrameComponent,
-    LmNarratorChatFeedComponent,
+    LmDiagramViewportComponent,
+        LmNarratorChatFeedComponent,
     LmLightSceneComponent,
     LmKickerComponent,
   ],
@@ -42,10 +42,13 @@ import { STEP_05_OUTRO } from './step-05-outro';
     <lm-step-frame
       [chapter]="5"
       [chapterTitle]="chapterTitle"
+      [stepTitle]="step.title"
       [step]="5"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="true"
       [nextChapter]="true"
+      [prevStepUrl]="'/ch/05/step/4'"
+      [nextStepUrl]="'/ch/06/step/1'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -56,8 +59,6 @@ import { STEP_05_OUTRO } from './step-05-outro';
       [playbackPaused]="runner.isPaused()"
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
-      (back)="goPrevStep()"
-      (next)="goNextChapter()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -65,31 +66,34 @@ import { STEP_05_OUTRO } from './step-05-outro';
       (checkpointSeek)="runner.goToCheckpoint($event)"
     >
       <div class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]">
+        <div class="flex min-h-0 h-full min-w-0 flex-col overflow-hidden">
         <lm-narrator-chat-feed
           [kicker]="step.kicker"
           [pastBeats]="runner.completedNarrateTexts()"
           [currentText]="runner.narrationText()"
           [visibleCount]="runner.narrationVisibleCount()"
         />
-        <div class="flex flex-col bg-paper-alt px-[26px] py-[22px]">
+        </div>
+        <div class="flex min-h-0 flex-col bg-paper-alt px-[26px] py-[22px]">
           <lm-kicker [opacity]="0.55" class="mb-3.5">wavefront spacing · observed rhythm</lm-kicker>
-          <div class="flex flex-1 items-center justify-center">
-            <lm-light-scene
+          <div class="flex min-h-0 flex-1 items-center justify-center">
+              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
+                <lm-light-scene
+                [width]="diagramVp.size().width"
+                [height]="diagramVp.size().height"
               [time]="2.5"
               [extent]="1.1"
               [observers]="observers"
               [sources]="sources"
-              [width]="560"
-              [height]="380"
             />
+              </lm-diagram-viewport>
           </div>
         </div>
       </div>
     </lm-step-frame>
-  `,
+  `
 })
 export class Step05Component implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_05_OUTRO;
@@ -107,8 +111,8 @@ export class Step05Component implements OnInit, OnDestroy {
       y: 0,
       label: 'S',
       velocity: { x: -0.5, y: 0 },
-      emissions: buildPeriodicEmissions(5, CH5_PULSE_INTERVAL),
-    },
+      emissions: buildPeriodicEmissions(5, CH5_PULSE_INTERVAL)
+},
   ];
 
   protected readonly runner: TimelineRunner;
@@ -137,12 +141,5 @@ export class Step05Component implements OnInit, OnDestroy {
     else if (this.runner.waitingForUser()) this.runner.advance();
     else if (this.runner.playbackActive()) this.runner.pause();
     else if (!this.runner.isComplete()) this.runner.goToNextCheckpoint();
-  }
-
-  protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/05/step/4');
-  }
-  protected goNextChapter(): void {
-    void this.router.navigateByUrl('/ch/06/step/1');
   }
 }

@@ -1,24 +1,23 @@
 import {
   Component,
   HostListener,
-  inject,
   OnDestroy,
   OnInit,
-  signal,
+  signal
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   LmNarratorComponent,
   LmStepFrameComponent,
-  TargetRegistry,
-  TimelineRunner,
+  LmDiagramViewportComponent,
+    TargetRegistry,
+  TimelineRunner
 } from '@lm/engine';
 import { LmSliderComponent } from '@lm/design';
 import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
 import {
   CHAPTER_01_TITLE,
   CHAPTER_01_TOTAL_STEPS,
-  hasNextStep,
+  hasNextStep
 } from '../step-registry';
 import { STEP_03_SPACETIME } from './step-03-spacetime';
 
@@ -26,7 +25,8 @@ import { STEP_03_SPACETIME } from './step-03-spacetime';
   selector: 'lm-step-03',
   imports: [
     LmStepFrameComponent,
-    LmNarratorComponent,
+    LmDiagramViewportComponent,
+        LmNarratorComponent,
     LmSpacetimeDiagramComponent,
     LmSliderComponent,
   ],
@@ -34,9 +34,12 @@ import { STEP_03_SPACETIME } from './step-03-spacetime';
     <lm-step-frame
       [chapter]="1"
       [chapterTitle]="chapterTitle"
+      [stepTitle]="step.title"
       [step]="3"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(3)"
+      [prevStepUrl]="'/ch/01/step/2'"
+      [nextStepUrl]="'/ch/01/step/4'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -47,8 +50,6 @@ import { STEP_03_SPACETIME } from './step-03-spacetime';
       [playbackPaused]="runner.isPaused()"
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
-      (back)="goPrevStep()"
-      (next)="goNextStep()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -64,14 +65,16 @@ import { STEP_03_SPACETIME } from './step-03-spacetime';
           [visibleCount]="runner.narrationVisibleCount()"
         />
 
-        <div class="flex items-center justify-center">
-          <lm-spacetime-diagram
+        <div class="flex min-h-0 flex-1 items-center justify-center">
+          <lm-diagram-viewport #diagramVp [aspectRatio]="680 / 460">
+            <lm-spacetime-diagram
+                [width]="diagramVp.size().width"
+                [height]="diagramVp.size().height"
             variant="full"
             [position]="position()"
             [time]="time()"
-            [width]="680"
-            [height]="460"
           />
+              </lm-diagram-viewport>
         </div>
 
         <div class="mx-auto flex w-full max-w-[520px] flex-col gap-4">
@@ -90,10 +93,9 @@ import { STEP_03_SPACETIME } from './step-03-spacetime';
         </div>
       </div>
     </lm-step-frame>
-  `,
+  `
 })
 export class Step03Component implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_03_SPACETIME;
@@ -109,13 +111,13 @@ export class Step03Component implements OnInit, OnDestroy {
     this.registry.register('diagram.position', {
       get: () => this.position(),
       set: (v) => this.position.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.registry.register('diagram.time', {
       get: () => this.time(),
       set: (v) => this.time.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -162,11 +164,4 @@ export class Step03Component implements OnInit, OnDestroy {
     }
   }
 
-  protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/01/step/2');
-  }
-
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/01/step/4');
-  }
 }

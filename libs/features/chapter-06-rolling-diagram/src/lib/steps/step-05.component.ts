@@ -1,24 +1,24 @@
 import {
   Component,
+  computed,
   HostListener,
-  inject,
   OnDestroy,
   OnInit,
-  signal,
+  signal
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  TargetRegistry,
-  TimelineRunner,
+  LmDiagramViewportComponent,
+    TargetRegistry,
+  TimelineRunner
 } from '@lm/engine';
 import { LmKickerComponent } from '@lm/design';
 import { LmCurvedSurfaceComponent } from '@lm/curved-surface';
 import {
   CHAPTER_06_TITLE,
   CHAPTER_06_TOTAL_STEPS,
-  hasNextStep,
+  hasNextStep
 } from '../step-registry';
 import { STEP_05_APPLE } from './step-05-apple';
 
@@ -26,7 +26,8 @@ import { STEP_05_APPLE } from './step-05-apple';
   selector: 'lm-ch6-step-05',
   imports: [
     LmStepFrameComponent,
-    LmNarratorChatFeedComponent,
+    LmDiagramViewportComponent,
+        LmNarratorChatFeedComponent,
     LmCurvedSurfaceComponent,
     LmKickerComponent,
   ],
@@ -34,10 +35,13 @@ import { STEP_05_APPLE } from './step-05-apple';
     <lm-step-frame
       [chapter]="6"
       [chapterTitle]="chapterTitle"
+      [stepTitle]="step.title"
       [step]="5"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="true"
       [nextChapter]="true"
+      [prevStepUrl]="'/ch/06/step/4'"
+      [nextStepUrl]="'/ch/07/step/1'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -48,8 +52,6 @@ import { STEP_05_APPLE } from './step-05-apple';
       [playbackPaused]="runner.isPaused()"
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
-      (back)="goPrevStep()"
-      (next)="goNextChapter()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -57,16 +59,21 @@ import { STEP_05_APPLE } from './step-05-apple';
       (checkpointSeek)="runner.goToCheckpoint($event)"
     >
       <div class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]">
+        <div class="flex min-h-0 h-full min-w-0 flex-col overflow-hidden">
         <lm-narrator-chat-feed
           [kicker]="step.kicker"
           [pastBeats]="runner.completedNarrateTexts()"
           [currentText]="runner.narrationText()"
           [visibleCount]="runner.narrationVisibleCount()"
         />
-        <div class="flex flex-col bg-paper-alt px-[26px] py-[22px]">
+        </div>
+        <div class="flex min-h-0 flex-col bg-paper-alt px-[26px] py-[22px]">
           <lm-kicker [opacity]="0.55" class="mb-3.5">the same fall</lm-kicker>
-          <div class="flex flex-1 items-center justify-center">
-            <lm-curved-surface
+          <div class="flex min-h-0 flex-1 items-center justify-center">
+              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
+                <lm-curved-surface
+                [width]="diagramVp.size().width"
+                [height]="diagramVp.size().height"
               [fold]="1"
               [curvature]="0.4"
               [time]="time()"
@@ -75,18 +82,17 @@ import { STEP_05_APPLE } from './step-05-apple';
               [trailLength]="120"
               [trailSpan]="1"
               [showAppleTree]="true"
+              [showProjectedTree]="showProjectedTree()"
               worldlineMode="apple-fall"
-              [width]="560"
-              [height]="380"
             />
+              </lm-diagram-viewport>
           </div>
         </div>
       </div>
     </lm-step-frame>
-  `,
+  `
 })
 export class Step05Component implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_05_APPLE;
@@ -97,18 +103,22 @@ export class Step05Component implements OnInit, OnDestroy {
   protected readonly unfold = signal(0);
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
+  /** Second tree copy appears once the first narrate beat has finished. */
+  protected readonly showProjectedTree = computed(
+    () => this.runner.completedNarrateTexts().length >= 1,
+  );
 
   constructor() {
     this.registry.register('surface.time', {
       get: () => this.time(),
       set: (v) => this.time.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.registry.register('surface.unfold', {
       get: () => this.unfold(),
       set: (v) => this.unfold.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -134,11 +144,4 @@ export class Step05Component implements OnInit, OnDestroy {
     else if (!this.runner.isComplete()) this.runner.goToNextCheckpoint();
   }
 
-  protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/06/step/4');
-  }
-
-  protected goNextChapter(): void {
-    void this.router.navigateByUrl('/ch/07/step/1');
-  }
 }

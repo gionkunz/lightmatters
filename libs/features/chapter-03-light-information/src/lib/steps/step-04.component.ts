@@ -3,34 +3,33 @@ import {
   computed,
   effect,
   HostListener,
-  inject,
   OnDestroy,
   OnInit,
-  signal,
+  signal
 } from '@angular/core';
-import { Router } from '@angular/router';
 import {
+  LmDiagramViewportComponent,
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
   TargetRegistry,
-  TimelineRunner,
+  TimelineRunner
 } from '@lm/engine';
 import {
   LmFactLineComponent,
   LmKickerComponent,
   LmPredictionChoiceComponent,
-  type PredictionOption,
+  type PredictionOption
 } from '@lm/design';
 import {
   LmLightSceneComponent,
   type LightSceneObserver,
   type LightSceneReception,
-  type LightSceneSource,
+  type LightSceneSource
 } from '@lm/light-scene';
 import {
   CHAPTER_03_TITLE,
   CHAPTER_03_TOTAL_STEPS,
-  hasNextStep,
+  hasNextStep
 } from '../step-registry';
 import { STEP_04_TWO_FLASHES_ONE_WITNESS } from './step-04-two-flashes-one-witness';
 
@@ -44,6 +43,7 @@ const ORDER_OPTIONS: PredictionOption[] = [
   selector: 'lm-ch3-step-04',
   imports: [
     LmStepFrameComponent,
+    LmDiagramViewportComponent,
     LmNarratorChatFeedComponent,
     LmLightSceneComponent,
     LmFactLineComponent,
@@ -54,9 +54,13 @@ const ORDER_OPTIONS: PredictionOption[] = [
     <lm-step-frame
       [chapter]="3"
       [chapterTitle]="chapterTitle"
+      [stepTitle]="step.title"
       [step]="4"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(4)"
+      [prevStepUrl]="'/ch/03/step/3'"
+      [nextStepUrl]="'/ch/03/step/5'"
+      [advanceDisabled]="!runner.allowsStepExit()"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -67,8 +71,6 @@ const ORDER_OPTIONS: PredictionOption[] = [
       [playbackPaused]="runner.isPaused()"
       [canGoPrevious]="runner.canGoToPreviousCheckpoint()"
       [canGoNext]="runner.canGoToNextCheckpoint()"
-      (back)="goPrevStep()"
-      (next)="goNextStep()"
       (goPrevious)="runner.goToPreviousCheckpoint()"
       (pauseRequested)="runner.pause()"
       (playRequested)="runner.resume()"
@@ -99,21 +101,23 @@ const ORDER_OPTIONS: PredictionOption[] = [
           }
         </div>
 
-        <div class="flex flex-col">
-          <div class="flex flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]">
+        <div class="flex min-h-0 flex-col">
+          <div class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]">
             <div class="mb-3.5 flex items-baseline justify-between gap-4">
               <lm-kicker [opacity]="0.55">{{ phaseKicker() }}</lm-kicker>
             </div>
-            <div class="flex flex-1 items-center justify-center">
-              <lm-light-scene
-                [time]="time()"
-                [extent]="0.95"
-                [observers]="observers()"
-                [sources]="sources"
-                [width]="560"
-                [height]="380"
-                (reception)="onReception($event)"
-              />
+            <div class="flex min-h-0 flex-1 items-center justify-center">
+              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
+                <lm-light-scene
+                  [time]="time()"
+                  [extent]="0.95"
+                  [observers]="observers()"
+                  [sources]="sources"
+                  [width]="diagramVp.size().width"
+                  [height]="diagramVp.size().height"
+                  (reception)="onReception($event)"
+                />
+              </lm-diagram-viewport>
             </div>
           </div>
 
@@ -134,10 +138,9 @@ const ORDER_OPTIONS: PredictionOption[] = [
         </div>
       </div>
     </lm-step-frame>
-  `,
+  `
 })
 export class Step04Component implements OnInit, OnDestroy {
-  private readonly router = inject(Router);
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_04_TWO_FLASHES_ONE_WITNESS;
@@ -152,15 +155,15 @@ export class Step04Component implements OnInit, OnDestroy {
       x: -0.5,
       y: 0,
       label: 'S_L',
-      emissions: [{ atTime: 0, pulseId: 'p-left' }],
-    },
+      emissions: [{ atTime: 0, pulseId: 'p-left' }]
+},
     {
       id: 's-right',
       x: 0.5,
       y: 0,
       label: 'S_R',
-      emissions: [{ atTime: 0, pulseId: 'p-right' }],
-    },
+      emissions: [{ atTime: 0, pulseId: 'p-right' }]
+},
   ];
 
   protected readonly time = signal(0);
@@ -169,22 +172,39 @@ export class Step04Component implements OnInit, OnDestroy {
   protected readonly rightArrived = signal<number | null>(null);
 
   /**
-   * Latched once segment 2 has actually started running.
-   *
-   * Why latch instead of deriving from `completedNarrateTexts().length` alone:
-   * the second animate event (which moves W rightward) only fires AFTER the
-   * "Let us run it again…" narrate beat completes. At that exact moment
-   * `scene.time` is still at the segment-1 endpoint (0.85). If we flipped phase
-   * the instant beat 5 finishes typing, the freshly-introduced moving observer
-   * would be evaluated against `scene.time = 0.85`, and its reception for
-   * `S_right` (which lands at t ≈ 0.39) would fire *immediately* — corrupting
-   * the FactLine before any animation plays.
-   *
-   * Latching on `scene.time < 0.05` ensures phase only flips once the second
-   * animate has reset time toward zero, so the moving observer's pulses
-   * expand from radius 0 in real time.
+   * Latched once segment 2's `scene.time` animate has reset near 0 (see effect).
+   * Cleared when checkpoint seek rewinds before the "run it again" beat so W
+   * and the prediction UI match the first run again.
    */
   private readonly hasEnteredMoving = signal(false);
+
+  /** True while the timeline is on (or paused at) the first exploration wait. */
+  protected readonly atPredictionPause = computed(() => {
+    const text = this.runner.narrationText();
+    const onPrompt =
+      text.includes('Predict') ||
+      (this.runner.waitingForUser() &&
+        this.runner.completedNarrateTexts().some((t) => t.includes('Predict')));
+    if (!onPrompt || text.includes('Let us run it again')) {
+      return false;
+    }
+    return this.runner.waitingForUser() || this.runner.atExplorationWait();
+  });
+
+  protected readonly inSecondSegment = computed(() => {
+    const text = this.runner.narrationText();
+    const past = this.runner.completedNarrateTexts();
+    return (
+      text.includes('Let us run it again') ||
+      text.includes('relativity of simultaneity') ||
+      text.includes('depends on who is moving') ||
+      past.some(
+        (t) =>
+          t.includes('Let us run it again') ||
+          t.includes('relativity of simultaneity'),
+      )
+    );
+  });
 
   protected readonly phase = computed<'still' | 'moving'>(() =>
     this.hasEnteredMoving() ? 'moving' : 'still',
@@ -203,16 +223,13 @@ export class Step04Component implements OnInit, OnDestroy {
             x: 0,
             y: 0,
             label: 'W',
-            velocity: { x: 0.3, y: 0 },
-          },
+            velocity: { x: 0.3, y: 0 }
+},
         ],
   );
 
   protected readonly showPrediction = computed(
-    () =>
-      this.runner.atExplorationWait() &&
-      this.runner.completedNarrateTexts().length >= 4 &&
-      this.phase() === 'still',
+    () => this.phase() === 'still' && this.atPredictionPause(),
   );
 
   protected phaseKicker(): string {
@@ -249,30 +266,31 @@ export class Step04Component implements OnInit, OnDestroy {
     this.registry.register('scene.time', {
       get: () => this.time(),
       set: (v) => this.time.set(v),
-      initial: 0,
-    });
+      initial: 0
+});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
 
     effect(() => {
       if (
-        this.runner.waitingForUser() &&
+        this.atPredictionPause() &&
         this.prediction() !== null &&
-        this.runner.atExplorationWait() &&
-        this.phase() === 'still' &&
-        this.runner.completedNarrateTexts().length >= 4
+        this.runner.waitingForUser()
       ) {
         this.runner.advance();
       }
     });
 
     effect(() => {
-      const completed = this.runner.completedNarrateTexts().length;
       const t = this.time();
-      // Beat 5 = "Let us run it again…" — once that is revealed AND the second
-      // animate has reset scene.time toward 0, we are truly in segment 2.
-      if (completed >= 5 && t < 0.05 && !this.hasEnteredMoving()) {
-        this.hasEnteredMoving.set(true);
+      if (this.inSecondSegment()) {
+        if (!this.hasEnteredMoving() && t < 0.05) {
+          this.hasEnteredMoving.set(true);
+          this.leftArrived.set(null);
+          this.rightArrived.set(null);
+        }
+      } else {
+        this.hasEnteredMoving.set(false);
       }
     });
   }
@@ -300,12 +318,5 @@ export class Step04Component implements OnInit, OnDestroy {
     } else if (!this.runner.isComplete()) {
       this.runner.goToNextCheckpoint();
     }
-  }
-
-  protected goPrevStep(): void {
-    void this.router.navigateByUrl('/ch/03/step/3');
-  }
-  protected goNextStep(): void {
-    void this.router.navigateByUrl('/ch/03/step/5');
   }
 }
