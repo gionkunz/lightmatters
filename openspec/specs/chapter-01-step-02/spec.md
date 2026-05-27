@@ -21,7 +21,7 @@ Chapter 1 Step 2 SHALL be authored as a step module exporting a `Step` object wi
 
 #### Scenario: Slider controls diagram point on time axis
 
-- **WHEN** the timeline reaches the exploration wait phase
+- **WHEN** the exploration phase begins (pre-exploration narrate event starts)
 - **AND** the user moves the time slider
 - **THEN** the point on the diagram moves vertically to match the slider value
 

@@ -81,6 +81,28 @@ import { readThemeColors } from './read-theme-colors';
           </text>
         </svg>
       }
+      <button
+        type="button"
+        class="absolute right-2 top-2 flex size-9 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-paper/90 text-ink opacity-70 transition hover:border-accent-1 hover:opacity-100 hover:shadow-[0_0_12px_var(--color-accent-1-glow)]"
+        aria-label="Reset view"
+        (click)="resetCamera($event)"
+      >
+        <svg
+          class="size-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+          <path d="M21 3v5h-5" />
+          <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+          <path d="M3 21v-5h5" />
+        </svg>
+      </button>
     </div>
   `,
 })
@@ -157,5 +179,10 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.renderer?.dispose();
     this.renderer = null;
+  }
+
+  protected resetCamera(event: MouseEvent): void {
+    event.stopPropagation();
+    this.renderer?.animateReset();
   }
 }

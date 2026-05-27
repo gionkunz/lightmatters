@@ -21,7 +21,7 @@ Chapter 1 Step 3 SHALL be authored as a step module exporting a `Step` object wi
 
 #### Scenario: Dual sliders control point in spacetime
 
-- **WHEN** the timeline reaches the exploration wait phase
+- **WHEN** the exploration phase begins (pre-exploration narrate event starts)
 - **AND** the user moves the position or time slider
 - **THEN** the point on the diagram moves to match both slider values
 - **AND** the worldline segment from the origin updates to the new point
@@ -54,3 +54,4 @@ Chapter 1 Step 3 SHALL navigate to `/ch/01/step/2` when the user clicks the foot
 
 - **WHEN** a user clicks the back control on Step 3
 - **THEN** the router navigates to `/ch/01/step/2`
+

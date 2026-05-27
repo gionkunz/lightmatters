@@ -56,6 +56,87 @@ describe('TimelineRunner', () => {
     await Promise.resolve();
     expect(runner.atCheckpointHold()).toBe(false);
     expect(runner.narrationText()).toBe('Explore.');
+    expect(runner.atExplorationWait()).toBe(true);
+    expect(runner.narrationVisibleCount()).toBe(1);
+  });
+
+  it('unlocks exploration controls when pre-exploration narrate starts', () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'narrate', text: 'Drag the slider.', speed: 10, pauseAfter: 5000 },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+
+    expect(runner.atExplorationWait()).toBe(true);
+    expect(runner.narrationVisibleCount()).toBe(1);
+    expect(runner.waitingForUser()).toBe(false);
+  });
+
+  it('unlocks exploration controls when pre-exploration animate starts', async () => {
+    const registry = new TargetRegistry();
+    let value = 0;
+    registry.register('diagram.position', {
+      get: () => value,
+      set: (v) => {
+        value = v;
+      },
+    });
+
+    const events: TimelineEvent[] = [
+      {
+        type: 'animate',
+        target: 'diagram.position',
+        from: 0,
+        to: 0.5,
+        duration: 0.05,
+      },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+
+    expect(runner.atExplorationWait()).toBe(true);
+    expect(runner.waitingForUser()).toBe(false);
+
+    jest.advanceTimersByTime(100);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(runner.waitingForUser()).toBe(true);
+  });
+
+  it('clears exploration flag after advance and re-arms for a second segment', async () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'narrate', text: 'First explore.', speed: 10, pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+      { type: 'narrate', text: 'Second explore.', speed: 10, pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+
+    jest.advanceTimersByTime(160);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(runner.waitingForUser()).toBe(true);
+    expect(runner.atExplorationWait()).toBe(true);
+
+    runner.advance();
+    await Promise.resolve();
+    expect(runner.waitingForUser()).toBe(false);
+    expect(runner.atExplorationWait()).toBe(true);
+    expect(runner.narrationText()).toBe('Second explore.');
+
+    jest.advanceTimersByTime(160);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(runner.atExplorationWait()).toBe(true);
+    expect(runner.waitingForUser()).toBe(true);
   });
 
   it('skips checkpoint hold before exploration userAdvance wait', async () => {

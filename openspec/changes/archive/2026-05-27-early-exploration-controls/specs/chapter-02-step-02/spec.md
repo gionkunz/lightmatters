@@ -1,9 +1,5 @@
-# chapter-02-step-02 Specification
+## MODIFIED Requirements
 
-## Purpose
-
-Chapter 2 Step 2 ("Two travellers"): twin-vector time dilation at half light speed with Lorentz-exact readouts and chat-feed layout.
-## Requirements
 ### Requirement: Chapter 2 Step 2 teaches twin-traveller time dilation
 
 Chapter 2 Step 2 SHALL be authored as a step module exporting a `Step` object with id `two-travellers`, layout `chat-feed`, a `pair`-variant spacetime diagram, two velocity sliders (Earth traveller A near rest, space traveller B), a chat-feed narrator, a reading mini-map of four `FactLine` readouts, and a timeline that narrates the one-year journey story then waits for user exploration.
@@ -43,14 +39,3 @@ Chapter 2 Step 2 SHALL be authored as a step module exporting a `Step` object wi
 - **AND** the user drags traveller B's slider
 - **THEN** traveller B's vector tilts to the arcsin-mapped angle for the slider value
 - **AND** the FactLine readouts update live using Lorentz-backed helpers
-
-### Requirement: Chapter 2 step registry includes Step 2
-
-The chapter 2 step registry SHALL register Step 2 at index 2 with component `Step02Component` and step module `STEP_02_TWO_TRAVELLERS`.
-
-#### Scenario: Step page resolves Step 2 from route
-
-- **WHEN** a user navigates to `/ch/02/step/2`
-- **THEN** the step page component renders `Step02Component`
-- **AND** Step 2's timeline starts with default parameter state (velocityA near 0, velocityB at 0 before animation)
-

@@ -404,6 +404,7 @@ export class TimelineRunner {
   }
 
   private beginNarrate(event: NarrateEvent): Promise<void> {
+    this.maybeEnableExplorationControls();
     this.narrationText.set(event.text);
     if (!this.narratePlayback) {
       this.narrationVisibleCount.set(0);
@@ -431,9 +432,6 @@ export class TimelineRunner {
     const count = this.narratePlayback.count;
     const totalUnits = narrateTextTypingUnits(event.text);
     if (count >= totalUnits) {
-      if (this.isPreExplorationEvent(this.index)) {
-        this.atExplorationWait.set(true);
-      }
       if (this.shouldHoldAfterEvent(this.index, event)) {
         this.startCheckpointHold();
       } else {
@@ -451,6 +449,7 @@ export class TimelineRunner {
   }
 
   private beginAnimate(event: AnimateEvent): Promise<void> {
+    this.maybeEnableExplorationControls();
     const target = this.registry.get(event.target);
     if (!target) {
       return Promise.resolve();
@@ -612,6 +611,12 @@ export class TimelineRunner {
   private isPreExplorationEvent(eventIndex: number): boolean {
     const next = this.events[eventIndex + 1];
     return next?.type === 'wait' && next.for === 'userAdvance';
+  }
+
+  private maybeEnableExplorationControls(): void {
+    if (this.isPreExplorationEvent(this.index)) {
+      this.atExplorationWait.set(true);
+    }
   }
 
   private shouldHoldAfterEvent(

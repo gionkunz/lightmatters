@@ -11,6 +11,11 @@ import {
 } from '@lm/physics';
 import * as THREE from 'three';
 import { readThemeColors, type Rgb, type ThemeColors } from './read-theme-colors';
+import {
+  applyOrbitOffset,
+  easeOutCubic,
+  ORBIT_SENSITIVITY,
+} from './camera-orbit';
 
 export interface CurvedSurfaceState {
   fold: number;
@@ -35,17 +40,36 @@ const CAMERA_TARGET = new THREE.Vector3(0, 0, 0);
 const CAMERA_TARGET_UNROLLED = new THREE.Vector3(0, 0.2, 0);
 
 const _vTarget = new THREE.Vector3();
+const _baseCameraPos = new THREE.Vector3();
+
+function computeAuthoredCamera(
+  fold: number,
+  unfold: number,
+  outPosition: THREE.Vector3,
+  outTarget: THREE.Vector3,
+): void {
+  outPosition.lerpVectors(CAMERA_FLAT, CAMERA_CYLINDER, fold);
+  if (unfold > 0) {
+    outPosition.lerp(CAMERA_UNROLLED, unfold);
+  }
+  outTarget.lerpVectors(CAMERA_TARGET, CAMERA_TARGET_UNROLLED, unfold);
+}
 
 function updateCamera(
   camera: THREE.PerspectiveCamera,
   fold: number,
   unfold: number,
+  azimuthDelta = 0,
+  elevationDelta = 0,
 ): void {
-  camera.position.lerpVectors(CAMERA_FLAT, CAMERA_CYLINDER, fold);
-  if (unfold > 0) {
-    camera.position.lerp(CAMERA_UNROLLED, unfold);
-  }
-  _vTarget.lerpVectors(CAMERA_TARGET, CAMERA_TARGET_UNROLLED, unfold);
+  computeAuthoredCamera(fold, unfold, _baseCameraPos, _vTarget);
+  const orbited = applyOrbitOffset(
+    _vTarget,
+    _baseCameraPos,
+    azimuthDelta,
+    elevationDelta,
+  );
+  camera.position.set(orbited.x, orbited.y, orbited.z);
   camera.lookAt(_vTarget);
 }
 
@@ -568,6 +592,44 @@ export class CurvedSurfaceRenderer {
   private readonly dotMesh: THREE.Mesh;
   private colors: ThemeColors = readThemeColors();
   private readonly params: CurvedSurfaceParams = DEFAULT_CURVED_SURFACE_PARAMS;
+  private orbitAzimuth = 0;
+  private orbitElevation = 0;
+  private dragging = false;
+  private lastPointerX = 0;
+  private lastPointerY = 0;
+  private resetRafId: number | null = null;
+  private readonly onPointerDown = (event: PointerEvent): void => {
+    if (event.button !== 0) {
+      return;
+    }
+    this.dragging = true;
+    this.lastPointerX = event.clientX;
+    this.lastPointerY = event.clientY;
+    this.canvas.setPointerCapture(event.pointerId);
+  };
+  private readonly onPointerMove = (event: PointerEvent): void => {
+    if (!this.dragging) {
+      return;
+    }
+    const dx = event.clientX - this.lastPointerX;
+    const dy = event.clientY - this.lastPointerY;
+    this.lastPointerX = event.clientX;
+    this.lastPointerY = event.clientY;
+    this.orbitAzimuth += dx * ORBIT_SENSITIVITY;
+    this.orbitElevation -= dy * ORBIT_SENSITIVITY;
+    this.applyCamera();
+    this.render();
+  };
+  private readonly onPointerUp = (event: PointerEvent): void => {
+    if (!this.dragging) {
+      return;
+    }
+    this.dragging = false;
+    if (this.canvas.hasPointerCapture(event.pointerId)) {
+      this.canvas.releasePointerCapture(event.pointerId);
+    }
+    this.syncGeometry();
+  };
   state: CurvedSurfaceState = {
     fold: 1,
     curvature: 0,
@@ -638,6 +700,60 @@ export class CurvedSurfaceRenderer {
 
     this.syncGeometry();
     this.render();
+    this.bindPointerHandlers();
+  }
+
+  animateReset(durationMs = 400): void {
+    this.cancelDrag();
+    if (this.resetRafId !== null) {
+      cancelAnimationFrame(this.resetRafId);
+      this.resetRafId = null;
+    }
+
+    const startAz = this.orbitAzimuth;
+    const startEl = this.orbitElevation;
+    if (startAz === 0 && startEl === 0) {
+      return;
+    }
+
+    const startWall = performance.now();
+    const step = (now: number) => {
+      const t = easeOutCubic(Math.min(1, (now - startWall) / durationMs));
+      this.orbitAzimuth = startAz * (1 - t);
+      this.orbitElevation = startEl * (1 - t);
+      this.applyCamera();
+      this.render();
+      if (t < 1) {
+        this.resetRafId = requestAnimationFrame(step);
+      } else {
+        this.orbitAzimuth = 0;
+        this.orbitElevation = 0;
+        this.resetRafId = null;
+        this.syncGeometry();
+      }
+    };
+    this.resetRafId = requestAnimationFrame(step);
+  }
+
+  private bindPointerHandlers(): void {
+    this.canvas.addEventListener('pointerdown', this.onPointerDown);
+    this.canvas.addEventListener('pointermove', this.onPointerMove);
+    this.canvas.addEventListener('pointerup', this.onPointerUp);
+    this.canvas.addEventListener('pointercancel', this.onPointerUp);
+  }
+
+  private cancelDrag(): void {
+    this.dragging = false;
+  }
+
+  private applyCamera(): void {
+    updateCamera(
+      this.camera,
+      this.state.fold,
+      this.state.unfold,
+      this.orbitAzimuth,
+      this.orbitElevation,
+    );
   }
 
   resize(width: number, height: number): void {
@@ -685,7 +801,13 @@ export class CurvedSurfaceRenderer {
       showAxisLabels,
     } = this.state;
 
-    updateCamera(this.camera, fold, unfold);
+    updateCamera(
+      this.camera,
+      fold,
+      unfold,
+      this.orbitAzimuth,
+      this.orbitElevation,
+    );
 
     if (fold > 0.35) {
       this.surface.setData(
@@ -769,6 +891,14 @@ export class CurvedSurfaceRenderer {
   }
 
   dispose(): void {
+    if (this.resetRafId !== null) {
+      cancelAnimationFrame(this.resetRafId);
+      this.resetRafId = null;
+    }
+    this.canvas.removeEventListener('pointerdown', this.onPointerDown);
+    this.canvas.removeEventListener('pointermove', this.onPointerMove);
+    this.canvas.removeEventListener('pointerup', this.onPointerUp);
+    this.canvas.removeEventListener('pointercancel', this.onPointerUp);
     this.surface.dispose();
     this.wireLinesBack.dispose();
     this.wireLinesFront.dispose();

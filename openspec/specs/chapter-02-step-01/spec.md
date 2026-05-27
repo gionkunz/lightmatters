@@ -45,7 +45,7 @@ Chapter 2 Step 1 SHALL be authored as a step module exporting a `Step` object wi
 
 #### Scenario: Slider controls vector angle during exploration
 
-- **WHEN** the timeline reaches the exploration wait phase
+- **WHEN** the exploration phase begins (pre-exploration narrate event starts)
 - **AND** the user moves the `v / c` slider
 - **THEN** the velocity vector tilts to reflect the new v/c value
 - **AND** more spatial component corresponds to less temporal component

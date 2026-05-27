@@ -210,7 +210,7 @@ export class Step04Component implements OnInit, OnDestroy {
 
   protected readonly showPrediction = computed(
     () =>
-      this.runner.waitingForUser() &&
+      this.runner.atExplorationWait() &&
       this.runner.completedNarrateTexts().length >= 4 &&
       this.phase() === 'still',
   );
@@ -253,6 +253,18 @@ export class Step04Component implements OnInit, OnDestroy {
     });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
+
+    effect(() => {
+      if (
+        this.runner.waitingForUser() &&
+        this.prediction() !== null &&
+        this.runner.atExplorationWait() &&
+        this.phase() === 'still' &&
+        this.runner.completedNarrateTexts().length >= 4
+      ) {
+        this.runner.advance();
+      }
+    });
 
     effect(() => {
       const completed = this.runner.completedNarrateTexts().length;
