@@ -26,7 +26,7 @@ describe('LmSliderComponent', () => {
     fixture.componentInstance.valueChange.subscribe((v) => emitted.push(v));
 
     const track = fixture.nativeElement.querySelector(
-      '.relative.h-5',
+      '.relative.cursor-pointer',
     ) as HTMLElement;
     track.getBoundingClientRect = () =>
       ({

@@ -17,7 +17,7 @@ import {
 } from '../timeline/narrate-text';
 
 const NARR_TEXT =
-  'm-0 font-serif text-[30px] leading-[1.4] text-pretty';
+  'm-0 font-serif text-[length:var(--lm-text-narrator)] leading-[1.4] text-pretty';
 
 const MATH_PILL =
   'inline-block align-[-0.06em] rounded-[5px] bg-ink-very-faint px-[0.38em] pt-[0.06em] pb-[0.1em] shadow-[inset_0_0_0_1px_var(--lm-ink-faint)]';
@@ -49,6 +49,20 @@ const MATH_HOST = `${MATH_PILL} animate-char-in [&_mjx-container]:!my-0 [&_mjx-c
                   }
                 </span>
               }
+              @case ('bold') {
+                <strong class="font-semibold whitespace-nowrap">
+                  @for (char of piece.chars; track $index) {
+                    <span>{{ char }}</span>
+                  }
+                </strong>
+              }
+              @case ('italic') {
+                <em class="italic whitespace-nowrap">
+                  @for (char of piece.chars; track $index) {
+                    <span>{{ char }}</span>
+                  }
+                </em>
+              }
               @case ('math') {
                 <span [class]="MATH_PILL">
                   <span class="inline-block min-w-[1.35em]">&nbsp;</span>
@@ -69,6 +83,20 @@ const MATH_HOST = `${MATH_PILL} animate-char-in [&_mjx-container]:!my-0 [&_mjx-c
                     <span class="animate-char-in">{{ char }}</span>
                   }
                 </span>
+              }
+              @case ('bold') {
+                <strong class="font-semibold whitespace-nowrap">
+                  @for (char of piece.chars; track $index) {
+                    <span class="animate-char-in">{{ char }}</span>
+                  }
+                </strong>
+              }
+              @case ('italic') {
+                <em class="italic whitespace-nowrap">
+                  @for (char of piece.chars; track $index) {
+                    <span class="animate-char-in">{{ char }}</span>
+                  }
+                </em>
               }
               @case ('math') {
                 <span

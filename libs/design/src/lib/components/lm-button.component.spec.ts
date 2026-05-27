@@ -36,7 +36,7 @@ describe('LmButtonComponent', () => {
     fixture.detectChanges();
 
     const button = fixture.nativeElement.querySelector('button');
-    expect(button.classList.contains('text-[19px]')).toBe(true);
+    expect(button.classList.contains('text-[length:var(--lm-text-button)]')).toBe(true);
     expect(button.classList.contains('font-normal')).toBe(true);
     expect(button.classList.contains('italic')).toBe(false);
   });

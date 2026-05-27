@@ -3,9 +3,7 @@
 ## Purpose
 
 Progressive narration UI driven by timeline `narrate` events. Renders step kickers and body text as accessible DOM content in the step frame.
-
 ## Requirements
-
 ### Requirement: Narrator renders progressive letter reveal
 
 The engine SHALL provide an `LmNarrator` component that displays narrator text in EB Garamond with a sequential letter reveal driven by timeline `narrate` events. Each letter fades in (`~450ms ease-out`) as it appears. Words SHALL be grouped so line breaks do not split words mid-token. No blinking caret.
@@ -50,7 +48,7 @@ Narrator text SHALL be rendered as real HTML text nodes (not canvas or SVG), rea
 
 ### Requirement: Chat-feed narrator renders stacked beats
 
-The engine SHALL provide an `LmNarratorChatFeed` component that renders a kicker label, a vertical stack of past narration beats at reduced opacity, and a current beat with a left accent border — driven by timeline `narrate` events.
+The engine SHALL provide an `LmNarratorChatFeed` component that renders a kicker label, a vertically scrollable stack of past narration beats at reduced opacity, and a current beat with a left accent border — driven by timeline `narrate` events.
 
 #### Scenario: Past beats render faded below current beat
 
@@ -63,6 +61,7 @@ The engine SHALL provide an `LmNarratorChatFeed` component that renders a kicker
 - **WHEN** a narrate event is actively revealing text in chat-feed layout
 - **THEN** the current beat displays characters sequentially with fade-in animation
 - **AND** inline LaTeX in the current beat renders via MathJax consistent with `LmNarrator`
+- **AND** inline Markdown emphasis in the current beat renders with bold/italic styling consistent with `LmNarrator`
 
 #### Scenario: Chat-feed narrator displays step kicker
 
@@ -78,3 +77,44 @@ The `TimelineRunner` SHALL expose the list of fully completed narrate event text
 - **WHEN** the timeline finishes narrate event at index 0 and begins narrate event at index 1
 - **THEN** the runner exposes the text of event 0 as a completed beat
 - **AND** event 1 is the active current beat
+
+### Requirement: Chat-feed narrator column scrolls when beats overflow
+
+`LmNarratorChatFeed` SHALL constrain its beat stack to the available height of the narrator column and provide vertical scrolling when past + current beats exceed that height. When a new beat becomes current, the feed SHALL scroll so the current beat remains visible without manual intervention.
+
+#### Scenario: Long beat history scrolls inside the column
+
+- **WHEN** a chat-feed step accumulates more narration beats than fit in the left column viewport
+- **THEN** the beat stack scrolls vertically within the narrator column
+- **AND** diagram and slider content in sibling columns remain visible
+
+#### Scenario: Current beat scrolls into view
+
+- **WHEN** the timeline advances to a new narrate event in chat-feed layout
+- **THEN** the current beat scrolls into the visible region of the feed
+- **AND** past beats remain accessible by scrolling upward
+
+### Requirement: Narrator renders inline Markdown emphasis
+
+Narrate text in `LmNarrator` and `LmNarratorChatFeed` SHALL render common inline Markdown emphasis: `**text**` as bold and `*text*` as italic. Markup delimiter characters SHALL NOT appear in the rendered output. Emphasis SHALL participate in the existing letter-by-letter typewriter reveal (delimiters are not typed; emphasized characters reveal like plain text).
+
+#### Scenario: Bold emphasis renders
+
+- **WHEN** a narrate string contains `This is **important** news.`
+- **AND** the typewriter has revealed through `important`
+- **THEN** the word `important` appears bold (strong emphasis)
+- **AND** no `*` characters are visible
+
+#### Scenario: Italic emphasis renders
+
+- **WHEN** a narrate string contains `An *ether* medium.`
+- **AND** the typewriter has revealed through `ether`
+- **THEN** the word `ether` appears italic
+- **AND** no surrounding `*` characters are visible
+
+#### Scenario: Emphasis in chat-feed past beats
+
+- **WHEN** a completed narrate beat contained `**geodesic**`
+- **THEN** the past beat renders `geodesic` in bold at past-beat opacity styling
+- **AND** does not re-animate the typewriter
+

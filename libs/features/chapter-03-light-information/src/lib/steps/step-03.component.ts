@@ -62,9 +62,9 @@ import { STEP_03_ONE_OF_THEM_MOVES } from './step-03-one-of-them-moves';
       (checkpointSeek)="runner.goToCheckpoint($event)"
     >
       <div
-        class="grid h-full box-border grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]"
+        class="grid h-full min-h-0 box-border grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]"
       >
-        <div class="flex flex-col">
+        <div class="flex min-h-0 h-full flex-col">
           <lm-narrator-chat-feed
             [kicker]="step.kicker"
             [pastBeats]="runner.completedNarrateTexts()"

@@ -37,6 +37,20 @@
 
 :root,
 [data-theme='light'] {
+  --lm-type-scale: 1.5;
+  --lm-text-narrator: calc(30px * var(--lm-type-scale));
+  --lm-text-chat-past: calc(19px * var(--lm-type-scale));
+  --lm-text-chat-current: calc(24px * var(--lm-type-scale));
+  --lm-text-kicker: calc(10.5px * var(--lm-type-scale));
+  --lm-text-chrome: calc(17px * var(--lm-type-scale));
+  --lm-text-button: calc(19px * var(--lm-type-scale));
+  --lm-text-button-sm: calc(17px * var(--lm-type-scale));
+  --lm-text-mono-sm: calc(10.5px * var(--lm-type-scale));
+  --lm-text-mono-md: calc(11.5px * var(--lm-type-scale));
+  --lm-text-hint: calc(11px * var(--lm-type-scale));
+  --lm-slider-thumb: calc(18px * var(--lm-type-scale));
+  --lm-slider-track-h: calc(20px * var(--lm-type-scale));
+  --lm-slider-line-top: calc(9px * var(--lm-type-scale));
   --lm-paper: #f6f5f1;
   --lm-paper-alt: #eeede8;
   --lm-surface: #ecebe5;
@@ -104,7 +118,7 @@ body {
 }
 
 .lm-interactive:hover {
-  box-shadow: 0 0 0 4px var(--lm-glow-1);
+  box-shadow: 0 0 0 calc(4px * var(--lm-type-scale)) var(--lm-glow-1);
 }
 
 .lm-chapter-card {

@@ -32,7 +32,7 @@ import { LmPlaybackBarComponent } from './lm-playback-bar.component';
           <lm-kicker [opacity]="0.45"
             >chapter {{ chapter() | number: '2.0-0' }}</lm-kicker
           >
-          <span class="font-serif text-[17px] italic opacity-85">{{
+          <span class="font-serif text-[length:var(--lm-text-chrome)] italic opacity-85">{{
             chapterTitle()
           }}</span>
         </div>
@@ -88,14 +88,14 @@ import { LmPlaybackBarComponent } from './lm-playback-bar.component';
         <div class="flex items-center gap-6">
           <div class="flex items-center gap-2">
             <span
-              class="inline-flex min-w-[22px] items-center justify-center border border-ink-faint px-1.5 py-0.5 font-mono text-[11px] opacity-70"
+              class="inline-flex min-w-[22px] items-center justify-center border border-ink-faint px-1.5 py-0.5 font-mono text-[length:var(--lm-text-hint)] opacity-70"
               >←</span
             >
             <lm-kicker [opacity]="0.45">back</lm-kicker>
           </div>
           <div class="flex items-center gap-2">
             <span
-              class="inline-flex min-w-[22px] items-center justify-center border border-ink-faint px-1.5 py-0.5 font-mono text-[11px] opacity-70"
+              class="inline-flex min-w-[22px] items-center justify-center border border-ink-faint px-1.5 py-0.5 font-mono text-[length:var(--lm-text-hint)] opacity-70"
               >␣</span
             >
             <lm-kicker [opacity]="0.45">play / pause</lm-kicker>

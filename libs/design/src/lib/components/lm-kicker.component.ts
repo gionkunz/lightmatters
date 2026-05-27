@@ -6,7 +6,7 @@ import { Component, input } from '@angular/core';
   imports: [],
   template: `
     <div
-      class="font-mono text-[10.5px] font-medium uppercase tracking-[0.22em] text-ink"
+      class="font-mono text-[length:var(--lm-text-kicker)] font-medium uppercase tracking-[0.22em] text-ink"
       [style.opacity]="opacity()"
     >
       <ng-content />

@@ -55,7 +55,7 @@ import { STEP_03_CONE } from './step-03-cone';
       (goNext)="runner.goToNextCheckpoint()"
       (checkpointSeek)="runner.goToCheckpoint($event)"
     >
-      <div class="grid h-full grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]">
+      <div class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]">
         <lm-narrator-chat-feed
           [kicker]="step.kicker"
           [pastBeats]="runner.completedNarrateTexts()"

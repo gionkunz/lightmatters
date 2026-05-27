@@ -39,7 +39,7 @@ function formatMs(ms: number): string {
       >
         <div class="flex min-w-0 items-center gap-3">
           <span
-            class="shrink-0 font-mono text-[10.5px] tabular-nums tracking-wide text-ink opacity-35"
+            class="shrink-0 font-mono text-[length:var(--lm-text-mono-sm)] tabular-nums tracking-wide text-ink opacity-35"
             >{{ formatMs(elapsedMs()) }}</span
           >
           <div
@@ -73,7 +73,7 @@ function formatMs(ms: number): string {
             }
           </div>
           <span
-            class="shrink-0 font-mono text-[10.5px] tabular-nums tracking-wide text-ink opacity-35"
+            class="shrink-0 font-mono text-[length:var(--lm-text-mono-sm)] tabular-nums tracking-wide text-ink opacity-35"
             >{{ formatMs(totalMs()) }}</span
           >
         </div>
@@ -82,7 +82,7 @@ function formatMs(ms: number): string {
           <button
             type="button"
             lmInteractive
-            class="flex size-12 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-xl text-ink opacity-70 transition-opacity hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+            class="flex size-14 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-70 transition-opacity hover:opacity-100 disabled:cursor-default disabled:opacity-25"
             [disabled]="!canGoPrevious()"
             (click)="goPrevious.emit()"
             aria-label="Previous checkpoint"
@@ -94,7 +94,7 @@ function formatMs(ms: number): string {
             <button
               type="button"
               lmInteractive
-              class="flex size-12 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-xl text-ink opacity-75 transition-opacity hover:opacity-100"
+              class="flex size-14 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-75 transition-opacity hover:opacity-100"
               (click)="pauseRequested.emit()"
               aria-label="Pause"
             >
@@ -104,7 +104,7 @@ function formatMs(ms: number): string {
             <button
               type="button"
               lmInteractive
-              class="lm-play-pulse flex size-12 cursor-pointer items-center justify-center rounded-full border-2 border-accent-1 bg-transparent font-mono text-xl text-accent-1 transition-opacity hover:opacity-100"
+              class="lm-play-pulse flex size-14 cursor-pointer items-center justify-center rounded-full border-2 border-accent-1 bg-transparent font-mono text-2xl text-accent-1 transition-opacity hover:opacity-100"
               (click)="playRequested.emit()"
               aria-label="Play"
             >
@@ -114,7 +114,7 @@ function formatMs(ms: number): string {
             <button
               type="button"
               disabled
-              class="flex size-12 cursor-default items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-xl text-ink opacity-25"
+              class="flex size-14 cursor-default items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-25"
               aria-label="Play"
             >
               ▶
@@ -124,7 +124,7 @@ function formatMs(ms: number): string {
           <button
             type="button"
             lmInteractive
-            class="flex size-12 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-xl text-ink opacity-70 transition-opacity hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+            class="flex size-14 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-70 transition-opacity hover:opacity-100 disabled:cursor-default disabled:opacity-25"
             [disabled]="!canGoNext()"
             (click)="goNext.emit()"
             aria-label="Next checkpoint"

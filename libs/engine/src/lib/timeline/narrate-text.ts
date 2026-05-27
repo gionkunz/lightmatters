@@ -1,6 +1,8 @@
-/** Parsed segment from narrate text with `$...$` inline LaTeX delimiters. */
+/** Parsed segment from narrate text with `$...$` math and inline emphasis. */
 export type NarrateSegment =
   | { kind: 'text'; content: string }
+  | { kind: 'bold'; content: string }
+  | { kind: 'italic'; content: string }
   | { kind: 'math'; latex: string };
 
 /** Typing duration for a math block, expressed as equivalent text characters. */
@@ -8,13 +10,17 @@ export const MATH_TYPING_UNIT_CHARS = 5;
 
 export type NarrateRenderPiece =
   | { kind: 'word'; chars: string[] }
+  | { kind: 'bold'; chars: string[] }
+  | { kind: 'italic'; chars: string[] }
   | { kind: 'space' }
   | { kind: 'math'; latex: string };
 
-/** Split narrate text on `$...$` into plain text and inline LaTeX segments. */
+type TextSegmentKind = 'text' | 'bold' | 'italic';
+
+/** Split narrate text on `$...$` and inline emphasis into render segments. */
 export function parseNarrateText(text: string): NarrateSegment[] {
   if (!text.includes('$')) {
-    return text.length > 0 ? [{ kind: 'text', content: text }] : [];
+    return parseEmphasisInText(text);
   }
 
   const segments: NarrateSegment[] = [];
@@ -27,7 +33,7 @@ export function parseNarrateText(text: string): NarrateSegment[] {
     }
 
     if (i % 2 === 0) {
-      segments.push({ kind: 'text', content: part });
+      segments.push(...parseEmphasisInText(part));
     } else {
       segments.push({ kind: 'math', latex: part });
     }
@@ -36,14 +42,69 @@ export function parseNarrateText(text: string): NarrateSegment[] {
   return segments;
 }
 
+function parseEmphasisInText(text: string): NarrateSegment[] {
+  if (!text.includes('*')) {
+    return text.length > 0 ? [{ kind: 'text', content: text }] : [];
+  }
+
+  const segments: NarrateSegment[] = [];
+  let plain = '';
+  let i = 0;
+
+  const flushPlain = () => {
+    if (plain.length > 0) {
+      segments.push({ kind: 'text', content: plain });
+      plain = '';
+    }
+  };
+
+  while (i < text.length) {
+    if (text.startsWith('**', i)) {
+      const close = text.indexOf('**', i + 2);
+      if (close !== -1) {
+        flushPlain();
+        segments.push({ kind: 'bold', content: text.slice(i + 2, close) });
+        i = close + 2;
+        continue;
+      }
+    }
+
+    if (text[i] === '*' && !text.startsWith('**', i)) {
+      let close = -1;
+      for (let j = i + 1; j < text.length; j++) {
+        if (text[j] === '*' && !text.startsWith('**', j)) {
+          close = j;
+          break;
+        }
+        if (text.startsWith('**', j)) {
+          break;
+        }
+      }
+
+      if (close !== -1) {
+        flushPlain();
+        segments.push({ kind: 'italic', content: text.slice(i + 1, close) });
+        i = close + 1;
+        continue;
+      }
+    }
+
+    plain += text[i];
+    i++;
+  }
+
+  flushPlain();
+  return segments;
+}
+
 /** Total typewriter units for a parsed narrate string. */
 export function narrateTypingUnits(segments: NarrateSegment[]): number {
   return segments.reduce(
     (total, segment) =>
       total +
-      (segment.kind === 'text'
-        ? segment.content.length
-        : MATH_TYPING_UNIT_CHARS),
+      (segment.kind === 'math'
+        ? MATH_TYPING_UNIT_CHARS
+        : segment.content.length),
     0,
   );
 }
@@ -73,29 +134,42 @@ export function buildNarrateRenderPieces(
     }
 
     const take = Math.min(remaining, segment.content.length);
-    appendTextPieces(pieces, segment.content.slice(0, take));
+    appendTextPieces(pieces, segment.content.slice(0, take), segment.kind);
     remaining -= take;
   }
 
   return pieces;
 }
 
-function appendTextPieces(pieces: NarrateRenderPiece[], visible: string): void {
+function appendTextPieces(
+  pieces: NarrateRenderPiece[],
+  visible: string,
+  style: TextSegmentKind = 'text',
+): void {
   let word: string[] = [];
+
+  const pushWord = () => {
+    if (word.length === 0) {
+      return;
+    }
+    if (style === 'bold') {
+      pieces.push({ kind: 'bold', chars: word });
+    } else if (style === 'italic') {
+      pieces.push({ kind: 'italic', chars: word });
+    } else {
+      pieces.push({ kind: 'word', chars: word });
+    }
+    word = [];
+  };
 
   for (const char of visible) {
     if (char === ' ') {
-      if (word.length > 0) {
-        pieces.push({ kind: 'word', chars: word });
-        word = [];
-      }
+      pushWord();
       pieces.push({ kind: 'space' });
     } else {
       word.push(char);
     }
   }
 
-  if (word.length > 0) {
-    pieces.push({ kind: 'word', chars: word });
-  }
+  pushWord();
 }
