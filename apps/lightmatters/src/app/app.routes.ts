@@ -42,15 +42,22 @@ export const appRoutes: Routes = [
       ),
   },
   {
-    path: 'ch/06/step/:step',
-    loadComponent: () =>
-      import('./chapter-06-placeholder.component').then(
-        (m) => m.Chapter06PlaceholderComponent,
+    path: 'ch/06',
+    loadChildren: () =>
+      import('@lm/feature-chapter-06-rolling-diagram').then(
+        (m) => m.chapter06Routes,
       ),
   },
   {
-    path: 'ch/06',
-    redirectTo: 'ch/06/step/1',
+    path: 'ch/07/step/:step',
+    loadComponent: () =>
+      import('./chapter-07-placeholder.component').then(
+        (m) => m.Chapter07PlaceholderComponent,
+      ),
+  },
+  {
+    path: 'ch/07',
+    redirectTo: 'ch/07/step/1',
     pathMatch: 'full',
   },
   {

@@ -1,0 +1,13 @@
+{
+  "name": "chapter-06-rolling-diagram",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/features/chapter-06-rolling-diagram/src",
+  "prefix": "lm",
+  "projectType": "library",
+  "tags": ["scope:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

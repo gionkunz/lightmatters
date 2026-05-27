@@ -31,7 +31,7 @@ At any moment, at most two visualization canvases are on screen — typically on
 ## Tech stack
 
 - **Framework:** Angular. Light Matters is genuinely an application — stateful, interactive, multi-component — not a document site. Angular's component model, dependency injection, and reactive primitives (signals, RxJS) match the orchestration this product needs.
-- **3D rendering:** **ogl** (or raw WebGL2 if ogl proves limiting). ogl is shader-first and small, which suits the custom line-art aesthetic better than a full scene-graph library like Three.js. The engine boundary is drawn so the renderer is swappable.
+- **3D rendering:** **Three.js** for Chapters 6–8 curved-spacetime wireframes (`lm-curved-surface`). Chosen after an ogl prototype proved too fragile for morphing line geometry and oblique camera reads. Physics stays in `@lm/physics`; the renderer boundary remains swappable.
 - **2D rendering:** SVG for diagrams. Lightweight, accessible, easy to author, animates smoothly for the small element counts we expect. 2D canvas as a fallback only if a specific diagram demands it.
 - **Animation:** custom timeline engine (see below), driven by `requestAnimationFrame`. Interpolation is hand-rolled (linear + a small library of easings) rather than wrapping GSAP/anime.js — the animation system *is* the narrative system, so a thin coordinator is cleaner than bridging an external library's lifecycle.
 - **State:** Angular signals for component-local and shared reactive state. A small step-scoped store for the active timeline and its variables.
@@ -384,6 +384,6 @@ Fully responsive interaction design is deferred past v1.
 8. **Chapter 1** as `libs/features/chapter-01-position-time` — Steps 1–4 authored (`position-only` → `time-only` → `full` → `single` / speed budget); steps 5–6 remain. Step-to-step footer navigation wired through step 4. Add an `nx g chapter` generator while authoring the rest so chapters 2+ are one command.
 9. ~~**Inline math in narration.**~~ Done — `$...$` LaTeX in narrate strings, MathJax v4 lazy load, atomic math reveal in typewriter.
 10. **Chapter-index and design-sheet features** at `libs/features/chapter-index` and `libs/features/design-sheet`, both lazy-loaded from the shell.
-11. **WebGL rendering** — wireframe aesthetic prototyped on a sphere in ogl, then `libs/primitives/curved-surface` for the cone visualizations.
+11. **WebGL rendering** — `libs/primitives/curved-surface` (Three.js) for cylinder/cone wireframes in Chapter 6+.
 12. **Expand the timeline event set** (`bind`, `branch`, `trigger`) as Chapter 2 and Chapter 3 demand them.
 13. **Chapter 2, then Chapter 3.** Chapter 2 (speed budget) and the bridge step are authored. Chapter 3 (light and information) is authored on a new `libs/primitives/light-scene` primitive — top-down 2-D space, expanding pulse circles, no time axis — alongside `@lm/physics` reception helpers (`pulseReachesStationary`, `pulseReachesMoving`). The Epstein spacetime diagram returns in Chapter 6. From here, further chapters are mostly content on top of `light-scene`, `spacetime-diagram`, and (later) `curved-surface`.

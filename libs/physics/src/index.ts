@@ -4,3 +4,4 @@ export * from './lib/speed-budget';
 export * from './lib/traveller-readout';
 export * from './lib/signal-reception';
 export * from './lib/light-scene';
+export * from './lib/curved-surface';

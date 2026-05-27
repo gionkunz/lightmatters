@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-Light Matters has an Nx integrated monorepo with the `lightmatters` Angular 21 app, foundational libraries (`libs/design`, `libs/engine`, `libs/physics`, `libs/primitives/spacetime-diagram`, `libs/primitives/light-scene`), a design system + landing page at `/`, Chapter 1 Steps 1–4 at `/ch/01/step/{1..4}`, Chapter 2 Steps 1–3 at `/ch/02/step/{1..3}`, Chapter 3 Steps 1–5 at `/ch/03/step/{1..5}`, Chapter 4 Steps 1–5 at `/ch/04/step/{1..5}`, Chapter 5 Steps 1–5 at `/ch/05/step/{1..5}`, and a Playwright `lightmatters-e2e` project. The timeline engine, narrator, step chrome, and both spacetime-diagram and light-scene primitives are implemented. Next up per `docs/architecture.md` build order: remaining Chapter 1/2 steps, `bind`/`trigger` timeline events, Chapter 6, chapter-index, and design-sheet.
+Light Matters has an Nx integrated monorepo with the `lightmatters` Angular 21 app, foundational libraries (`libs/design`, `libs/engine`, `libs/physics`, `libs/primitives/spacetime-diagram`, `libs/primitives/light-scene`, `libs/primitives/curved-surface`), a design system + landing page at `/`, Chapter 1 Steps 1–4 at `/ch/01/step/{1..4}`, Chapter 2 Steps 1–3 at `/ch/02/step/{1..3}`, Chapter 3 Steps 1–5 at `/ch/03/step/{1..5}`, Chapter 4 Steps 1–5 at `/ch/04/step/{1..5}`, Chapter 5 Steps 1–5 at `/ch/05/step/{1..5}`, Chapter 6 Steps 1–5 at `/ch/06/step/{1..5}`, and a Playwright `lightmatters-e2e` project. The timeline engine, narrator, step chrome, spacetime-diagram, light-scene, and curved-surface (WebGL) primitives are implemented. Next up per `docs/architecture.md` build order: remaining Chapter 1/2 steps, `bind`/`trigger` timeline events, Chapter 7, chapter-index, and design-sheet.
 
 Build / test / lint commands:
 
@@ -35,7 +35,7 @@ Light Matters (lightmatters.app) is an interactive web app that builds intuition
 
 See `docs/architecture.md` for full reasoning. Highlights so you don't re-litigate them:
 
-- **Stack:** Angular + **ogl** (WebGL) + SVG, organized as an **Nx** classic integrated monorepo (`apps/` + `libs/`). Hosted on **Cloudflare Pages** at `lightmatters.app`.
+- **Stack:** Angular + **Three.js** (WebGL) + SVG, organized as an **Nx** classic integrated monorepo (`apps/` + `libs/`). Hosted on **Cloudflare Pages** at `lightmatters.app`.
 - **CSS:** **Tailwind v4** via `@tailwindcss/postcss`. No `tailwind.config.js`; configuration (theme tokens, `@source` directives for libs) lives in `apps/lightmatters/src/styles.css`. Global styles entry is `.css` (not `.scss`) so PostCSS handles `@import "tailwindcss";` directly; component `.scss` files still work for Sass-only features.
 - **Typography:** **EB Garamond** (serif, everywhere readable) + **IBM Plex Mono** (small uppercase "Kicker" labels only). No sans-serif. Ever.
 - **Two themes:** light and dark. Both first-class, not an either-or.

@@ -8,8 +8,10 @@
 @source '../../../libs/features/chapter-03-light-information/src';
 @source '../../../libs/features/chapter-04-ether-was-wrong/src';
 @source '../../../libs/features/chapter-05-doppler-seeing-motion/src';
+@source '../../../libs/features/chapter-06-rolling-diagram/src';
 @source '../../../libs/primitives/spacetime-diagram/src';
 @source '../../../libs/primitives/light-scene/src';
+@source '../../../libs/primitives/curved-surface/src';
 
 @theme inline {
   --font-serif: 'EB Garamond', 'Iowan Old Style', serif;

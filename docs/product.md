@@ -111,12 +111,15 @@ Physics helpers: `buildPeriodicEmissions`, `pulseArrivalSceneTimes`, `meanPulseI
 
 ### Chapter 6 — Rolling the diagram: gravity as geometry
 
-The cone visualization from Epstein, brought to life.
+The cone visualization from Epstein, brought to life. Returns to the Epstein spacetime diagram and introduces WebGL (`lm-curved-surface`).
 
-- Roll the spacetime diagram into a **cylinder** — you are moving in circles through time with negligible spatial displacement.
-- Bend the cylinder into a **cone** — the wide end represents strong gravity, the point weak gravity.
-- A straight worldline drawn on the cone curves spatially in the unrolled view: **this is gravity**. Not a force, just geodesics on warped spacetime.
-- Newton's apple: place a tiny house on the rim of the cone, draw an apple's worldline. Place the same house further around the cone — the apple falls the same way. Gravity is the geometry, not the apple.
+- **Step 1 — A point in time.** Flat `time-only` diagram recap: a body at rest in space moves only through time.
+- **Step 2 — Roll the paper.** Fold the diagram into a **cylinder**; the dot orbits the surface leaving a **fading trail**.
+- **Step 3 — Bend into a cone.** Morph cylinder → cone; wide end = strong gravity, point = weak gravity.
+- **Step 4 — Gravity as geometry.** A straight geodesic on the cone curves spatially when unrolled.
+- **Step 5 — Newton's apple.** Tiny house on the rim; gravity is the geometry, not the apple. Bridge to Chapter 7.
+
+Physics helpers: `cylinderSurfacePoint`, `coneSurfacePoint`, `morphSurfacePoint`, `worldlineTrailSamples` in `@lm/physics`.
 
 ### Chapter 7 — Why the center of the Earth is weightless
 

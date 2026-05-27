@@ -10,26 +10,15 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@lm/design": [
-        "./libs/design/src/index.ts"
-      ],
-      "@lm/engine": [
-        "./libs/engine/src/index.ts"
-      ],
-      "@lm/physics": [
-        "./libs/physics/src/index.ts"
-      ],
-      "@lm/feature-landing": [
-        "./libs/features/landing/src/index.ts"
-      ],
+      "@lm/design": ["./libs/design/src/index.ts"],
+      "@lm/engine": ["./libs/engine/src/index.ts"],
+      "@lm/physics": ["./libs/physics/src/index.ts"],
+      "@lm/feature-landing": ["./libs/features/landing/src/index.ts"],
       "@lm/spacetime-diagram": [
         "./libs/primitives/spacetime-diagram/src/index.ts"
       ],
@@ -48,13 +37,12 @@
       "@lm/feature-chapter-05-doppler-seeing-motion": [
         "./libs/features/chapter-05-doppler-seeing-motion/src/index.ts"
       ],
-      "@lm/light-scene": [
-        "./libs/primitives/light-scene/src/index.ts"
+      "@lm/light-scene": ["./libs/primitives/light-scene/src/index.ts"],
+      "@lm/curved-surface": ["./libs/primitives/curved-surface/src/index.ts"],
+      "@lm/feature-chapter-06-rolling-diagram": [
+        "./libs/features/chapter-06-rolling-diagram/src/index.ts"
       ]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

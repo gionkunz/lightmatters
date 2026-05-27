@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LmButtonComponent, LmWordmarkComponent } from '@lm/design';
 
-/** Placeholder until Chapter 6 is authored. */
+/** Placeholder until Chapter 7 is authored. */
 @Component({
-  selector: 'lm-chapter-06-placeholder',
+  selector: 'lm-chapter-07-placeholder',
   imports: [LmWordmarkComponent, LmButtonComponent, RouterLink],
   template: `
     <div
@@ -12,16 +12,16 @@ import { LmButtonComponent, LmWordmarkComponent } from '@lm/design';
     >
       <lm-wordmark [size]="28" />
       <p class="m-0 max-w-md text-2xl italic leading-snug">
-        Chapter 6 — Rolling the diagram: gravity as geometry — is coming next.
+        Chapter 7 — Why the center of the Earth is weightless — is coming next.
       </p>
       <p class="m-0 max-w-lg text-[17px] opacity-75">
-        The cone visualization from Epstein will land here — gravity as geodesics
-        on warped spacetime.
+        The full gravity well — cylinder, cone, and weightless center — will
+        land here.
       </p>
-      <a routerLink="/ch/05/step/5">
-        <lm-button [emphasis]="true">← back to chapter 5</lm-button>
+      <a routerLink="/ch/06/step/5">
+        <lm-button [emphasis]="true">← back to chapter 6</lm-button>
       </a>
     </div>
   `,
 })
-export class Chapter06PlaceholderComponent {}
+export class Chapter07PlaceholderComponent {}
