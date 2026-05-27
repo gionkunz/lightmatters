@@ -321,6 +321,83 @@ describe('TimelineRunner', () => {
     expect(runner.isComplete()).toBe(false);
   });
 
+  it('marks the final userAdvance wait as allowing step exit', () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'narrate', text: 'Done.', pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+    runner.skip();
+
+    expect(runner.waitingForUser()).toBe(true);
+    expect(runner.allowsStepExit()).toBe(true);
+    expect(runner.isComplete()).toBe(false);
+  });
+
+  it('uses the checkpoint before a mid-step userAdvance wait on the scrubber', () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'narrate', text: 'A', speed: 10, pauseAfter: 0 },
+      { type: 'narrate', text: 'B', speed: 10, pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+      { type: 'narrate', text: 'C', speed: 10, pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+    runner.skip();
+    expect(runner.waitingForUser()).toBe(true);
+    expect(runner.activeCheckpointIndex()).toBe(1);
+  });
+
+  it('can rewind from a completed timeline', async () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'narrate', text: 'First', speed: 10, pauseAfter: 0 },
+      { type: 'narrate', text: 'Second', speed: 10, pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+    runner.skip();
+    runner.advance();
+    jest.advanceTimersByTime(100);
+    await Promise.resolve();
+    expect(runner.isComplete()).toBe(true);
+    expect(runner.canGoToPreviousCheckpoint()).toBe(true);
+
+    runner.goToPreviousCheckpoint();
+    jest.advanceTimersByTime(100);
+    await Promise.resolve();
+
+    expect(runner.isComplete()).toBe(false);
+    expect(runner.narrationText()).toBe('Second');
+  });
+
+  it('canGoToNextCheckpoint while waiting for user at exploration pause', () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'narrate', text: 'Predict?', pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+      { type: 'narrate', text: 'After.', pauseAfter: 0 },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+    runner.skip();
+    expect(runner.waitingForUser()).toBe(true);
+    expect(runner.canGoToNextCheckpoint()).toBe(true);
+
+    runner.goToNextCheckpoint();
+    expect(runner.waitingForUser()).toBe(false);
+    expect(runner.narrationText()).toBe('After.');
+  });
+
   it('advance unblocks userAdvance wait', () => {
     const registry = new TargetRegistry();
     const events: TimelineEvent[] = [{ type: 'wait', for: 'userAdvance' }];
@@ -435,6 +512,48 @@ describe('TimelineRunner', () => {
     expect(runner.activeCheckpointIndex()).toBe(1);
   });
 
+  it('keeps the last narrate line current during a following animate', async () => {
+    const registry = new TargetRegistry();
+    let value = 0;
+    registry.register('diagram.value', {
+      get: () => value,
+      set: (v) => {
+        value = v;
+      },
+      initial: 0,
+    });
+
+    const events: TimelineEvent[] = [
+      { type: 'narrate', text: 'First beat', speed: 10, pauseAfter: 0 },
+      { type: 'narrate', text: 'Second beat', speed: 10, pauseAfter: 0 },
+      {
+        type: 'animate',
+        target: 'diagram.value',
+        from: 0,
+        to: 1,
+        duration: 0.1,
+      },
+      { type: 'narrate', text: 'Third beat', speed: 10, pauseAfter: 0 },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+
+    jest.advanceTimersByTime(220);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(runner.completedNarrateTexts()).toEqual(['First beat']);
+    expect(runner.narrationText()).toBe('Second beat');
+
+    jest.advanceTimersByTime(200);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(runner.completedNarrateTexts()).toEqual(['First beat']);
+    expect(runner.narrationText()).toBe('Second beat');
+  });
+
   it('includes completed narrate beats in the stack before the next beat starts', async () => {
     const registry = new TargetRegistry();
     const events: TimelineEvent[] = [
@@ -449,6 +568,8 @@ describe('TimelineRunner', () => {
     jest.advanceTimersByTime(120);
     await Promise.resolve();
     expect(runner.atCheckpointHold()).toBe(true);
+    expect(runner.activeCheckpointIndex()).toBe(0);
+    expect(runner.canGoToPreviousCheckpoint()).toBe(false);
 
     runner.advanceFromCheckpointHold();
     await Promise.resolve();

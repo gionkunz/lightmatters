@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { LmInteractiveDirective } from '@lm/design';
+import { LmInteractiveDirective, LmKickerComponent } from '@lm/design';
 import type { TimelineCheckpoint } from '../timeline/types';
 
 function formatMs(ms: number): string {
@@ -12,7 +12,7 @@ function formatMs(ms: number): string {
 /** Music-player-style transport bar: progress track + centered transport controls. */
 @Component({
   selector: 'lm-playback-bar',
-  imports: [LmInteractiveDirective],
+  imports: [LmInteractiveDirective, LmKickerComponent],
   styles: [
     `
       @keyframes lm-play-pulse {
@@ -79,58 +79,84 @@ function formatMs(ms: number): string {
         </div>
 
         <div class="flex items-center justify-center gap-4">
-          <button
-            type="button"
-            lmInteractive
-            class="flex size-14 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-70 transition-opacity hover:opacity-100 disabled:cursor-default disabled:opacity-25"
-            [disabled]="!canGoPrevious()"
-            (click)="goPrevious.emit()"
-            aria-label="Previous checkpoint"
+          <div
+            class="flex w-[16rem] shrink-0 items-center justify-end gap-2"
           >
-            ⏮
-          </button>
-
-          @if (showPause()) {
+            <div
+              class="flex w-[12rem] shrink-0 items-center justify-end whitespace-nowrap"
+              data-lm-transport-hint="previous"
+              [class.invisible]="!previousHint()"
+              [attr.aria-hidden]="!previousHint()"
+            >
+              <lm-kicker [opacity]="0.45">{{ previousHint() }}</lm-kicker>
+            </div>
             <button
               type="button"
               lmInteractive
-              class="flex size-14 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-75 transition-opacity hover:opacity-100"
-              (click)="pauseRequested.emit()"
-              aria-label="Pause"
+              class="flex size-14 shrink-0 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-70 transition-opacity hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+              [disabled]="!canGoPrevious()"
+              (click)="goPrevious.emit()"
+              aria-label="Previous checkpoint"
             >
-              ⏸
+              ⏮
             </button>
-          } @else if (showPlay()) {
+          </div>
+
+          <div class="flex shrink-0 items-center gap-4">
+            @if (showPause()) {
+              <button
+                type="button"
+                lmInteractive
+                class="flex size-14 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-75 transition-opacity hover:opacity-100"
+                (click)="pauseRequested.emit()"
+                aria-label="Pause"
+              >
+                ⏸
+              </button>
+            } @else if (showPlay()) {
+              <button
+                type="button"
+                lmInteractive
+                class="lm-play-pulse flex size-14 cursor-pointer items-center justify-center rounded-full border-2 border-accent-1 bg-transparent font-mono text-2xl text-accent-1 transition-opacity hover:opacity-100"
+                (click)="playRequested.emit()"
+                aria-label="Play"
+              >
+                ▶
+              </button>
+            } @else {
+              <button
+                type="button"
+                disabled
+                class="flex size-14 cursor-default items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-25"
+                aria-label="Play"
+              >
+                ▶
+              </button>
+            }
+          </div>
+
+          <div
+            class="flex w-[16rem] shrink-0 items-center justify-start gap-2"
+          >
             <button
               type="button"
               lmInteractive
-              class="lm-play-pulse flex size-14 cursor-pointer items-center justify-center rounded-full border-2 border-accent-1 bg-transparent font-mono text-2xl text-accent-1 transition-opacity hover:opacity-100"
-              (click)="playRequested.emit()"
-              aria-label="Play"
+              class="flex size-14 shrink-0 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-70 transition-opacity hover:opacity-100 disabled:cursor-default disabled:opacity-25"
+              [disabled]="!canGoNext()"
+              (click)="goNext.emit()"
+              aria-label="Next checkpoint"
             >
-              ▶
+              ⏭
             </button>
-          } @else {
-            <button
-              type="button"
-              disabled
-              class="flex size-14 cursor-default items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-25"
-              aria-label="Play"
+            <div
+              class="flex w-[12rem] shrink-0 items-center justify-start whitespace-nowrap"
+              data-lm-transport-hint="next"
+              [class.invisible]="!nextHint()"
+              [attr.aria-hidden]="!nextHint()"
             >
-              ▶
-            </button>
-          }
-
-          <button
-            type="button"
-            lmInteractive
-            class="flex size-14 cursor-pointer items-center justify-center rounded-full border border-ink-faint bg-transparent font-mono text-2xl text-ink opacity-70 transition-opacity hover:opacity-100 disabled:cursor-default disabled:opacity-25"
-            [disabled]="!canGoNext()"
-            (click)="goNext.emit()"
-            aria-label="Next checkpoint"
-          >
-            ⏭
-          </button>
+              <lm-kicker [opacity]="0.45">{{ nextHint() }}</lm-kicker>
+            </div>
+          </div>
         </div>
       </div>
     }
@@ -147,6 +173,8 @@ export class LmPlaybackBarComponent {
   readonly showPlay = input(false);
   readonly canGoPrevious = input(false);
   readonly canGoNext = input(false);
+  readonly previousHint = input('');
+  readonly nextHint = input('');
 
   readonly goPrevious = output<void>();
   readonly pauseRequested = output<void>();

@@ -33,7 +33,8 @@ const MATH_HOST = `${MATH_PILL} [&_mjx-container]:!my-0 [&_mjx-container]:!text-
   selector: 'lm-narrator-chat-feed',
   imports: [LmKickerComponent],
   host: {
-    class: 'flex h-full min-h-0 max-w-[500px] flex-1 flex-col',
+    class:
+      'flex h-full max-h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden max-w-[120ch]',
   },
   template: `
     @if (kicker()) {

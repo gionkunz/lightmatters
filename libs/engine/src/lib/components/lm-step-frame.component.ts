@@ -1,62 +1,63 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, HostListener, inject, input, output } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import {
-  LmButtonComponent,
+  LmInteractiveDirective,
   LmKickerComponent,
   LmThemeToggleComponent,
   LmWordmarkComponent,
 } from '@lm/design';
 import type { TimelineCheckpoint } from '../timeline/types';
 import { LmPlaybackBarComponent } from './lm-playback-bar.component';
+import { parseStepUrl } from './step-url';
 
-/** Step shell: nav, playback bar, content, navigation footer. */
+/** Step shell: nav, playback bar, and content. */
 @Component({
   selector: 'lm-step-frame',
   imports: [
     DecimalPipe,
+    RouterLink,
     LmWordmarkComponent,
     LmKickerComponent,
     LmThemeToggleComponent,
-    LmButtonComponent,
     LmPlaybackBarComponent,
+    LmInteractiveDirective,
   ],
   template: `
     <div
-      class="relative grid min-h-screen grid-rows-[auto_auto_1fr_auto] bg-paper font-serif text-ink transition-colors duration-400"
+      class="relative grid h-dvh max-h-dvh min-h-0 grid-rows-[auto_auto_1fr] overflow-hidden bg-paper font-serif text-ink transition-colors duration-400"
     >
       <nav
-        class="grid grid-cols-[auto_1fr_auto_auto_auto] items-center gap-7 border-b border-ink-faint px-10 py-5"
+        class="grid grid-cols-[auto_1fr_auto] items-center gap-8 border-b border-ink-faint px-10 py-5"
       >
-        <lm-wordmark [size]="20" />
-        <div class="flex items-center gap-4">
+        <a
+          routerLink="/"
+          lmInteractive
+          class="shrink-0 rounded-sm no-underline outline-none"
+          aria-label="Light Matters home"
+        >
+          <lm-wordmark [size]="26" [bold]="true" />
+        </a>
+
+        <div
+          class="flex min-w-0 flex-wrap items-baseline gap-x-6 gap-y-1"
+        >
           <lm-kicker [opacity]="0.45"
             >chapter {{ chapter() | number: '2.0-0' }}</lm-kicker
           >
-          <span class="font-serif text-[length:var(--lm-text-chrome)] italic opacity-85">{{
-            chapterTitle()
-          }}</span>
+          <span
+            class="font-serif text-[length:var(--lm-text-chrome)] italic opacity-85"
+            >{{ chapterTitle() }}</span
+          >
+          <lm-kicker [opacity]="0.45"
+            >step {{ step() | number: '2.0-0' }}</lm-kicker
+          >
+          <span
+            class="min-w-0 font-serif text-[length:var(--lm-text-chrome)] italic opacity-85"
+            >{{ stepTitle() }}</span
+          >
         </div>
-        <div class="flex items-center gap-1">
-          @for (dot of dots(); track $index) {
-            <span
-              class="h-[5px] rounded-full transition-all duration-400"
-              [class.w-3]="dot.here"
-              [class.w-[5px]]="!dot.here"
-              [class.bg-accent-1]="dot.here"
-              [class.bg-ink]="dot.filled && !dot.here"
-              [class.border]="!dot.filled && !dot.here"
-              [class.border-ink-faint]="!dot.filled && !dot.here"
-              [class.bg-transparent]="!dot.filled && !dot.here"
-              [style.box-shadow]="
-                dot.here ? '0 0 8px var(--lm-glow-1)' : 'none'
-              "
-            ></span>
-          }
-        </div>
-        <lm-kicker [opacity]="0.5"
-          >{{ step() | number: '2.0-0' }} /
-          {{ stepsTotal() | number: '2.0-0' }}</lm-kicker
-        >
+
         <lm-theme-toggle />
       </nav>
 
@@ -69,60 +70,36 @@ import { LmPlaybackBarComponent } from './lm-playback-bar.component';
         [activeCheckpointIndex]="activeCheckpointIndex()"
         [showPause]="playbackActive()"
         [showPlay]="playbackPaused()"
-        [canGoPrevious]="canGoPrevious()"
-        [canGoNext]="canGoNext()"
-        (goPrevious)="goPrevious.emit()"
+        [canGoPrevious]="transportCanGoPrevious()"
+        [canGoNext]="transportCanGoNext()"
+        [previousHint]="previousHint()"
+        [nextHint]="nextHint()"
+        (goPrevious)="onGoPrevious()"
         (pauseRequested)="pauseRequested.emit()"
         (playRequested)="playRequested.emit()"
-        (goNext)="goNext.emit()"
+        (goNext)="onGoNext()"
         (checkpointSeek)="checkpointSeek.emit($event)"
       />
 
-      <main class="overflow-hidden">
+      <main class="min-h-0 overflow-hidden">
         <ng-content />
       </main>
-
-      <footer
-        class="flex items-center justify-between gap-6 border-t border-ink-faint px-10 py-[18px]"
-      >
-        <div class="flex items-center gap-6">
-          <div class="flex items-center gap-2">
-            <span
-              class="inline-flex min-w-[22px] items-center justify-center border border-ink-faint px-1.5 py-0.5 font-mono text-[length:var(--lm-text-hint)] opacity-70"
-              >←</span
-            >
-            <lm-kicker [opacity]="0.45">back</lm-kicker>
-          </div>
-          <div class="flex items-center gap-2">
-            <span
-              class="inline-flex min-w-[22px] items-center justify-center border border-ink-faint px-1.5 py-0.5 font-mono text-[length:var(--lm-text-hint)] opacity-70"
-              >␣</span
-            >
-            <lm-kicker [opacity]="0.45">play / pause</lm-kicker>
-          </div>
-        </div>
-        <div class="flex shrink-0 items-center gap-3.5">
-          <lm-button [emphasis]="true" (click)="back.emit()">← back</lm-button>
-          @if (hasNextStep()) {
-          <lm-button
-            [primary]="true"
-            [emphasis]="true"
-            (click)="next.emit()"
-            >{{ nextChapter() ? 'next chapter →' : 'continue →' }}</lm-button
-          >
-          }
-        </div>
-      </footer>
     </div>
   `,
 })
 export class LmStepFrameComponent {
+  private readonly router = inject(Router);
+
   readonly chapter = input.required<number>();
   readonly chapterTitle = input.required<string>();
+  readonly stepTitle = input.required<string>();
   readonly step = input.required<number>();
   readonly stepsTotal = input.required<number>();
   readonly hasNextStep = input(false);
   readonly nextChapter = input(false);
+  readonly prevStepUrl = input<string | null>(null);
+  readonly nextStepUrl = input<string | null>(null);
+  readonly advanceDisabled = input(false);
 
   readonly showPlayback = input(false);
   readonly progress = input(0);
@@ -132,22 +109,128 @@ export class LmStepFrameComponent {
   readonly activeCheckpointIndex = input(0);
   readonly playbackActive = input(false);
   readonly playbackPaused = input(false);
+  /** Runner can seek to a prior checkpoint within the current step. */
   readonly canGoPrevious = input(false);
+  /** Runner can advance to the next checkpoint within the current step. */
   readonly canGoNext = input(false);
 
-  readonly back = output<void>();
-  readonly next = output<void>();
   readonly goPrevious = output<void>();
   readonly pauseRequested = output<void>();
   readonly playRequested = output<void>();
   readonly goNext = output<void>();
   readonly checkpointSeek = output<number>();
 
-  protected dots(): { filled: boolean; here: boolean }[] {
-    const current = this.step();
-    return Array.from({ length: this.stepsTotal() }, (_, k) => ({
-      filled: k < current - 1,
-      here: k === current - 1,
-    }));
+  @HostListener('document:keydown', ['$event'])
+  onTransportKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+      return;
+    }
+    const tag = (event.target as HTMLElement).tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') {
+      return;
+    }
+    event.preventDefault();
+    if (event.key === 'ArrowLeft') {
+      this.onGoPrevious();
+    } else {
+      this.onGoNext();
+    }
+  }
+
+  transportPrevious(): void {
+    this.onGoPrevious();
+  }
+
+  transportNext(): void {
+    this.onGoNext();
+  }
+
+  protected onGoPrevious(): void {
+    if (this.atFirstCheckpoint()) {
+      const url = this.prevStepUrl();
+      if (url !== null && url !== '') {
+        void this.router.navigateByUrl(url);
+      }
+      return;
+    }
+    if (this.canGoPrevious()) {
+      this.goPrevious.emit();
+    }
+  }
+
+  protected onGoNext(): void {
+    if (
+      this.atLastCheckpoint() &&
+      this.hasNextStep() &&
+      !this.advanceDisabled()
+    ) {
+      const url = this.nextStepUrl();
+      if (url) {
+        void this.router.navigateByUrl(url);
+      }
+      return;
+    }
+    if (this.canGoNext()) {
+      this.goNext.emit();
+    }
+  }
+
+  protected transportCanGoPrevious(): boolean {
+    if (this.atFirstCheckpoint()) {
+      return !!this.prevStepUrl();
+    }
+    return this.canGoPrevious();
+  }
+
+  protected transportCanGoNext(): boolean {
+    if (this.atLastCheckpoint()) {
+      return (
+        (this.hasNextStep() && !this.advanceDisabled() && !!this.nextStepUrl()) ||
+        this.canGoNext()
+      );
+    }
+    return this.canGoNext();
+  }
+
+  protected previousHint(): string {
+    if (!this.atFirstCheckpoint() || !this.prevStepUrl()) {
+      return '';
+    }
+    const url = this.prevStepUrl();
+    if (!url) {
+      return '';
+    }
+    if (url === '/') {
+      return 'home';
+    }
+    const parsed = parseStepUrl(url);
+    if (parsed && parsed.chapter !== this.chapter()) {
+      return 'previous chapter';
+    }
+    return `step ${this.step() - 1}`;
+  }
+
+  protected nextHint(): string {
+    if (
+      !this.atLastCheckpoint() ||
+      !this.hasNextStep() ||
+      this.advanceDisabled() ||
+      !this.nextStepUrl()
+    ) {
+      return '';
+    }
+    if (this.nextChapter()) {
+      return 'next chapter';
+    }
+    return `step ${this.step() + 1}`;
+  }
+
+  protected atFirstCheckpoint(): boolean {
+    return this.activeCheckpointIndex() === 0;
+  }
+
+  protected atLastCheckpoint(): boolean {
+    const total = this.checkpoints().length;
+    return total > 0 && this.activeCheckpointIndex() >= total - 1;
   }
 }

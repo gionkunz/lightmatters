@@ -90,20 +90,35 @@ export class TimelineRunner {
     return this.atCheckpointHold();
   }
 
+  /** True when the learner may leave the step via step-chrome forward transport. */
+  allowsStepExit(): boolean {
+    return this.isComplete() || this.isAtFinalUserAdvanceWait();
+  }
+
   canGoToPreviousCheckpoint(): boolean {
-    if (this.isComplete() || this.checkpointEventIndices.length === 0) {
+    if (this.checkpointEventIndices.length === 0) {
       return false;
     }
+    if (this.isComplete()) {
+      return this.checkpointEventIndices.length > 1;
+    }
     if (this.waitingForUser()) {
+      return this.checkpointArrayIndexBefore(this.index) >= 0;
+    }
+    const active = this.getActiveCheckpointIndex();
+    if (active > 0) {
       return true;
     }
-    return (
-      this.getActiveCheckpointIndex() > 0 || this.hasPartialCurrentEvent()
-    );
+    // First checkpoint: rewind within the step only while mid-event.
+    // At a completed hold, defer to step/chapter boundary navigation.
+    if (this.atCheckpointHold()) {
+      return false;
+    }
+    return this.hasPartialCurrentEvent();
   }
 
   canGoToNextCheckpoint(): boolean {
-    return !this.isComplete() && !this.waitingForUser();
+    return !this.isComplete();
   }
 
   start(): void {
@@ -178,8 +193,10 @@ export class TimelineRunner {
     }
 
     let targetCpIdx: number;
-    if (this.waitingForUser()) {
+    if (this.isComplete()) {
       targetCpIdx = cps.length - 1;
+    } else if (this.waitingForUser()) {
+      targetCpIdx = Math.max(0, this.checkpointArrayIndexBefore(this.index));
     } else {
       const active = this.getActiveCheckpointIndex();
       targetCpIdx = active > 0 ? active - 1 : 0;
@@ -191,6 +208,11 @@ export class TimelineRunner {
   /** Jump to the next narrate/animate checkpoint, or through to exploration wait. */
   goToNextCheckpoint(): void {
     if (!this.canGoToNextCheckpoint()) {
+      return;
+    }
+
+    if (this.waitingForUser()) {
+      this.advance();
       return;
     }
 
@@ -541,12 +563,46 @@ export class TimelineRunner {
   }
 
   private getActiveCheckpointIndex(): number {
-    if (this.waitingForUser() || this.isComplete()) {
+    if (this.isComplete()) {
       return Math.max(0, this.checkpointEventIndices.length - 1);
+    }
+
+    if (this.waitingForUser()) {
+      const before = this.checkpointArrayIndexBefore(this.index);
+      return before >= 0 ? before : 0;
     }
 
     const idx = this.checkpointEventIndices.indexOf(this.index);
     return idx >= 0 ? idx : 0;
+  }
+
+  /** Index in checkpointEventIndices for the last narrate/animate before `eventIndex`. */
+  private checkpointArrayIndexBefore(eventIndex: number): number {
+    let cpIdx = -1;
+    for (let i = 0; i < this.checkpointEventIndices.length; i++) {
+      if (this.checkpointEventIndices[i] < eventIndex) {
+        cpIdx = i;
+      } else {
+        break;
+      }
+    }
+    return cpIdx;
+  }
+
+  private isAtFinalUserAdvanceWait(): boolean {
+    if (!this.waitingForUser()) {
+      return false;
+    }
+    const event = this.events[this.index];
+    if (event?.type !== 'wait' || event.for !== 'userAdvance') {
+      return false;
+    }
+    for (let i = this.index + 1; i < this.events.length; i++) {
+      if (this.events[i].type !== 'wait') {
+        return false;
+      }
+    }
+    return true;
   }
 
   private hasPartialCurrentEvent(): boolean {
@@ -717,6 +773,13 @@ export class TimelineRunner {
         texts.push(event.text);
       }
     }
+
+    const current = this.events[this.index];
+    if (current && current.type !== 'narrate' && texts.length > 0) {
+      // Animate/wait between narrate beats: keep the last line in the current slot.
+      texts.pop();
+    }
+
     this.completedNarrateTexts.set(texts);
   }
 }
