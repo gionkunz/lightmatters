@@ -10,7 +10,7 @@ export const STEP_01_TIME_ONLY: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'The spacetime diagram, **laid flat**. **Space** runs up the left edge; **time** runs along the bottom. A body at rest in space moves only through time — a straight line parallel to the time axis.',
+      text: 'The spacetime diagram, **laid flat**. **Space** runs up the left edge; **time** runs along the bottom. A body at rest in space sits at one place in space and moves only through time — a line **parallel** to the time axis, slightly offset so we can see it.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -23,7 +23,7 @@ export const STEP_01_TIME_ONLY: Step = {
     },
     {
       type: 'narrate',
-      text: 'Now **roll the sheet** into a tube — the reverse of unrolling. The same straight worldline becomes a circle around the rim: one lap, one unit of time.',
+      text: 'Now **roll the sheet** into a tube. The same straight worldline wraps into a circle around the rim — one lap for each unit of time.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -35,8 +35,16 @@ export const STEP_01_TIME_ONLY: Step = {
       easing: 'ease-out',
     },
     {
+      type: 'animate',
+      target: 'surface.time',
+      from: 0.85,
+      to: 1.85,
+      duration: 5,
+      easing: 'linear',
+    },
+    {
       type: 'narrate',
-      text: 'Same motion, new geometry. Next we meet the classic Epstein strip and roll it the other way — from a vertical worldline into the same cylinder.',
+      text: 'Watch it orbit again — a full second turn around the time axis. Same motion, new geometry. Next we **pinch** this tube into a cone.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

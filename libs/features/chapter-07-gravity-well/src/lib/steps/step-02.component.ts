@@ -1,45 +1,46 @@
 import {
   Component,
+  computed,
   HostListener,
   OnDestroy,
   OnInit,
-  signal
+  signal,
 } from '@angular/core';
 import {
+  LmDiagramViewportComponent,
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  LmDiagramViewportComponent,
-    TargetRegistry,
-  TimelineRunner
+  TargetRegistry,
+  TimelineRunner,
 } from '@lm/engine';
 import { LmKickerComponent } from '@lm/design';
 import { LmCurvedSurfaceComponent } from '@lm/curved-surface';
 import {
-  CHAPTER_06_TITLE,
-  CHAPTER_06_TOTAL_STEPS,
-  hasNextStep
+  CHAPTER_07_TITLE,
+  CHAPTER_07_TOTAL_STEPS,
+  hasNextStep,
 } from '../step-registry';
-import { STEP_02_CYLINDER } from './step-02-cylinder';
+import { STEP_02_PIECEWISE } from './step-02-piecewise';
 
 @Component({
-  selector: 'lm-ch6-step-02',
+  selector: 'lm-ch7-step-02',
   imports: [
     LmStepFrameComponent,
     LmDiagramViewportComponent,
-        LmNarratorChatFeedComponent,
+    LmNarratorChatFeedComponent,
     LmCurvedSurfaceComponent,
     LmKickerComponent,
   ],
   template: `
     <lm-step-frame
-      [chapter]="6"
+      [chapter]="7"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="2"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(2)"
-      [prevStepUrl]="'/ch/06/step/1'"
-      [nextStepUrl]="'/ch/06/step/3'"
+      [prevStepUrl]="'/ch/07/step/1'"
+      [nextStepUrl]="'/ch/07/step/3'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -56,61 +57,72 @@ import { STEP_02_CYLINDER } from './step-02-cylinder';
       (goNext)="runner.goToNextCheckpoint()"
       (checkpointSeek)="runner.goToCheckpoint($event)"
     >
-      <div class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]">
-        <div class="flex min-h-0 h-full min-w-0 flex-col overflow-hidden">
-        <lm-narrator-chat-feed
-          [kicker]="step.kicker"
-          [pastBeats]="runner.completedNarrateTexts()"
-          [currentText]="runner.narrationText()"
-          [visibleCount]="runner.narrationVisibleCount()"
-        />
+      <div
+        class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]"
+      >
+        <div class="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
+          <lm-narrator-chat-feed
+            [kicker]="step.kicker"
+            [pastBeats]="runner.completedNarrateTexts()"
+            [currentText]="runner.narrationText()"
+            [visibleCount]="runner.narrationVisibleCount()"
+          />
         </div>
-        <div class="flex min-h-0 flex-col bg-paper-alt px-[26px] py-[22px]">
-          <lm-kicker [opacity]="0.55" class="mb-3.5">the same line, rolled</lm-kicker>
+        <div class="relative flex min-h-0 flex-col bg-paper-alt px-[26px] py-[22px]">
+          <lm-kicker [opacity]="0.55" class="mb-3.5">narrow → wide → narrow</lm-kicker>
           <div class="flex min-h-0 flex-1 items-center justify-center">
-              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
-                <lm-curved-surface
+            <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
+              <lm-curved-surface
                 [width]="diagramVp.size().width"
                 [height]="diagramVp.size().height"
-              [fold]="fold()"
-              [curvature]="0"
-              [time]="time()"
-              [showTrail]="true"
-              [showAxisLabels]="true"
-              [trailLength]="120"
-              [trailSpan]="1"
-              worldlineMode="orbit"
-            />
-              </lm-diagram-viewport>
+                surfaceProfile="well"
+                [wellReveal]="wellReveal()"
+                [wellMorph]="0"
+                [showTrail]="false"
+                [showEarthSphere]="showEarth()"
+                [showAxisLabels]="true"
+              />
+            </lm-diagram-viewport>
+          </div>
+          <div
+            class="pointer-events-none absolute left-[14%] top-[36%] font-mono text-[10px] uppercase leading-tight tracking-wider text-ink opacity-50"
+          >
+            outer space
+          </div>
+          <div
+            class="pointer-events-none absolute left-[26%] top-[28%] font-mono text-[10px] uppercase leading-tight tracking-wider text-ink opacity-50"
+          >
+            <span class="block">near earth gravity field</span>
+            <span class="block opacity-75">/ surface</span>
+          </div>
+          <div
+            class="pointer-events-none absolute left-1/2 top-[16%] -translate-x-1/2 text-center font-mono text-[10px] uppercase leading-tight tracking-wider text-ink opacity-55"
+          >
+            earth center · weightless
           </div>
         </div>
       </div>
     </lm-step-frame>
-  `
+  `,
 })
 export class Step02Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
-  protected readonly step = STEP_02_CYLINDER;
-  protected readonly chapterTitle = CHAPTER_06_TITLE;
-  protected readonly stepsTotal = CHAPTER_06_TOTAL_STEPS;
+  protected readonly step = STEP_02_PIECEWISE;
+  protected readonly chapterTitle = CHAPTER_07_TITLE;
+  protected readonly stepsTotal = CHAPTER_07_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;
-  protected readonly fold = signal(0);
-  protected readonly time = signal(0);
+  protected readonly wellReveal = signal(0);
+  protected readonly showEarth = computed(() => this.wellReveal() >= 0.38);
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
 
   constructor() {
-    this.registry.register('surface.fold', {
-      get: () => this.fold(),
-      set: (v) => this.fold.set(v),
-      initial: 0
-});
-    this.registry.register('surface.time', {
-      get: () => this.time(),
-      set: (v) => this.time.set(v),
-      initial: 0
-});
+    this.registry.register('surface.wellReveal', {
+      get: () => this.wellReveal(),
+      set: (v) => this.wellReveal.set(v),
+      initial: 0,
+    });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -135,5 +147,4 @@ export class Step02Component implements OnInit, OnDestroy {
     else if (this.runner.playbackActive()) this.runner.pause();
     else if (!this.runner.isComplete()) this.runner.goToNextCheckpoint();
   }
-
 }

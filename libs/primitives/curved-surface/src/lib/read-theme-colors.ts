@@ -66,11 +66,13 @@ export interface ThemeColors {
   ink: Rgb;
   paper: Rgb;
   accent1: Rgb;
+  accent2: Rgb;
 }
 
 const FALLBACK_INK = '#14141a';
 const FALLBACK_PAPER = '#f5f0e8';
 const FALLBACK_ACCENT = '#c44b3a';
+const FALLBACK_ACCENT_2 = '#3a5a9c';
 
 export function readThemeColors(): ThemeColors {
   return {
@@ -82,6 +84,10 @@ export function readThemeColors(): ThemeColors {
     accent1: cssColorToRgb(
       readCssColor('--lm-accent-1', FALLBACK_ACCENT),
       FALLBACK_ACCENT,
+    ),
+    accent2: cssColorToRgb(
+      readCssColor('--lm-accent-2', FALLBACK_ACCENT_2),
+      FALLBACK_ACCENT_2,
     ),
   };
 }

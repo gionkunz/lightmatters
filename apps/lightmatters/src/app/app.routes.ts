@@ -49,15 +49,22 @@ export const appRoutes: Routes = [
       ),
   },
   {
-    path: 'ch/07/step/:step',
-    loadComponent: () =>
-      import('./chapter-07-placeholder.component').then(
-        (m) => m.Chapter07PlaceholderComponent,
+    path: 'ch/07',
+    loadChildren: () =>
+      import('@lm/feature-chapter-07-gravity-well').then(
+        (m) => m.chapter07Routes,
       ),
   },
   {
-    path: 'ch/07',
-    redirectTo: 'ch/07/step/1',
+    path: 'ch/08/step/:step',
+    loadComponent: () =>
+      import('./chapter-08-placeholder.component').then(
+        (m) => m.Chapter08PlaceholderComponent,
+      ),
+  },
+  {
+    path: 'ch/08',
+    redirectTo: 'ch/08/step/1',
     pathMatch: 'full',
   },
   {

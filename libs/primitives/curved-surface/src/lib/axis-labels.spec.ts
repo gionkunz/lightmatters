@@ -1,5 +1,6 @@
 import {
   buildAxisStrips,
+  buildWellAxisStrips,
   computeAxisLabelAnchors,
 } from './axis-labels';
 import * as THREE from 'three';
@@ -26,6 +27,28 @@ describe('buildAxisStrips', () => {
     for (const p of [...space, ...time]) {
       expect(p.z).toBeCloseTo(0, 5);
     }
+  });
+});
+
+describe('buildWellAxisStrips', () => {
+  it('runs space along the tunnel axis and time around the near end', () => {
+    const { space, time } = buildWellAxisStrips(1, 1);
+    expect(space.length).toBeGreaterThan(2);
+    expect(time.length).toBeGreaterThan(2);
+    expect(space[0].y).toBeCloseTo(0);
+    expect(space[0].z).toBeCloseTo(0);
+    expect(space[space.length - 1].x).toBeGreaterThan(space[0].x);
+    for (const p of time) {
+      expect(p.x).toBeCloseTo(-1.7, 1);
+    }
+  });
+
+  it('grows the space axis as the bulge is revealed', () => {
+    const partial = buildWellAxisStrips(0.4, 0);
+    const full = buildWellAxisStrips(1, 0);
+    expect(partial.space[partial.space.length - 1].x).toBeLessThan(
+      full.space[full.space.length - 1].x,
+    );
   });
 });
 

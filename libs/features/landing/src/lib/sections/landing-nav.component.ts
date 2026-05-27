@@ -8,7 +8,7 @@ import { LmThemeToggleComponent, LmWordmarkComponent } from '@lm/design';
     <nav
       class="grid grid-cols-[auto_1fr_auto_auto] items-center gap-x-8 border-b border-ink-faint px-16 py-[26px]"
     >
-      <lm-wordmark [size]="22" />
+      <lm-wordmark [size]="22" [bold]="true" />
       <div></div>
       <div class="flex gap-8">
         @for (item of links; track item) {
@@ -26,7 +26,7 @@ import { LmThemeToggleComponent, LmWordmarkComponent } from '@lm/design';
 })
 export class LandingNavComponent {
   protected readonly links = [
-    { label: 'Chapters', href: '#' },
+    { label: 'Chapters', href: '#chapters' },
     { label: 'About', href: '#' },
     { label: 'Notes', href: '#' },
   ];

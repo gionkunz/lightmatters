@@ -1,11 +1,24 @@
 import {
   buildAppleTreeScene,
   DEFAULT_CURVED_SURFACE_PARAMS,
+  DEFAULT_WELL_PARAMS,
+  earthSphereWireframeStrips,
+  isWellXRevealed,
   morphSurfacePoint,
   surfaceThetaSweep,
   unrolledSurfacePoint,
+  wellRevealMaxX,
+  wellSurfacePoint,
+  wellSurfacePointUnrolled,
+  wellTrajectoryMorphedSamples,
+  wellTrajectoryPointMorphed,
+  wellSpatialBudgetTrajectoryPoint,
+  wellSpatialBudgetTrajectorySamples,
+  type WellLaunchMode,
   type CurvedSurfaceParams,
   type Vec3,
+  type WellParams,
+  type WellTrajectoryMode,
   type WorldlineMode,
   worldlineTrailSamples,
 } from '@lm/physics';
@@ -13,6 +26,7 @@ import * as THREE from 'three';
 import { readThemeColors, type Rgb, type ThemeColors } from './read-theme-colors';
 import {
   buildAxisStrips,
+  buildWellAxisStrips,
   computeAxisLabelAnchors,
   type AxisLabelAnchor,
 } from './axis-labels';
@@ -25,27 +39,43 @@ import { WidePolylineOverlay, WidePolylineStrips, WideWireframeLines, OVERLAY_LI
 
 export type { AxisLabelAnchor };
 
+export type SurfaceProfile = 'cone' | 'well';
+
 export interface CurvedSurfaceState {
+  surfaceProfile: SurfaceProfile;
   fold: number;
   curvature: number;
   time: number;
   unfold: number;
+  wellReveal: number;
+  wellMorph: number;
+  wellUnfold: number;
+  energy: number;
+  wellLaunchMode: WellLaunchMode;
+  spatialFraction: number;
+  /** Normalized x on the left half where a spatial-budget launch begins. */
+  wellStartXNorm: number;
   showTrail: boolean;
   trailLength: number;
   /** Proper-time span of the fading trail (0–1). */
   trailSpan: number;
   worldlineMode: WorldlineMode;
+  wellTrajectoryMode: WellTrajectoryMode;
   showAppleTree: boolean;
   /** When false, only the near-rim tree is drawn (proper-time copy hidden). */
   showProjectedTree: boolean;
   showGeodesic: boolean;
   showAxisLabels: boolean;
+  showEarthSphere: boolean;
 }
 
 /** Flat strip: face-on. Cylinder: oblique. Unrolled: face-on, pulled back. */
 const CAMERA_FLAT = new THREE.Vector3(0, 0, 3.2);
 const CAMERA_CYLINDER = new THREE.Vector3(0.25, 0.55, 3.4);
 const CAMERA_UNROLLED = new THREE.Vector3(0, 0, 4.4);
+const CAMERA_WELL = new THREE.Vector3(0.06, 0.34, 5.35);
+/** Top-down view for the unfolded paper (Step 3). */
+const CAMERA_WELL_FLAT = new THREE.Vector3(0, 5.6, 0.001);
 const CAMERA_TARGET = new THREE.Vector3(0, 0, 0);
 const CAMERA_TARGET_UNROLLED = new THREE.Vector3(0, 0.2, 0);
 
@@ -53,11 +83,24 @@ const _vTarget = new THREE.Vector3();
 const _baseCameraPos = new THREE.Vector3();
 
 function computeAuthoredCamera(
+  surfaceProfile: SurfaceProfile,
   fold: number,
   unfold: number,
+  wellUnfold: number,
   outPosition: THREE.Vector3,
   outTarget: THREE.Vector3,
 ): void {
+  if (surfaceProfile === 'well') {
+    outTarget.copy(CAMERA_TARGET);
+    if (wellUnfold > 0) {
+      const u = Math.max(0, Math.min(1, wellUnfold));
+      const eased = u * u * (3 - 2 * u);
+      outPosition.lerpVectors(CAMERA_WELL, CAMERA_WELL_FLAT, eased);
+    } else {
+      outPosition.copy(CAMERA_WELL);
+    }
+    return;
+  }
   outPosition.lerpVectors(CAMERA_FLAT, CAMERA_CYLINDER, fold);
   if (unfold > 0) {
     outPosition.lerp(CAMERA_UNROLLED, unfold);
@@ -67,12 +110,21 @@ function computeAuthoredCamera(
 
 function updateCamera(
   camera: THREE.PerspectiveCamera,
+  surfaceProfile: SurfaceProfile,
   fold: number,
   unfold: number,
+  wellUnfold: number,
   azimuthDelta = 0,
   elevationDelta = 0,
 ): void {
-  computeAuthoredCamera(fold, unfold, _baseCameraPos, _vTarget);
+  computeAuthoredCamera(
+    surfaceProfile,
+    fold,
+    unfold,
+    wellUnfold,
+    _baseCameraPos,
+    _vTarget,
+  );
   const orbited = applyOrbitOffset(
     _vTarget,
     _baseCameraPos,
@@ -232,6 +284,149 @@ function buildSurfaceMesh(
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < segs; j++) {
       const a = i * (segs + 1) + j;
+      const b = a + 1;
+      const c = a + (segs + 1);
+      const d = c + 1;
+      indices[ii++] = a;
+      indices[ii++] = b;
+      indices[ii++] = d;
+      indices[ii++] = a;
+      indices[ii++] = d;
+      indices[ii++] = c;
+    }
+  }
+
+  return { positions, indices };
+}
+
+function smoothstep01(t: number): number {
+  const x = Math.max(0, Math.min(1, t));
+  return x * x * (3 - 2 * x);
+}
+
+/**
+ * Surface point morphed between rolled bulge and flat unrolled paper.
+ * `wellUnfold` is gated to 0 when `wellMorph > 0` (smooth bulge is not
+ * developable).
+ */
+function wellSurfaceMorphedPoint(
+  theta: number,
+  xNorm: number,
+  wellMorph: number,
+  wellUnfold: number,
+  params: WellParams,
+): Vec3 {
+  const rolled = wellSurfacePoint(theta, xNorm, wellMorph, params);
+  if (wellMorph > 1e-6 || wellUnfold <= 0) {
+    return rolled;
+  }
+  const flat = wellSurfacePointUnrolled(theta, xNorm, params);
+  const eased = smoothstep01(wellUnfold);
+  return {
+    x: rolled.x + (flat.x - rolled.x) * eased,
+    y: rolled.y + (flat.y - rolled.y) * eased,
+    z: rolled.z + (flat.z - rolled.z) * eased,
+  };
+}
+
+function buildWellWireframeStrips(
+  wellReveal: number,
+  wellMorph: number,
+  wellUnfold: number,
+  params: WellParams,
+): Vec3[][] {
+  const segments = 72;
+  const meridians = 20;
+  const xCols = 24;
+  const strips: Vec3[][] = [];
+  const revealMax = wellRevealMaxX(wellReveal);
+
+  const ringAt = (xNorm: number) => {
+    if (!isWellXRevealed(xNorm, wellReveal)) {
+      return;
+    }
+    const pts: Vec3[] = [];
+    for (let i = 0; i <= segments; i++) {
+      const theta = (i / segments) * 2 * Math.PI;
+      pts.push(
+        wellSurfaceMorphedPoint(theta, xNorm, wellMorph, wellUnfold, params),
+      );
+    }
+    strips.push(pts);
+  };
+
+  for (let i = 0; i <= xCols; i++) {
+    const xNorm = -1 + (2 * i) / xCols;
+    if (!isWellXRevealed(xNorm, wellReveal)) {
+      continue;
+    }
+    ringAt(xNorm);
+  }
+
+  for (let m = 0; m <= meridians; m++) {
+    const theta = (m / meridians) * 2 * Math.PI;
+    const meridian: Vec3[] = [];
+    for (let i = 0; i <= xCols; i++) {
+      const xNorm = -1 + (2 * i) / xCols;
+      if (!isWellXRevealed(xNorm, wellReveal)) {
+        continue;
+      }
+      meridian.push(
+        wellSurfaceMorphedPoint(theta, xNorm, wellMorph, wellUnfold, params),
+      );
+    }
+    if (meridian.length > 1) {
+      strips.push(meridian);
+    }
+  }
+
+  if (revealMax > -0.95) {
+    ringAt(Math.max(-1, revealMax));
+  }
+
+  return strips;
+}
+
+function buildWellSurfaceMesh(
+  wellReveal: number,
+  wellMorph: number,
+  wellUnfold: number,
+  params: WellParams,
+): SurfaceMeshData {
+  const xCols = 24;
+  const segs = 48;
+  const visibleX: number[] = [];
+  for (let i = 0; i <= xCols; i++) {
+    const xNorm = -1 + (2 * i) / xCols;
+    if (isWellXRevealed(xNorm, wellReveal)) {
+      visibleX.push(xNorm);
+    }
+  }
+
+  const positions = new Float32Array(visibleX.length * (segs + 1) * 3);
+  const indices = new Uint32Array(Math.max(0, visibleX.length - 1) * segs * 6);
+
+  let vi = 0;
+  for (const xNorm of visibleX) {
+    for (let j = 0; j <= segs; j++) {
+      const theta = (j / segs) * 2 * Math.PI;
+      const p = wellSurfaceMorphedPoint(
+        theta,
+        xNorm,
+        wellMorph,
+        wellUnfold,
+        params,
+      );
+      positions[vi++] = p.x;
+      positions[vi++] = p.y;
+      positions[vi++] = p.z;
+    }
+  }
+
+  let ii = 0;
+  for (let col = 0; col < visibleX.length - 1; col++) {
+    for (let j = 0; j < segs; j++) {
+      const a = col * (segs + 1) + j;
       const b = a + 1;
       const c = a + (segs + 1);
       const d = c + 1;
@@ -432,9 +627,11 @@ export class CurvedSurfaceRenderer {
   private readonly trailLine: WidePolylineOverlay;
   private readonly appleTreeNearLines: WidePolylineStrips;
   private readonly appleTreeProjectedLines: WidePolylineStrips;
+  private readonly earthSphereLines: WireframeLines;
   private readonly dotMesh: THREE.Mesh;
   private colors: ThemeColors = readThemeColors();
   private readonly params: CurvedSurfaceParams = DEFAULT_CURVED_SURFACE_PARAMS;
+  private readonly wellParams: WellParams = DEFAULT_WELL_PARAMS;
   private viewportWidth = 720;
   private viewportHeight = 520;
   private axisLabelAnchors: AxisLabelAnchor[] = [];
@@ -479,18 +676,28 @@ export class CurvedSurfaceRenderer {
     this.syncGeometry();
   };
   state: CurvedSurfaceState = {
+    surfaceProfile: 'cone',
     fold: 1,
     curvature: 0,
     time: 0,
     unfold: 0,
+    wellReveal: 1,
+    wellMorph: 1,
+    wellUnfold: 0,
+    energy: 0.35,
+    wellLaunchMode: 'energy',
+    spatialFraction: 0.28,
+    wellStartXNorm: -1,
     showTrail: true,
     trailLength: 96,
     trailSpan: 1,
     worldlineMode: 'orbit',
+    wellTrajectoryMode: 'pass-through',
     showAppleTree: false,
     showProjectedTree: true,
     showGeodesic: false,
     showAxisLabels: false,
+    showEarthSphere: false,
   };
 
   constructor(private readonly canvas: HTMLCanvasElement) {
@@ -503,7 +710,7 @@ export class CurvedSurfaceRenderer {
     this.renderer.setClearColor(0x000000, 0);
 
     this.camera = new THREE.PerspectiveCamera(42, 1, 0.05, 50);
-    updateCamera(this.camera, 0, 0);
+    updateCamera(this.camera, 'cone', 0, 0, 0);
 
     const colors = readThemeColors();
     this.colors = colors;
@@ -555,6 +762,13 @@ export class CurvedSurfaceRenderer {
       0.85,
       OVERLAY_LINE_WIDTH,
       2,
+      true,
+    );
+    this.earthSphereLines = new WireframeLines(
+      this.scene,
+      colors.accent2,
+      0.78,
+      1,
       true,
     );
 
@@ -618,8 +832,10 @@ export class CurvedSurfaceRenderer {
   private applyCamera(): void {
     updateCamera(
       this.camera,
+      this.state.surfaceProfile,
       this.state.fold,
       this.state.unfold,
+      this.state.wellUnfold,
       this.orbitAzimuth,
       this.orbitElevation,
     );
@@ -649,6 +865,7 @@ export class CurvedSurfaceRenderer {
     this.trailLine.setColor(colors.accent1, 0.95);
     this.appleTreeNearLines.setColor(colors.ink, 0.85);
     this.appleTreeProjectedLines.setColor(colors.ink, 0.85);
+    this.earthSphereLines.setColor(colors.accent2, 0.78);
     (this.dotMesh.material as THREE.MeshBasicMaterial).color.copy(
       rgbToColor(colors.accent1),
     );
@@ -664,27 +881,54 @@ export class CurvedSurfaceRenderer {
 
   private syncGeometry(): void {
     const {
+      surfaceProfile,
       fold,
       curvature,
       time,
       unfold,
+      wellReveal,
+      wellMorph,
+      wellUnfold,
+      energy,
+      wellLaunchMode,
+      spatialFraction,
+      wellStartXNorm,
       showTrail,
       trailLength,
       trailSpan,
       worldlineMode,
+      wellTrajectoryMode,
       showAppleTree,
       showProjectedTree,
       showGeodesic,
       showAxisLabels,
+      showEarthSphere,
     } = this.state;
 
-    updateCamera(
-      this.camera,
-      fold,
-      unfold,
-      this.orbitAzimuth,
-      this.orbitElevation,
-    );
+    this.applyCamera();
+
+    if (surfaceProfile === 'well') {
+      this.syncWellGeometry(
+        wellReveal,
+        wellMorph,
+        wellUnfold,
+        energy,
+        wellLaunchMode,
+        spatialFraction,
+        wellStartXNorm,
+        time,
+        showTrail,
+        trailLength,
+        trailSpan,
+        worldlineMode,
+        wellTrajectoryMode,
+        showAxisLabels,
+        showEarthSphere,
+      );
+      return;
+    }
+
+    this.earthSphereLines.setStrips([]);
 
     if (fold > 0.35) {
       this.surface.setData(
@@ -778,6 +1022,137 @@ export class CurvedSurfaceRenderer {
     }
   }
 
+  private syncWellGeometry(
+    wellReveal: number,
+    wellMorph: number,
+    wellUnfold: number,
+    energy: number,
+    wellLaunchMode: WellLaunchMode,
+    spatialFraction: number,
+    wellStartXNorm: number,
+    time: number,
+    showTrail: boolean,
+    trailLength: number,
+    trailSpan: number,
+    worldlineMode: WorldlineMode,
+    wellTrajectoryMode: WellTrajectoryMode,
+    showAxisLabels: boolean,
+    showEarthSphere: boolean,
+  ): void {
+    // Smooth bulge cannot lay perfectly flat — clamp unfold for any non-zero morph.
+    const effectiveUnfold = wellMorph > 1e-6 ? 0 : wellUnfold;
+
+    if (wellReveal > 0.05) {
+      this.surface.setData(
+        buildWellSurfaceMesh(
+          wellReveal,
+          wellMorph,
+          effectiveUnfold,
+          this.wellParams,
+        ),
+      );
+      this.surface.setVisible(true);
+    } else {
+      this.surface.setVisible(false);
+    }
+
+    const strips = buildWellWireframeStrips(
+      wellReveal,
+      wellMorph,
+      effectiveUnfold,
+      this.wellParams,
+    );
+    const { front, back } = splitStripsByFacing(strips, this.camera);
+    this.wireLinesBack.setStrips(back);
+    this.wireLinesFront.setStrips(front);
+
+    if (showAxisLabels && wellReveal > 0.05) {
+      const axisStrips = buildWellAxisStrips(
+        wellReveal,
+        wellMorph,
+        this.wellParams,
+      );
+      this.axisLines.setStrips([axisStrips.space, axisStrips.time]);
+      this.updateAxisLabelAnchors(axisStrips);
+    } else {
+      this.axisLines.setStrips([]);
+      this.setAxisLabelAnchors([]);
+    }
+    this.appleTreeNearLines.setStrips([]);
+    this.appleTreeProjectedLines.setStrips([]);
+    this.appleGeodesicLines.setStrips([]);
+    this.geodesicLine.setPoints([]);
+
+    // Hide the Earth globe as the paper unrolls (the globe is a 3-D artifact).
+    const earthOpacity = effectiveUnfold > 0.01 ? 1 - smoothstep01(effectiveUnfold) : 1;
+    if (showEarthSphere && wellReveal >= 0.38 && earthOpacity > 0.05) {
+      this.earthSphereLines.setStrips(
+        earthSphereWireframeStrips(this.wellParams),
+      );
+    } else {
+      this.earthSphereLines.setStrips([]);
+    }
+
+    const dot =
+      worldlineMode === 'well-trajectory'
+        ? wellLaunchMode === 'spatial-budget'
+          ? wellSpatialBudgetTrajectoryPoint(
+              spatialFraction,
+              time,
+              wellMorph,
+              this.wellParams,
+              wellTrajectoryMode,
+              wellStartXNorm,
+            )
+          : wellTrajectoryPointMorphed(
+              energy,
+              time,
+              wellMorph,
+              effectiveUnfold,
+              this.wellParams,
+              wellTrajectoryMode,
+            )
+        : wellSurfaceMorphedPoint(
+            0,
+            wellRevealMaxX(wellReveal),
+            wellMorph,
+            effectiveUnfold,
+            this.wellParams,
+          );
+    this.dotMesh.position.set(dot.x, dot.y, dot.z);
+
+    if (showTrail && time > 0 && worldlineMode === 'well-trajectory') {
+      const samples =
+        wellLaunchMode === 'spatial-budget'
+          ? wellSpatialBudgetTrajectorySamples(
+              spatialFraction,
+              trailLength,
+              wellMorph,
+              this.wellParams,
+              time,
+              trailSpan,
+              wellTrajectoryMode,
+              wellStartXNorm,
+            )
+          : wellTrajectoryMorphedSamples(
+              energy,
+              trailLength,
+              wellMorph,
+              effectiveUnfold,
+              this.wellParams,
+              time,
+              trailSpan,
+              wellTrajectoryMode,
+            );
+      this.trailLine.setPoints(
+        samples,
+        (index, total) => 0.25 + 0.75 * ((index + 1) / total),
+      );
+    } else {
+      this.trailLine.setPoints([]);
+    }
+  }
+
   private updateAxisLabelAnchors(
     strips: ReturnType<typeof buildAxisStrips>,
   ): void {
@@ -798,12 +1173,19 @@ export class CurvedSurfaceRenderer {
   private render(): void {
     this.renderer.render(this.scene, this.camera);
     if (this.state.showAxisLabels) {
-      const strips = buildAxisStrips(
-        this.state.fold,
-        this.state.curvature,
-        this.state.unfold,
-        this.params,
-      );
+      const strips =
+        this.state.surfaceProfile === 'well'
+          ? buildWellAxisStrips(
+              this.state.wellReveal,
+              this.state.wellMorph,
+              this.wellParams,
+            )
+          : buildAxisStrips(
+              this.state.fold,
+              this.state.curvature,
+              this.state.unfold,
+              this.params,
+            );
       this.updateAxisLabelAnchors(strips);
     }
   }
@@ -826,6 +1208,7 @@ export class CurvedSurfaceRenderer {
     this.trailLine.dispose();
     this.appleTreeNearLines.dispose();
     this.appleTreeProjectedLines.dispose();
+    this.earthSphereLines.dispose();
     this.dotMesh.geometry.dispose();
     (this.dotMesh.material as THREE.Material).dispose();
     this.renderer.dispose();

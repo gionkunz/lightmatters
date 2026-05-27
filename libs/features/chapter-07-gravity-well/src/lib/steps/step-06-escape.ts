@@ -1,0 +1,176 @@
+import type { Step } from '@lm/engine';
+import { WELL_ESCAPE_SPATIAL_THRESHOLD } from '@lm/physics';
+
+const BEAT_PAUSE_MS = 6500;
+const LOW_SPATIAL = 0.22;
+const ESCAPE_SPATIAL = WELL_ESCAPE_SPATIAL_THRESHOLD + 0.08;
+/** Starting position slider: weightless center of Earth. */
+const CENTER_START = 1;
+/** All speed budget on space — the light-like limit. */
+const PURE_SPATIAL = 1;
+
+export const STEP_06_ESCAPE: Step = {
+  id: 'escape-velocity',
+  title: 'Escape velocity',
+  kicker: 'your initial vector',
+  layout: 'chat-feed',
+  timeline: [
+    {
+      type: 'narrate',
+      text: 'You always start in **outer space** — the narrow cylinder where gravity has no grip. Your motion budget is one light speed. How much do you spend on **space** — running toward Earth — versus **time** — winding around the cylinder?',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'animate',
+      target: 'surface.spatialFraction',
+      from: LOW_SPATIAL,
+      to: LOW_SPATIAL,
+      duration: 0.01,
+      easing: 'linear',
+    },
+    {
+      type: 'animate',
+      target: 'surface.startPositionFraction',
+      from: 0,
+      to: 0,
+      duration: 0.01,
+      easing: 'linear',
+    },
+    {
+      type: 'animate',
+      target: 'surface.time',
+      from: 0,
+      to: 1,
+      duration: 7,
+      easing: 'linear',
+    },
+    {
+      type: 'narrate',
+      text: 'Most of your budget on **time**, little on **space**: you spiral in slowly, pass the weightless center, and coast out to narrow outer space on the far side.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'animate',
+      target: 'surface.time',
+      from: 0,
+      to: 0,
+      duration: 0.01,
+      easing: 'linear',
+    },
+    {
+      type: 'animate',
+      target: 'surface.spatialFraction',
+      from: LOW_SPATIAL,
+      to: ESCAPE_SPATIAL,
+      duration: 1.5,
+      easing: 'ease-out',
+    },
+    {
+      type: 'animate',
+      target: 'surface.time',
+      from: 0,
+      to: 1,
+      duration: 7,
+      easing: 'linear',
+    },
+    {
+      type: 'narrate',
+      text: 'Dedicate enough to **space** — **escape velocity**, seen as geometry — and you shoot through the center and climb out to narrow outer space on the far side. A threshold, not a formula to memorize.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'What if you start at the **center of the Earth** itself — the wide, flat cylinder from Step 1?',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'animate',
+      target: 'surface.time',
+      from: 0,
+      to: 0,
+      duration: 0.01,
+      easing: 'linear',
+    },
+    {
+      type: 'animate',
+      target: 'surface.spatialFraction',
+      from: ESCAPE_SPATIAL,
+      to: LOW_SPATIAL,
+      duration: 1,
+      easing: 'ease-out',
+    },
+    {
+      type: 'animate',
+      target: 'surface.startPositionFraction',
+      from: 0,
+      to: CENTER_START,
+      duration: 1.5,
+      easing: 'ease-out',
+    },
+    {
+      type: 'animate',
+      target: 'surface.time',
+      from: 0,
+      to: 1,
+      duration: 7,
+      easing: 'linear',
+    },
+    {
+      type: 'narrate',
+      text: '**No curvature** — that is the whole answer. The wide center cylinder is **flat**. There is nowhere to **fall**; you circle the time axis, but you do not move in space at all. Complete **weightlessness**, not because the center traps you, but because the geometry here has nothing to pull.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'How would **light** travel here? Light spends its entire budget on **space** — almost none on winding **time**.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'animate',
+      target: 'surface.time',
+      from: 0,
+      to: 0,
+      duration: 0.01,
+      easing: 'linear',
+    },
+    {
+      type: 'animate',
+      target: 'surface.startPositionFraction',
+      from: CENTER_START,
+      to: 0,
+      duration: 1.5,
+      easing: 'ease-out',
+    },
+    {
+      type: 'animate',
+      target: 'surface.spatialFraction',
+      from: LOW_SPATIAL,
+      to: PURE_SPATIAL,
+      duration: 1.5,
+      easing: 'ease-out',
+    },
+    {
+      type: 'animate',
+      target: 'surface.time',
+      from: 0,
+      to: 1,
+      duration: 6,
+      easing: 'linear',
+    },
+    {
+      type: 'narrate',
+      text: "Turn **spatial motion** all the way up: the worldline is nearly a **straight line** through the folded spacetime — out through the bulge and into outer space on the far side. That is **light** crossing **Earth's** gravity. The well is so shallow that the bend is barely visible in our demo.",
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'Do not take that as the whole story. Gravity **always** curves geometry, and light always follows it — but around ordinary mass the deflection is tiny. Only when gravity becomes **extreme** — a much deeper well — does light visibly **bend** instead of passing straight through. Chapter 8 lives in that regime.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'Try both dials yourself: starting position, space versus time. Then we follow light into heavy gravity.',
+    },
+    { type: 'wait', for: 'userAdvance' },
+  ],
+};

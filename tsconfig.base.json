@@ -41,6 +41,9 @@
       "@lm/curved-surface": ["./libs/primitives/curved-surface/src/index.ts"],
       "@lm/feature-chapter-06-rolling-diagram": [
         "./libs/features/chapter-06-rolling-diagram/src/index.ts"
+      ],
+      "@lm/feature-chapter-07-gravity-well": [
+        "./libs/features/chapter-07-gravity-well/src/index.ts"
       ]
     }
   },

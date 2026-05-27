@@ -1,9 +1,13 @@
 import {
   DEFAULT_CURVED_SURFACE_PARAMS,
+  DEFAULT_WELL_PARAMS,
   surfaceThetaSweep,
   unrolledSurfacePoint,
+  wellRevealMaxX,
+  wellSurfacePoint,
   type CurvedSurfaceParams,
   type Vec3,
+  type WellParams,
 } from '@lm/physics';
 import type { PerspectiveCamera } from 'three';
 import { Vector3 } from 'three';
@@ -114,6 +118,34 @@ export function buildAxisStrips(
       { x: 0, y: half, z: 0 },
     ],
   };
+}
+
+/** Space (tunnel axis) and time (circumference) guides for the gravity bulge. */
+export function buildWellAxisStrips(
+  wellReveal: number,
+  wellMorph: number,
+  params: WellParams = DEFAULT_WELL_PARAMS,
+): AxisStrips {
+  const half = params.length / 2;
+  const revealMax = wellRevealMaxX(wellReveal);
+  const xMax = (revealMax * params.length) / 2;
+
+  const space: Vec3[] = [];
+  const cols = 24;
+  for (let i = 0; i <= cols; i++) {
+    const t = i / cols;
+    const x = -half + t * (xMax + half);
+    space.push({ x, y: 0, z: 0 });
+  }
+
+  const time: Vec3[] = [];
+  const segs = 28;
+  for (let i = 0; i <= segs; i++) {
+    const theta = (i / segs) * 2 * Math.PI;
+    time.push(wellSurfacePoint(theta, -1, wellMorph, params));
+  }
+
+  return { space, time };
 }
 
 const _projectVec = new Vector3();

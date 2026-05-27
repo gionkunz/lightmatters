@@ -685,6 +685,13 @@ export class TimelineRunner {
     if (event.type === 'narrate' && event.pauseAfter === 0) {
       return false;
     }
+    if (event.type === 'animate') {
+      const next = this.events[eventIndex + 1];
+      // Setup chains (snap targets, then run the visible tween) are one beat.
+      if (next?.type === 'animate') {
+        return false;
+      }
+    }
     return true;
   }
 

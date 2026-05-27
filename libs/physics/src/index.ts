@@ -6,3 +6,4 @@ export * from './lib/signal-reception';
 export * from './lib/light-scene';
 export * from './lib/ether-field';
 export * from './lib/curved-surface';
+export * from './lib/gravity-well';

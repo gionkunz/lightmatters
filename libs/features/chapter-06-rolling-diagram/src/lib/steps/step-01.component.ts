@@ -79,7 +79,7 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
               [showTrail]="true"
               [showAxisLabels]="true"
               [trailLength]="120"
-              [trailSpan]="0.85"
+              [trailSpan]="1.85"
               worldlineMode="time-only"
             />
               </lm-diagram-viewport>

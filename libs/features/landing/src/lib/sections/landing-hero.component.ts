@@ -37,7 +37,9 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
           <a routerLink="/ch/01/step/1">
             <lm-button [primary]="true">begin chapter 1 →</lm-button>
           </a>
-          <lm-button>preview the journey</lm-button>
+          <a href="#chapters">
+            <lm-button>preview the journey</lm-button>
+          </a>
         </div>
         <div
           class="mt-7 flex items-center gap-4 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink opacity-45"
@@ -55,7 +57,7 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
             <lm-kicker [opacity]="0.4">step 03</lm-kicker>
           </div>
           <div
-            class="mb-[18px] min-h-16 text-pretty font-serif text-[21px] leading-snug text-ink"
+            class="mb-[18px] min-h-16 text-pretty font-serif text-[length:var(--lm-text-narrator)] leading-[1.4] text-ink"
           >
             You are always moving through spacetime at the speed of light. You
             only choose how to spend it.

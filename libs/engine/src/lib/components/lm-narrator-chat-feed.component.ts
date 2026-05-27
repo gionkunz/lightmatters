@@ -45,7 +45,7 @@ const MATH_HOST = `${MATH_PILL} [&_mjx-container]:!my-0 [&_mjx-container]:!text-
 
     <div
       #beatScroll
-      class="flex min-h-0 flex-1 flex-col gap-[18px] overflow-y-auto overscroll-contain"
+      class="lm-scrollbar flex min-h-0 flex-1 flex-col gap-[18px] overflow-y-auto overscroll-contain"
     >
       @for (beat of pastBeats(); track $index) {
         <p [class]="PAST_TEXT">

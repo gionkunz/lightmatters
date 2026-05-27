@@ -6,6 +6,7 @@ import {
   cylinderSurfacePoint,
   DEFAULT_CURVED_SURFACE_PARAMS,
   morphSurfacePoint,
+  TIME_ONLY_SPACE_T,
   unrolledSurfacePoint,
   worldlineTrailSamples,
   APPLE_TREE_THETA,
@@ -55,7 +56,7 @@ describe('curved-surface physics', () => {
     expect(start.z).toBeCloseTo(end.z, 1);
   });
 
-  it('moves along the bottom time edge when time-only and fully unrolled', () => {
+  it('moves parallel to the time axis when time-only and fully unrolled', () => {
     const start = morphSurfacePoint(
       1,
       0,
@@ -76,6 +77,9 @@ describe('curved-surface physics', () => {
     expect(end.z).toBeCloseTo(0, 5);
     expect(Math.abs(end.y - start.y)).toBeLessThan(0.08);
     expect(Math.hypot(end.x - start.x, end.y - start.y)).toBeGreaterThan(0.15);
+    const onTimeAxis = unrolledSurfacePoint(0, 0, 0, DEFAULT_CURVED_SURFACE_PARAMS);
+    expect(start.y).toBeGreaterThan(onTimeAxis.y + 0.05);
+    expect(TIME_ONLY_SPACE_T).toBeGreaterThan(0);
   });
 
   it('returns the requested number of trail samples with increasing age', () => {

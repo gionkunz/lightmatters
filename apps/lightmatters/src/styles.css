@@ -9,6 +9,7 @@
 @source '../../../libs/features/chapter-04-ether-was-wrong/src';
 @source '../../../libs/features/chapter-05-doppler-seeing-motion/src';
 @source '../../../libs/features/chapter-06-rolling-diagram/src';
+@source '../../../libs/features/chapter-07-gravity-well/src';
 @source '../../../libs/primitives/spacetime-diagram/src';
 @source '../../../libs/primitives/light-scene/src';
 @source '../../../libs/primitives/curved-surface/src';
@@ -146,4 +147,28 @@ body {
     0 0 0 1px var(--lm-ink),
     0 0 0 5px var(--lm-glow-1);
   transform: translateY(-2px);
+}
+
+/* Thin theme-aware scrollbars (narrator feed, etc.). */
+.lm-scrollbar {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--lm-ink-faint) transparent;
+}
+
+.lm-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.lm-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lm-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--lm-ink-faint);
+  border-radius: 999px;
+}
+
+.lm-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--lm-ink-mid);
 }

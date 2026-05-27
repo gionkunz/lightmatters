@@ -36,7 +36,12 @@ export const APPLE_STEM_SPACE_T = 0.1 * APPLE_TREE_SCALE;
 export const APPLE_RELEASE_SPACE_T =
   APPLE_RELEASE_GLYPH[1] * APPLE_STEM_SPACE_T;
 
-export type WorldlineMode = 'orbit' | 'time-only' | 'geodesic-fall' | 'apple-fall';
+export type WorldlineMode =
+  | 'orbit'
+  | 'time-only'
+  | 'geodesic-fall'
+  | 'apple-fall'
+  | 'well-trajectory';
 
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
@@ -92,13 +97,25 @@ function radiiAtCurvature(
   };
 }
 
+/** spaceT for pure-time worldlines — offset from the time axis for visibility. */
+export const TIME_ONLY_SPACE_T = 0.32;
+
 /** Flat spacetime strip: time vertical (y), space fixed at x = 0. */
 function flatWorldlinePoint(properTime: number, params: CurvedSurfaceParams): Vec3 {
   const y = lerp(-params.height / 2, params.height / 2, properTime);
   return { x: 0, y, z: 0 };
 }
 
-/** Bottom rim: fixed space (t = 0), motion purely in θ / time. */
+function timeOnlyFlatPoint(
+  properTime: number,
+  params: CurvedSurfaceParams,
+): Vec3 {
+  const spaceX = (TIME_ONLY_SPACE_T - 0.5) * params.height;
+  const y = lerp(-params.height / 2, params.height / 2, properTime);
+  return { x: spaceX, y, z: 0 };
+}
+
+/** Fixed space, motion purely in θ / time. */
 function timeOnlyWorldlinePoint(
   curvature: number,
   properTime: number,
@@ -106,7 +123,7 @@ function timeOnlyWorldlinePoint(
 ): Vec3 {
   const { top, bottom } = radiiAtCurvature(curvature, params);
   const theta = properTime * 2 * Math.PI;
-  return coneSurfacePoint(theta, 0, top, bottom, params.height);
+  return coneSurfacePoint(theta, TIME_ONLY_SPACE_T, top, bottom, params.height);
 }
 
 function timeOnlyWorldlinePointUnrolled(
@@ -115,7 +132,7 @@ function timeOnlyWorldlinePointUnrolled(
   params: CurvedSurfaceParams,
 ): Vec3 {
   const theta = properTime * 2 * Math.PI;
-  return unrolledSurfacePoint(theta, 0, curvature, params);
+  return unrolledSurfacePoint(theta, TIME_ONLY_SPACE_T, curvature, params);
 }
 
 /** Starting 3D theta of the geodesic-fall worldline (front of the cone). */
@@ -423,9 +440,12 @@ export function morphSurfacePoint(
   const folded = lerpVec3(flat, curved, fold);
   if (mode === 'apple-fall') return curved;
   if (mode === 'time-only') {
-    if (unfold <= 0) return folded;
+    const flatTime = timeOnlyFlatPoint(properTime, params);
+    const curvedTime = timeOnlyWorldlinePoint(curvature, properTime, params);
+    const foldedTime = lerpVec3(flatTime, curvedTime, fold);
+    if (unfold <= 0) return foldedTime;
     const unrolled = timeOnlyWorldlinePointUnrolled(curvature, properTime, params);
-    return lerpVec3(folded, unrolled, unfold);
+    return lerpVec3(foldedTime, unrolled, unfold);
   }
   if (unfold <= 0) return folded;
   const unrolled = curvedWorldlinePointUnrolled(

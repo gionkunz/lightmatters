@@ -3,7 +3,7 @@ import { DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LmKickerComponent } from '@lm/design';
-import { CHAPTERS } from '../data/chapters.data';
+import { CHAPTERS, chapterFirstStepHref } from '../data/chapters.data';
 import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placeholder.component';
 
 @Component({
@@ -16,17 +16,22 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
     LmDiagramPlaceholderComponent,
   ],
   template: `
-    <section class="border-b border-ink-faint px-16 pb-24 pt-[88px]">
+    <section
+      id="chapters"
+      class="border-b border-ink-faint px-16 pb-24 pt-[88px]"
+    >
       <div class="mb-11 flex items-baseline gap-[18px]">
         <lm-kicker [opacity]="0.55">II · the journey</lm-kicker>
-        <h3 class="m-0 font-serif text-[30px] font-medium italic text-ink">
+        <h3
+          class="m-0 font-serif text-[30px] font-semibold italic text-ink"
+        >
           eight chapters, paced for an evening.
         </h3>
         <span class="mb-2 h-px flex-1 bg-ink-faint"></span>
       </div>
       <div class="grid grid-cols-4 gap-x-6 gap-y-8">
         @for (chapter of chapters; track chapter.n) {
-          @if (chapterRoute(chapter.n); as route) {
+          @if (chapterHref(chapter.n); as route) {
             <a
               [routerLink]="route"
               class="lm-chapter-card block cursor-pointer bg-paper-alt p-[22px] no-underline text-inherit"
@@ -65,7 +70,9 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
           [height]="100"
         />
       </div>
-      <div class="mb-2 font-serif text-lg font-medium leading-tight text-ink">
+      <div
+        class="mb-2 font-serif text-[length:var(--lm-text-chrome)] font-semibold leading-tight text-ink"
+      >
         {{ chapter.title }}
       </div>
       <div
@@ -79,14 +86,7 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
 export class LandingChaptersComponent {
   protected readonly chapters = CHAPTERS;
 
-  protected chapterRoute(chapterNumber: number): string | null {
-    switch (chapterNumber) {
-      case 1:
-        return '/ch/01/step/1';
-      case 2:
-        return '/ch/02/step/1';
-      default:
-        return null;
-    }
+  protected chapterHref(chapterNumber: number): string | null {
+    return chapterFirstStepHref(chapterNumber);
   }
 }

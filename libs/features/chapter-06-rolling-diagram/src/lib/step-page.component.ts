@@ -4,7 +4,6 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { LmButtonComponent } from '@lm/design';
 import { Step01Component } from './steps/step-01.component';
-import { Step02Component } from './steps/step-02.component';
 import { Step03Component } from './steps/step-03.component';
 import { Step04Component } from './steps/step-04.component';
 import { Step05Component } from './steps/step-05.component';
@@ -13,7 +12,6 @@ import { Step05Component } from './steps/step-05.component';
   selector: 'lm-ch6-step-page',
   imports: [
     Step01Component,
-    Step02Component,
     Step03Component,
     Step04Component,
     Step05Component,
@@ -26,15 +24,12 @@ import { Step05Component } from './steps/step-05.component';
         <lm-ch6-step-01 />
       }
       @case (2) {
-        <lm-ch6-step-02 />
-      }
-      @case (3) {
         <lm-ch6-step-03 />
       }
-      @case (4) {
+      @case (3) {
         <lm-ch6-step-04 />
       }
-      @case (5) {
+      @case (4) {
         <lm-ch6-step-05 />
       }
       @default {

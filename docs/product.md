@@ -114,22 +114,25 @@ Physics helpers: `buildPeriodicEmissions`, `pulseArrivalSceneTimes`, `meanPulseI
 
 The cone visualization from Epstein, brought to life. Returns to the Epstein spacetime diagram and introduces WebGL (`lm-curved-surface`).
 
-- **Step 1 — A point in time.** Unrolled cylinder with **Space** / **time** axes; a body at rest moves along the time axis, then the sheet **rolls into a tube** (reverse of unroll).
-- **Step 2 — Roll the paper.** Fold the diagram into a **cylinder**; the dot orbits the surface leaving a **fading trail**.
-- **Step 3 — Bend into a cone.** Morph cylinder → cone; wide end = strong gravity, point = weak gravity.
-- **Step 4 — Gravity as geometry.** A straight geodesic on the cone curves spatially when unrolled.
-- **Step 5 — Newton's apple.** Tiny house on the rim; gravity is the geometry, not the apple. Bridge to Chapter 7.
+- **Step 1 — A point in time.** Unrolled cylinder with **Space** / **time** axes; a body at rest moves along a line offset from the time axis, then the sheet **rolls into a tube** and the dot completes another lap around the rim.
+- **Step 2 — Bend into a cone.** Morph cylinder → cone; wide end = strong gravity, point = weak gravity.
+- **Step 3 — Gravity as geometry.** A straight geodesic on the cone curves spatially when unrolled.
+- **Step 4 — Newton's apple.** Tiny house on the rim; gravity is the geometry, not the apple. Bridge to Chapter 7.
 
 Physics helpers: `cylinderSurfacePoint`, `coneSurfacePoint`, `morphSurfacePoint`, `worldlineTrailSamples` in `@lm/physics`.
 
 ### Chapter 7 — Why the center of the Earth is weightless
 
-A continuation of the cone idea, answering a question the founder asked himself as a child.
+A continuation of the cone idea, answering a question the founder asked himself as a child — opened with the tunnel-through-Earth thought experiment.
 
-- Compose the full gravity well as a sequence: cylinder (space) → cone narrowing toward the surface → small cylinder (Earth's center, no gravity) → cone widening → cylinder (space again).
-- Smooth that piecewise shape into a single bezier-curved gravity well.
-- Animate a particle dropped into the well: it spirals in, passes through the weightless center, climbs the far side, and either falls back or escapes depending on its energy.
-- Interactive: let the user dial initial energy and watch the trajectory change. The notion of escape velocity becomes a visual threshold, not a formula.
+- **Step 1 — The puzzle.** Tunnel jump hook; Epstein's **bulge** (not a dipping well); cone recap.
+- **Step 2 — Build the bulge.** Piecewise: narrow outer cylinder → **expanding** cone → wide center cylinder (Earth sphere, weightless) → **contracting** cone → narrow outer cylinder.
+- **Step 3 — Fall on folded paper.** A particle falls through the piecewise bulge, then the paper unrolls flat — the curving worldline straightens into a literal straight line. Gravity is the shape of the paper.
+- **Step 4 — Smooth the shape.** Morph the four creases into one continuous bulge; the smooth shape can't lay perfectly flat, but the straight-line truth from Step 3 still holds.
+- **Step 5 — Fall through Earth.** Pay off the tunnel: particle spirals in, passes the weightless center, climbs the far side (trail) — the same straight-line worldline you saw on the unrolled paper.
+- **Step 6 — Escape velocity.** Interactive energy dial: bound vs escape trajectories; bridge to Chapter 8.
+
+Physics helpers: `wellRadiusAt`, `wellSurfacePoint`, `wellTrajectoryPoint`, `wellTrajectorySamples`, `isEscapeTrajectory` in `@lm/physics`.
 
 ### Chapter 8 — Light bending around mass
 

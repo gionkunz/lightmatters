@@ -40,6 +40,26 @@ describe('LmCurvedSurfaceComponent', () => {
     expect(fixture.componentInstance.time()).toBe(0.25);
   });
 
+  it('accepts well profile inputs', () => {
+    fixture.componentRef.setInput('surfaceProfile', 'well');
+    fixture.componentRef.setInput('wellReveal', 0.5);
+    fixture.componentRef.setInput('wellMorph', 0.25);
+    fixture.componentRef.setInput('energy', 0.8);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.surfaceProfile()).toBe('well');
+    expect(fixture.componentInstance.wellReveal()).toBe(0.5);
+    expect(fixture.componentInstance.wellMorph()).toBe(0.25);
+    expect(fixture.componentInstance.energy()).toBe(0.8);
+  });
+
+  it('accepts wellUnfold input for the paper-unfold demo', () => {
+    fixture.componentRef.setInput('surfaceProfile', 'well');
+    fixture.componentRef.setInput('wellMorph', 0);
+    fixture.componentRef.setInput('wellUnfold', 0.7);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.wellUnfold()).toBe(0.7);
+  });
+
   it('renders a reset view button', () => {
     fixture.detectChanges();
     const button = fixture.nativeElement.querySelector(

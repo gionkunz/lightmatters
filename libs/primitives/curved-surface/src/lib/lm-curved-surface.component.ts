@@ -10,7 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ThemeService } from '@lm/design';
-import type { WorldlineMode } from '@lm/physics';
+import type { WellLaunchMode, WellTrajectoryMode, WorldlineMode } from '@lm/physics';
 import { axisArrowPoints, type AxisLabelAnchor } from './axis-labels';
 import {
   CurvedSurfaceRenderer,
@@ -93,18 +93,28 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
   private readonly themeService = inject(ThemeService);
   private readonly canvasRef = viewChild.required<ElementRef<HTMLCanvasElement>>('canvas');
 
+  readonly surfaceProfile = input<'cone' | 'well'>('cone');
   readonly fold = input(1);
   readonly curvature = input(0);
   readonly time = input(0);
   readonly unfold = input(0);
+  readonly wellReveal = input(1);
+  readonly wellMorph = input(1);
+  readonly wellUnfold = input(0);
+  readonly energy = input(0.35);
+  readonly wellLaunchMode = input<WellLaunchMode>('energy');
+  readonly spatialFraction = input(0.28);
+  readonly wellStartXNorm = input(-1);
   readonly showTrail = input(true);
   readonly trailLength = input(96);
   readonly trailSpan = input(1);
   readonly worldlineMode = input<WorldlineMode>('orbit');
+  readonly wellTrajectoryMode = input<WellTrajectoryMode>('pass-through');
   readonly showAppleTree = input(false);
   readonly showProjectedTree = input(true);
   readonly showGeodesic = input(false);
   readonly showAxisLabels = input(false);
+  readonly showEarthSphere = input(false);
   readonly width = input(720);
   readonly height = input(520);
 
@@ -121,18 +131,28 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
       this.renderer.resize(this.width(), this.height());
       this.renderer.setThemeColors(readThemeColors());
       this.renderer.update({
+        surfaceProfile: this.surfaceProfile(),
         fold: this.fold(),
         curvature: this.curvature(),
         time: this.time(),
         unfold: this.unfold(),
+        wellReveal: this.wellReveal(),
+        wellMorph: this.wellMorph(),
+        wellUnfold: this.wellUnfold(),
+        energy: this.energy(),
+        wellLaunchMode: this.wellLaunchMode(),
+        spatialFraction: this.spatialFraction(),
+        wellStartXNorm: this.wellStartXNorm(),
         showTrail: this.showTrail(),
         trailLength: this.trailLength(),
         trailSpan: this.trailSpan(),
         worldlineMode: this.worldlineMode(),
+        wellTrajectoryMode: this.wellTrajectoryMode(),
         showAppleTree: this.showAppleTree(),
         showProjectedTree: this.showProjectedTree(),
         showGeodesic: this.showGeodesic(),
         showAxisLabels: this.showAxisLabels(),
+        showEarthSphere: this.showEarthSphere(),
       });
     });
 
@@ -149,18 +169,28 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
 
     effect(() => {
       const state: Partial<CurvedSurfaceState> = {
+        surfaceProfile: this.surfaceProfile(),
         fold: this.fold(),
         curvature: this.curvature(),
         time: this.time(),
         unfold: this.unfold(),
+        wellReveal: this.wellReveal(),
+        wellMorph: this.wellMorph(),
+        wellUnfold: this.wellUnfold(),
+        energy: this.energy(),
+        wellLaunchMode: this.wellLaunchMode(),
+        spatialFraction: this.spatialFraction(),
+        wellStartXNorm: this.wellStartXNorm(),
         showTrail: this.showTrail(),
         trailLength: this.trailLength(),
         trailSpan: this.trailSpan(),
         worldlineMode: this.worldlineMode(),
+        wellTrajectoryMode: this.wellTrajectoryMode(),
         showAppleTree: this.showAppleTree(),
         showProjectedTree: this.showProjectedTree(),
         showGeodesic: this.showGeodesic(),
         showAxisLabels: this.showAxisLabels(),
+        showEarthSphere: this.showEarthSphere(),
       };
       this.renderer?.update(state);
     });
