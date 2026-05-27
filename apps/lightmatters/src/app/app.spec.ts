@@ -15,4 +15,13 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     expect(fixture.componentInstance).toBeTruthy();
   });
+
+  it('hosts the viewport resolution hint', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const hint = fixture.nativeElement.querySelector(
+      'lm-viewport-resolution-hint',
+    );
+    expect(hint).not.toBeNull();
+  });
 });

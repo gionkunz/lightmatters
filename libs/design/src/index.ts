@@ -1,4 +1,11 @@
 export { ThemeService, type ThemeName } from './lib/theme/theme.service';
+export {
+  ViewportResolutionHintService,
+  MIN_VIEWPORT_WIDTH,
+  MIN_VIEWPORT_HEIGHT,
+  isViewportUndersized,
+} from './lib/viewport/viewport-resolution-hint.service';
+export { LmViewportResolutionHintComponent } from './lib/components/lm-viewport-resolution-hint.component';
 export { MathJaxService } from './lib/math/mathjax.service';
 export { LmInteractiveDirective } from './lib/directives/lm-interactive.directive';
 export { LmWordmarkComponent } from './lib/components/lm-wordmark.component';
