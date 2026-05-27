@@ -83,7 +83,7 @@ interface SourceRender {
     <svg
       [attr.width]="width()"
       [attr.height]="height()"
-      [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
+      [attr.viewBox]="svgViewBox"
       class="block"
     >
       @for (pulse of pulses(); track pulse.id) {
@@ -320,6 +320,75 @@ export class LmLightSceneComponent {
       default:
         return 'fill-ink';
     }
+  }
+
+  /** Tight bounds in layout pixels; display width/height scale the cropped region. */
+  protected get svgViewBox(): string {
+    const pad = 12;
+    const b = this.sceneBounds();
+    return `${b.minX - pad} ${b.minY - pad} ${b.width + pad * 2} ${b.height + pad * 2}`;
+  }
+
+  private sceneBounds(): {
+    minX: number;
+    minY: number;
+    width: number;
+    height: number;
+  } {
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    const add = (x: number, y: number, margin = 0): void => {
+      minX = Math.min(minX, x - margin);
+      minY = Math.min(minY, y - margin);
+      maxX = Math.max(maxX, x + margin);
+      maxY = Math.max(maxY, y + margin);
+    };
+
+    const labelPadX = this.showLabels() ? 48 : 0;
+    const labelPadY = this.showLabels() ? 16 : 0;
+    const e = this.extent();
+    for (const corner of [
+      { x: -e, y: -e },
+      { x: e, y: -e },
+      { x: -e, y: e },
+      { x: e, y: e },
+    ]) {
+      const px = this.toPx(corner.x, corner.y);
+      add(px.x, px.y, 8);
+    }
+
+    for (const pulse of this.pulses()) {
+      add(pulse.cx, pulse.cy, pulse.r + 2);
+    }
+    for (const src of this.renderedSources()) {
+      add(src.cx, src.cy, 10);
+      if (this.showLabels() && src.label) {
+        add(src.cx + 8, src.cy - 8, labelPadX);
+        add(src.cx, src.cy, labelPadY);
+      }
+    }
+    for (const obs of this.renderedObservers()) {
+      add(obs.cx, obs.cy, obs.received ? 14 : 10);
+      if (this.showLabels()) {
+        add(obs.cx + 10, obs.cy + 4, labelPadX);
+        add(obs.cx, obs.cy, labelPadY);
+      }
+    }
+
+    if (!Number.isFinite(minX)) {
+      const cx = this.width() / 2;
+      const cy = this.height() / 2;
+      return { minX: cx - 40, minY: cy - 40, width: 80, height: 80 };
+    }
+
+    return {
+      minX,
+      minY,
+      width: maxX - minX,
+      height: maxY - minY,
+    };
   }
 
   private unit(): number {

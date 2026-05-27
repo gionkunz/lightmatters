@@ -219,6 +219,23 @@ describe('LmSpacetimeDiagramComponent', () => {
       );
     });
 
+    it('uses a tight viewBox smaller than the layout slot', () => {
+      fixture.componentRef.setInput('showTipLabel', true);
+      fixture.componentRef.setInput('velocityA', 0.01);
+      fixture.componentRef.setInput('velocityB', 0.5);
+      fixture.componentRef.setInput('width', 800);
+      fixture.componentRef.setInput('height', 600);
+      fixture.detectChanges();
+
+      const svg = fixture.nativeElement.querySelector('svg');
+      const viewBox = svg.getAttribute('viewBox') ?? '';
+      const [, , vbW, vbH] = viewBox.split(/\s+/).map(Number);
+      expect(vbW).toBeLessThan(800);
+      expect(vbH).toBeLessThan(600);
+      expect(vbW).toBeGreaterThan(300);
+      expect(vbH).toBeGreaterThan(200);
+    });
+
     it('renders accent tip labels for both travellers', () => {
       fixture.componentRef.setInput('showTipLabel', true);
       fixture.componentRef.setInput('velocityA', 0.01);

@@ -104,9 +104,22 @@ body {
   background-color: var(--lm-paper);
   color: var(--lm-ink);
   font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   transition:
     background-color 0.4s,
     color 0.4s;
+}
+
+/* Narration emphasis uses real EB Garamond masters (600/700), not faux-bold. */
+.font-serif strong,
+.font-serif b {
+  font-weight: 600;
+}
+
+.font-serif em,
+.font-serif i {
+  font-style: italic;
 }
 
 .lm-interactive {

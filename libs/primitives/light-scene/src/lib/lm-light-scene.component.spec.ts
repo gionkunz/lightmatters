@@ -124,6 +124,25 @@ describe('LmLightSceneComponent', () => {
     expect(sourceCx).toBeGreaterThan(pulseCx);
   });
 
+  it('uses a square-ish viewBox tighter than the layout slot', () => {
+    fixture.componentRef.setInput('observers', [
+      { id: 'w', x: 0, y: 0, label: 'W' },
+    ]);
+    fixture.componentRef.setInput('sources', [
+      { id: 's-left', x: -0.5, y: 0, label: 'S_L', emissions: [{ atTime: 0, pulseId: 'p1' }] },
+      { id: 's-right', x: 0.5, y: 0, label: 'S_R', emissions: [{ atTime: 0, pulseId: 'p2' }] },
+    ]);
+    fixture.componentRef.setInput('width', 560);
+    fixture.componentRef.setInput('height', 380);
+    fixture.detectChanges();
+
+    const viewBox = fixture.nativeElement.querySelector('svg')?.getAttribute('viewBox') ?? '';
+    const [, , vbW, vbH] = viewBox.split(/\s+/).map(Number);
+    expect(vbW).toBeLessThan(560);
+    expect(vbH).toBeLessThan(380);
+    expect(Math.abs(vbW - vbH)).toBeLessThan(80);
+  });
+
   it('emits reception only once even if time scrubs back and forward', () => {
     const events: unknown[] = [];
     fixture.componentRef.setInput('observers', [

@@ -23,7 +23,7 @@ type DiagramVariant =
     <svg
       [attr.width]="width()"
       [attr.height]="height()"
-      [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
+      [attr.viewBox]="svgViewBox"
       class="block overflow-visible"
     >
       @if (variant() === 'position-only') {
@@ -33,7 +33,7 @@ type DiagramVariant =
           stroke-width="1"
           [attr.opacity]="axisOpacity()"
         >
-          <line [attr.x1]="left" [attr.y1]="axisY" [attr.x2]="right" [attr.y2]="axisY" />
+          <line [attr.x1]="left" [attr.y1]="axisY" [attr.x2]="plotRight" [attr.y2]="axisY" />
           @for (tick of ticks; track tick) {
             <line
               [attr.x1]="left + tick * axisSpan"
@@ -53,7 +53,7 @@ type DiagramVariant =
 
         @if (showLabels()) {
           <text
-            [attr.x]="right + 8"
+            [attr.x]="plotRight + 8"
             [attr.y]="axisY + 4"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
@@ -106,7 +106,7 @@ type DiagramVariant =
           stroke-width="1"
           [attr.opacity]="axisOpacity()"
         >
-          <line [attr.x1]="left" [attr.y1]="fullBottom" [attr.x2]="right" [attr.y2]="fullBottom" />
+          <line [attr.x1]="left" [attr.y1]="fullBottom" [attr.x2]="plotRight" [attr.y2]="fullBottom" />
           <line [attr.x1]="left" [attr.y1]="fullBottom" [attr.x2]="left" [attr.y2]="fullTop" />
           @for (tick of ticks; track tick) {
             <line
@@ -279,7 +279,7 @@ type DiagramVariant =
 
         @if (showLabels()) {
           <text
-            [attr.x]="right + 8"
+            [attr.x]="plotRight + 8"
             [attr.y]="fullBottom + 4"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
@@ -300,7 +300,7 @@ type DiagramVariant =
           stroke-width="1"
           [attr.opacity]="axisOpacity()"
         >
-          <line [attr.x1]="left" [attr.y1]="fullBottom" [attr.x2]="right" [attr.y2]="fullBottom" />
+          <line [attr.x1]="left" [attr.y1]="fullBottom" [attr.x2]="plotRight" [attr.y2]="fullBottom" />
           <line [attr.x1]="left" [attr.y1]="fullBottom" [attr.x2]="left" [attr.y2]="fullTop" />
           @for (tick of ticks; track tick) {
             <line
@@ -425,7 +425,7 @@ type DiagramVariant =
 
         @if (showLabels()) {
           <text
-            [attr.x]="right + 8"
+            [attr.x]="plotRight + 8"
             [attr.y]="fullBottom + 4"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
@@ -491,8 +491,231 @@ export class LmSpacetimeDiagramComponent {
   protected readonly vectorLen = 240;
   protected readonly ticks = [0, 0.2, 0.4, 0.6, 0.8, 1];
 
+  protected get plotRight(): number {
+    const variant = this.variant();
+    if (variant === 'pair') {
+      return this.pairPlotRight();
+    }
+    if (variant === 'single' && (this.budgetArc() || this.showTipLabel())) {
+      return this.singlePlotRight();
+    }
+    if (variant === 'wavefront') {
+      return this.wavefrontPlotRight();
+    }
+    return this.right;
+  }
+
   protected get axisSpan(): number {
-    return this.right - this.left;
+    return this.plotRight - this.left;
+  }
+
+  /** Tight viewBox in design coordinates; width/height scale to the layout slot. */
+  protected get svgViewBox(): string {
+    const pad = 10;
+    const b = this.contentBounds();
+    return `${b.minX - pad} ${b.minY - pad} ${b.width + pad * 2} ${b.height + pad * 2}`;
+  }
+
+  private contentBounds(): {
+    minX: number;
+    minY: number;
+    width: number;
+    height: number;
+  } {
+    const variant = this.variant();
+    if (variant === 'position-only') {
+      return {
+        minX: this.left - 20,
+        minY: this.axisY - 14,
+        width: this.plotRight - this.left + 36,
+        height: 28,
+      };
+    }
+    if (variant === 'time-only') {
+      return {
+        minX: this.axisX - 24,
+        minY: this.timeTop - 12,
+        width: 48,
+        height: this.timeBottom - this.timeTop + 28,
+      };
+    }
+    if (variant === 'pair') {
+      return this.pairContentBounds();
+    }
+    if (variant === 'single') {
+      return this.singleContentBounds();
+    }
+    if (variant === 'wavefront') {
+      return this.wavefrontContentBounds();
+    }
+    return {
+      minX: this.left - 24,
+      minY: this.fullTop - 16,
+      width: this.plotRight - this.left + 36,
+      height: this.fullBottom - this.fullTop + 28,
+    };
+  }
+
+  private pairPlotRight(): number {
+    let maxX = this.left + this.vectorLen + 16;
+    if (this.showTipLabel()) {
+      for (const vector of this.pairVectors()) {
+        maxX = Math.max(maxX, vector.tipX + 16 + vector.tipLabelWidth);
+      }
+    } else {
+      for (const vector of this.pairVectors()) {
+        maxX = Math.max(maxX, vector.tipX + 12);
+      }
+    }
+    return maxX;
+  }
+
+  private pairContentBounds(): {
+    minX: number;
+    minY: number;
+    width: number;
+    height: number;
+  } {
+    let maxX = this.pairPlotRight();
+    let minY = this.fullTop;
+    let maxY = this.fullBottom + 8;
+    for (const vector of this.pairVectors()) {
+      maxX = Math.max(maxX, vector.tipX + (this.showTipLabel() ? vector.tipLabelWidth + 16 : 12));
+      if (this.showTipLabel()) {
+        minY = Math.min(minY, vector.tipY - 28);
+        maxY = Math.max(maxY, vector.tipY + 30);
+      } else {
+        minY = Math.min(minY, vector.tipY - 10);
+        maxY = Math.max(maxY, vector.tipY + 10);
+      }
+    }
+    const minX = this.left - 24;
+    return {
+      minX,
+      minY: minY - (this.showLabels() ? 14 : 6),
+      width: maxX - minX + (this.showLabels() ? 28 : 12),
+      height: maxY - minY + (this.showLabels() ? 18 : 10),
+    };
+  }
+
+  private singlePlotRight(): number {
+    let maxX = this.left + this.vectorLen + 16;
+    if (this.showTipLabel()) {
+      maxX = Math.max(maxX, this.vectorTipX + 16 + this.tipLabelWidth);
+    } else {
+      maxX = Math.max(maxX, this.vectorTipX + 12);
+    }
+    return maxX;
+  }
+
+  private singleContentBounds(): {
+    minX: number;
+    minY: number;
+    width: number;
+    height: number;
+  } {
+    let maxX = this.singlePlotRight();
+    let minY = this.fullTop;
+    let maxY = this.fullBottom + 8;
+    maxX = Math.max(maxX, this.vectorTipX + (this.showTipLabel() ? this.tipLabelWidth + 16 : 12));
+    if (this.showTipLabel()) {
+      minY = Math.min(minY, this.vectorTipY - 28);
+      maxY = Math.max(maxY, this.vectorTipY + 30);
+    } else {
+      minY = Math.min(minY, this.vectorTipY - 10);
+      maxY = Math.max(maxY, this.vectorTipY + 10);
+    }
+    const minX = this.left - 24;
+    return {
+      minX,
+      minY: minY - (this.showLabels() ? 14 : 6),
+      width: maxX - minX + (this.showLabels() ? 28 : 12),
+      height: maxY - minY + (this.showLabels() ? 18 : 10),
+    };
+  }
+
+  private wavefrontPlotRight(): number {
+    const layout = this.wavefrontLayout();
+    const tMax = this.wavefrontTMax();
+    const signal = this.wavefrontSignal();
+    let maxX = layout.xB;
+    if (signal === 'ring') {
+      maxX = Math.max(maxX, layout.xB + tMax);
+    }
+    if (this.wavefrontShowObserverC()) {
+      maxX = Math.max(
+        maxX,
+        observerPositionAtTime(layout, 'c', tMax),
+      );
+    }
+    const px = this.left + maxX * this.wavefrontUnit + 20;
+    const worldlines = this.wavefrontWorldlines();
+    let maxPx = px;
+    for (const wl of worldlines) {
+      maxPx = Math.max(maxPx, wl.x2 + 12, wl.labelX + 16);
+    }
+    const ring = this.wavefrontCirclePx();
+    if (ring) {
+      maxPx = Math.max(maxPx, ring.cx + ring.r + 8);
+    }
+    const ray = this.wavefrontLightRayPx();
+    if (ray) {
+      maxPx = Math.max(maxPx, ray.x2 + 8);
+    }
+    const seg = this.wavefrontHorizontalLightPx();
+    if (seg) {
+      maxPx = Math.max(maxPx, seg.x2 + 8, seg.lift?.x2 ?? 0);
+    }
+    return Math.max(maxPx, this.left + 80);
+  }
+
+  private wavefrontContentBounds(): {
+    minX: number;
+    minY: number;
+    width: number;
+    height: number;
+  } {
+    let minX = this.left - 24;
+    let minY = this.fullTop - 16;
+    let maxX = this.wavefrontPlotRight();
+    let maxY = this.fullBottom + 8;
+
+    for (const wl of this.wavefrontWorldlines()) {
+      minX = Math.min(minX, wl.x1, wl.x2, wl.labelX - 8);
+      maxX = Math.max(maxX, wl.x2 + 12, wl.labelX + 16);
+      minY = Math.min(minY, wl.y1, wl.y2, wl.labelY - 12);
+      maxY = Math.max(maxY, wl.y2 + 8, wl.labelY + 4);
+    }
+    for (const dot of this.wavefrontObserverDots()) {
+      minX = Math.min(minX, dot.x - 8);
+      maxX = Math.max(maxX, dot.x + 8);
+      minY = Math.min(minY, dot.y - 8);
+      maxY = Math.max(maxY, dot.y + 8);
+    }
+    const ring = this.wavefrontCirclePx();
+    if (ring) {
+      minX = Math.min(minX, ring.cx - ring.r);
+      maxX = Math.max(maxX, ring.cx + ring.r);
+      minY = Math.min(minY, ring.cy - ring.r);
+      maxY = Math.max(maxY, ring.cy + ring.r);
+    }
+    if (this.showWavefrontReceptionA()) {
+      const a = this.wavefrontReceptionAPx();
+      maxX = Math.max(maxX, a.x + 8);
+      maxY = Math.max(maxY, a.y + 8);
+    }
+    if (this.wavefrontShowObserverC() && this.showWavefrontReceptionC()) {
+      const c = this.wavefrontReceptionCPx();
+      maxX = Math.max(maxX, c.x + 8);
+      maxY = Math.max(maxY, c.y + 8);
+    }
+
+    return {
+      minX,
+      minY,
+      width: maxX - minX + 12,
+      height: maxY - minY + 12,
+    };
   }
 
   protected get timeAxisSpan(): number {
@@ -841,7 +1064,8 @@ export class LmSpacetimeDiagramComponent {
           : layout.xB,
       ) + 0.05;
     const timeExtent = signal === 'ring' ? 2 * tMax : tMax;
-    return Math.min(this.axisSpan / xExtent, this.fullTimeAxisSpan / timeExtent);
+    const designAxisSpan = this.right - this.left;
+    return Math.min(designAxisSpan / xExtent, this.fullTimeAxisSpan / timeExtent);
   }
 
   protected effectiveWavefrontTime(): number {
