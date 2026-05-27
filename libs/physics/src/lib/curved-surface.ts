@@ -639,11 +639,12 @@ export function buildAppleTreeScene(
   curvature: number,
   params: CurvedSurfaceParams = DEFAULT_CURVED_SURFACE_PARAMS,
   unfold = 0,
+  showProjectedCopy = true,
 ): AppleTreeScene {
   const geom = buildAppleGeodesicGeometry(curvature, params);
   const projectedTheta =
     APPLE_TREE_THETA + (geom?.thetaOffset ?? APPLE_TREE_TIME_OFFSET);
-  const t1 = buildComicTree(APPLE_TREE_THETA, curvature, params, true, unfold);
+  const t1 = buildComicTree(APPLE_TREE_THETA, curvature, params, false, unfold);
   const projected = buildComicTree(
     projectedTheta,
     curvature,
@@ -657,9 +658,12 @@ export function buildAppleTreeScene(
     48,
     unfold,
   );
+  const treeStrips = showProjectedCopy
+    ? [...t1.tree, ...projected.tree]
+    : t1.tree;
   return {
-    treeStrips: [...t1.tree, ...projected.tree],
-    accentStrips: t1.accent,
+    treeStrips,
+    accentStrips: [],
     appleGeodesic,
   };
 }

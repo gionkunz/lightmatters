@@ -25,6 +25,7 @@ The product assumes curiosity, not prior physics knowledge. Math is optional and
 4. **Minimalist, paper-like aesthetic.** Black on white (or white on black). Line-based rendering even for 3D — bodies are drawn as wireframes/silhouettes, not shaded solids. A serif typeface gives the experience the feel of a learning paper or a quiet notebook.
 5. **One screen, one idea.** Steps are small. A step has a single visual focus and a single insight.
 6. **Narrated reveal.** Text appears progressively, like a chat conversation, so the reader's eye moves with the explanation rather than skimming ahead. The reader can press a key to reveal everything immediately and continue at their own pace.
+7. **Optional commitment questions.** Prediction prompts and similar beats invite a choice but never gate navigation — playback transport, checkpoint seek, and step boundaries stay available; an unanswered question is simply ignored.
 
 ## Aesthetic direction
 

@@ -28,6 +28,8 @@ export interface CurvedSurfaceState {
   trailSpan: number;
   worldlineMode: WorldlineMode;
   showAppleTree: boolean;
+  /** When false, only the near-rim tree is drawn (proper-time copy hidden). */
+  showProjectedTree: boolean;
   showGeodesic: boolean;
   showAxisLabels: boolean;
 }
@@ -615,8 +617,8 @@ export class CurvedSurfaceRenderer {
     const dy = event.clientY - this.lastPointerY;
     this.lastPointerX = event.clientX;
     this.lastPointerY = event.clientY;
-    this.orbitAzimuth += dx * ORBIT_SENSITIVITY;
-    this.orbitElevation -= dy * ORBIT_SENSITIVITY;
+    this.orbitAzimuth -= dx * ORBIT_SENSITIVITY;
+    this.orbitElevation += dy * ORBIT_SENSITIVITY;
     this.applyCamera();
     this.render();
   };
@@ -640,6 +642,7 @@ export class CurvedSurfaceRenderer {
     trailSpan: 1,
     worldlineMode: 'orbit',
     showAppleTree: false,
+    showProjectedTree: true,
     showGeodesic: false,
     showAxisLabels: false,
   };
@@ -797,6 +800,7 @@ export class CurvedSurfaceRenderer {
       trailSpan,
       worldlineMode,
       showAppleTree,
+      showProjectedTree,
       showGeodesic,
       showAxisLabels,
     } = this.state;
@@ -830,7 +834,12 @@ export class CurvedSurfaceRenderer {
     this.wireLinesFront.setStrips(front);
 
     if (showAppleTree) {
-      const scene = buildAppleTreeScene(curvature, this.params, unfold);
+      const scene = buildAppleTreeScene(
+        curvature,
+        this.params,
+        unfold,
+        showProjectedTree,
+      );
       this.appleTreeLines.setStrips(scene.treeStrips);
       this.appleAccentLines.setStrips(scene.accentStrips);
       const geodesicStrips: Vec3[][] = [];

@@ -119,6 +119,7 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
   readonly trailSpan = input(1);
   readonly worldlineMode = input<WorldlineMode>('orbit');
   readonly showAppleTree = input(false);
+  readonly showProjectedTree = input(true);
   readonly showGeodesic = input(false);
   readonly showAxisLabels = input(false);
   readonly width = input(720);
@@ -142,6 +143,7 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
         trailSpan: this.trailSpan(),
         worldlineMode: this.worldlineMode(),
         showAppleTree: this.showAppleTree(),
+        showProjectedTree: this.showProjectedTree(),
         showGeodesic: this.showGeodesic(),
         showAxisLabels: this.showAxisLabels(),
       });
@@ -169,6 +171,7 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
         trailSpan: this.trailSpan(),
         worldlineMode: this.worldlineMode(),
         showAppleTree: this.showAppleTree(),
+        showProjectedTree: this.showProjectedTree(),
         showGeodesic: this.showGeodesic(),
         showAxisLabels: this.showAxisLabels(),
       };
