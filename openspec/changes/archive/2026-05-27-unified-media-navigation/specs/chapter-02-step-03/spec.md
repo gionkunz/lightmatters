@@ -1,8 +1,5 @@
-# chapter-02-step-03 Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change chapter-02-bridge-chapter-3. Update Purpose after archive.
-## Requirements
 ### Requirement: Chapter 2 Step 3 is a single-pulse bridge to Chapter 3
 
 Chapter 2 Step 3 SHALL be authored as a step module exporting a `Step` object with id `bridge-to-light`, layout `chat-feed`, a `wavefront`-variant spacetime diagram (A and B stationary, C at $v/c \approx 0.5$), B as emitter of **exactly one flash**, FactLine clocks for A and C, two `LmPredictionChoice` prompts, and a timeline that stages wavefront expansion to A then C with narrate pauses at each milestone. The step SHALL NOT animate a second pulse or a pulse train.
@@ -57,15 +54,7 @@ Chapter 2 Step 3 SHALL be authored as a step module exporting a `Step` object wi
 - **AND** narration does not reveal whether the reader's predictions were correct
 - **AND** the forward transport control becomes enabled on or after this beat with a "next chapter" boundary hint
 
-### Requirement: Chapter 2 step registry includes Step 3
-
-The chapter 2 step registry SHALL register Step 3 at index 3 with component `Step03Component` and step module `STEP_03_BRIDGE_TO_LIGHT`.
-
-#### Scenario: Step page resolves Step 3 from route
-
-- **WHEN** a user navigates to `/ch/02/step/3`
-- **THEN** the step page component renders `Step03Component`
-- **AND** Step 3 starts with `wavefront.radius` at 0, clocks at zero, and no predictions selected
+## ADDED Requirements
 
 ### Requirement: Step 3 back navigates to Step 2 via playback transport
 
@@ -76,4 +65,3 @@ Chapter 2 Step 3 SHALL navigate to `/ch/02/step/2` when the user presses the rew
 - **WHEN** the user is at the first checkpoint of Chapter 2 Step 3
 - **AND** presses the rewind transport control
 - **THEN** the router navigates to `/ch/02/step/2`
-

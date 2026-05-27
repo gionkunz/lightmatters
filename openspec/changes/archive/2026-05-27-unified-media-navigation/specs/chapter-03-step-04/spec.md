@@ -1,8 +1,5 @@
-# chapter-03-step-04 Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change chapter-03-light-information. Update Purpose after archive.
-## Requirements
 ### Requirement: Step 4 — Two flashes, one witness
 
 Chapter 3 Step 4 ("Two flashes, one witness") SHALL render two sources on a horizontal line equidistant from a midpoint observer, emit one pulse from each source at the same scene time, and demonstrate that the order of arrival at the midpoint observer depends on the observer's motion. A `LmPredictionChoice` SHALL gate continuation: the reader predicts the arrival order before the moving-observer animation plays.
@@ -37,4 +34,3 @@ Chapter 3 Step 4 ("Two flashes, one witness") SHALL render two sources on a hori
 - **WHEN** the reader has made a prediction and the timeline completes
 - **THEN** the forward transport control is enabled at the last checkpoint
 - **AND** pressing it routes to `/ch/03/step/5`
-

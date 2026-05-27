@@ -60,12 +60,12 @@ An `animate` event SHALL tween a numeric property on a named target from a `from
 
 ### Requirement: Timeline supports wait events
 
-A `wait` event SHALL pause timeline progression until its condition is satisfied. Step 1 uses `userAdvance` and `animationDone` conditions.
+A `wait` event SHALL pause timeline progression until its condition is satisfied.
 
 #### Scenario: Wait for userAdvance blocks progression
 
 - **WHEN** the runner reaches `{ wait: { for: 'userAdvance' } }`
-- **THEN** timeline progression stops until the user triggers advance (keyboard or footer control)
+- **THEN** timeline progression stops until the user triggers advance (keyboard or playback transport control)
 
 ### Requirement: Skip fast-forwards to next wait boundary
 

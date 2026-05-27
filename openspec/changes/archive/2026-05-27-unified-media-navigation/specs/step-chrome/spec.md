@@ -1,9 +1,5 @@
-# step-chrome Specification
+## MODIFIED Requirements
 
-## Purpose
-
-Reusable step shell: chapter nav, progress dots, top playback bar, footer controls, and step routing host.
-## Requirements
 ### Requirement: Step frame provides chapter navigation chrome
 
 The engine SHALL provide an `LmStepFrame` component that renders the step shell: chapter number and title, progress dots, step counter, and playback transport. The step frame SHALL NOT render a footer navigation row.
@@ -25,16 +21,6 @@ The engine SHALL provide an `LmStepFrame` component that renders the step shell:
 - **WHEN** any step renders inside the step frame
 - **THEN** no footer with back or continue buttons is visible
 - **AND** the main content area extends to the bottom of the viewport
-
-### Requirement: Keyboard advance and skip
-
-The step host SHALL listen for Space and Enter key presses to trigger timeline skip/advance when the timeline is waiting for user input.
-
-#### Scenario: Space advances at wait boundary
-
-- **WHEN** the timeline is paused at a `userAdvance` wait
-- **AND** the user presses Space
-- **THEN** the timeline proceeds (or completes the step if no further events)
 
 ### Requirement: Step frame provides playback transport
 
@@ -96,19 +82,79 @@ The step frame SHALL render an `LmPlaybackBar` below the nav with a progress tra
 - **AND** the user presses the forward transport control
 - **THEN** the router navigates to the first step of the next chapter
 
-### Requirement: StepHost resolves step from route parameter
+## REMOVED Requirements
 
-The chapter feature SHALL provide a step page component that reads the `:step` route parameter, loads the corresponding step module, mounts visualizations, and starts the timeline runner.
+### Requirement: Step footer provides back navigation
 
-#### Scenario: Route param selects step
+**Reason**: Back navigation is handled by the playback bar rewind control at step boundaries.
+**Migration**: Use ⏮ at the first checkpoint (or ArrowLeft) instead of the footer back button.
 
-- **WHEN** a user navigates to `/ch/01/step/1`
-- **THEN** the StepHost loads Step 1's authored content and starts its timeline
+### Requirement: Advance control hidden when no next step exists
 
-#### Scenario: Visualizations remount on step change
+**Reason**: Forward transport disabled state replaces footer continue visibility rules.
+**Migration**: When no next step exists, ⏭ is disabled at the last checkpoint.
 
-- **WHEN** a user navigates from one step to another within the same chapter
-- **THEN** previous step visualizations unmount and new step visualizations mount fresh
+### Requirement: Step 2 shows advance when Step 3 exists
+
+**Reason**: Consolidated into unified playback transport boundary navigation.
+**Migration**: Use ⏭ at Step 2's last checkpoint to reach Step 3.
+
+### Requirement: Step 3 back navigates to Step 2
+
+**Reason**: Consolidated into unified playback transport boundary navigation.
+**Migration**: Use ⏮ at Step 3's first checkpoint to return to Step 2.
+
+### Requirement: Step 3 shows advance when Step 4 exists
+
+**Reason**: Consolidated into unified playback transport boundary navigation.
+**Migration**: Use ⏭ at Step 3's last checkpoint to reach Step 4.
+
+### Requirement: Step 4 back navigates to Step 3
+
+**Reason**: Consolidated into unified playback transport boundary navigation.
+**Migration**: Use ⏮ at Step 4's first checkpoint to return to Step 3.
+
+### Requirement: Chapter 1 Step 4 advances to Chapter 2 Step 1
+
+**Reason**: Consolidated into unified playback transport boundary navigation.
+**Migration**: Use ⏭ at Chapter 1 Step 4's last checkpoint with "next chapter" hint.
+
+### Requirement: Chapter 2 Step 1 back navigates to Chapter 1 Step 4
+
+**Reason**: Consolidated into unified playback transport boundary navigation.
+**Migration**: Use ⏮ at Chapter 2 Step 1's first checkpoint.
+
+### Requirement: Chapter 2 Step 1 advances to Chapter 2 Step 2
+
+**Reason**: Consolidated into unified playback transport boundary navigation.
+**Migration**: Use ⏭ at Chapter 2 Step 1's last checkpoint.
+
+### Requirement: Chapter 2 Step 2 back navigates to Chapter 2 Step 1
+
+**Reason**: Consolidated into unified playback transport boundary navigation.
+**Migration**: Use ⏮ at Chapter 2 Step 2's first checkpoint.
+
+### Requirement: Chapter 2 Step 2 advances to Chapter 2 Step 3
+
+**Reason**: Consolidated into unified playback transport boundary navigation.
+**Migration**: Use ⏭ at Chapter 2 Step 2's last checkpoint.
+
+### Requirement: Chapter 2 Step 3 back navigates to Chapter 2 Step 2
+
+**Reason**: Consolidated into unified playback transport boundary navigation.
+**Migration**: Use ⏮ at Chapter 2 Step 3's first checkpoint.
+
+### Requirement: Step frame supports disabled continue control
+
+**Reason**: Replaced by `advanceDisabled` on forward transport at step boundaries.
+**Migration**: Pass `advanceDisabled` to step frame instead of `continueDisabled`.
+
+### Requirement: Chapter 2 Step 3 advances to Chapter 3 Step 1
+
+**Reason**: Consolidated into unified playback transport boundary navigation with prediction gating on forward transport.
+**Migration**: Use ⏭ at Chapter 2 Step 3's last checkpoint with `advanceDisabled` until predictions are selected.
+
+## ADDED Requirements
 
 ### Requirement: Transport shows boundary hints
 
@@ -180,4 +226,3 @@ The step host SHALL listen for ArrowLeft and ArrowRight key presses to trigger t
 - **WHEN** focus is in a slider input
 - **AND** the user presses ArrowLeft or ArrowRight
 - **THEN** the transport dispatch does not run
-

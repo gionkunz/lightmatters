@@ -62,21 +62,24 @@ Step 1 SHALL use the three-row grid layout from `StepIntro` in `step-ui.jsx`: na
 
 ### Requirement: Step 1 back navigates to Chapter 1 Step 4
 
-Chapter 2 Step 1 SHALL navigate to `/ch/01/step/4` when the user clicks the footer back control.
+Chapter 2 Step 1 SHALL navigate to `/ch/01/step/4` when the user presses the rewind transport control at the first checkpoint.
 
-#### Scenario: Back from Step 1 returns to Chapter 1 Step 4
+#### Scenario: Rewind from Step 1 returns to Chapter 1 Step 4
 
-- **WHEN** a user clicks the back control on Chapter 2 Step 1
+- **WHEN** the user is at the first checkpoint of Chapter 2 Step 1
+- **AND** presses the rewind transport control
 - **THEN** the router navigates to `/ch/01/step/4`
 
 ### Requirement: Step 1 hides advance when no Step 2 exists
 
-Chapter 2 Step 1 SHALL NOT show a continue-to-next-step control in the footer until Step 2 is authored.
+When Chapter 2 Step 1 is the only authored step in the chapter, the forward transport control SHALL be disabled at the last checkpoint or step completion.
 
-#### Scenario: No advance button on Step 1
+#### Scenario: Forward disabled on lone Step 1
 
 - **WHEN** Chapter 2 Step 1 is the only authored step in the chapter
-- **THEN** no "next step" advance button is visible in the footer
+- **AND** the timeline is at the last checkpoint or complete
+- **THEN** the forward transport control is disabled
+- **AND** no navigation to a next step occurs
 
 ### Requirement: Step 1 fifty-fifty demo uses equal-split velocity on arc
 
@@ -103,4 +106,15 @@ Step 1 narration for the fifty-fifty beat SHALL describe equal time and space co
 - **WHEN** Step 1's timeline runs the fifty-fifty narrate beat
 - **THEN** the narration refers to the vector bisecting the angle on the arc (45°) with equal time and space shares
 - **AND** the narration does not equate half light speed ($v/c = 0.5$) with the fifty-fifty split
+
+### Requirement: Step 1 advances to Step 2 via playback transport
+
+When Step 2 is authored, Chapter 2 Step 1 SHALL navigate to `/ch/02/step/2` when the user presses the forward transport control at the last checkpoint or step completion.
+
+#### Scenario: Forward from Step 1 reaches Step 2
+
+- **WHEN** the timeline is at the last checkpoint or complete on Chapter 2 Step 1
+- **AND** Step 2 is authored
+- **AND** the user presses the forward transport control
+- **THEN** the router navigates to `/ch/02/step/2`
 
