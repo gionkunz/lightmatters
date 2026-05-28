@@ -53,6 +53,13 @@ export const appRoutes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'chapter/6',
+    loadChildren: () =>
+      import('@lm/feature-chapter-06-clocks-and-rulers').then(
+        (m) => m.chapter06ClocksRoutes,
+      ),
+  },
+  {
     path: 'chapter/7',
     loadChildren: () =>
       import('@lm/feature-chapter-05-doppler-seeing-motion').then(

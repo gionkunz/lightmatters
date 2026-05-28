@@ -25,6 +25,7 @@ import {
   CH5_PULSE_INTERVAL
 } from '../pulse-train.constants';
 import {
+  CHAPTER_05_ROUTE_NUMBER,
   CHAPTER_05_TITLE,
   CHAPTER_05_TOTAL_STEPS,
   hasNextStep
@@ -43,7 +44,7 @@ import { STEP_04_EXTREME_RECESSION } from './step-04-extreme-recession';
   ],
   template: `
     <lm-step-frame
-      [chapter]="5"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="4"
@@ -107,6 +108,7 @@ export class Step04Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_04_EXTREME_RECESSION;
+  protected readonly chapterRoute = CHAPTER_05_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_05_TITLE;
   protected readonly stepsTotal = CHAPTER_05_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

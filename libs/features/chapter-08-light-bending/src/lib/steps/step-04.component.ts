@@ -15,6 +15,7 @@ import {
 import { LmKickerComponent } from '@lm/design';
 import { lightBend2DArcLength } from '@lm/physics';
 import {
+  CHAPTER_08_ROUTE_NUMBER,
   CHAPTER_08_TITLE,
   CHAPTER_08_TOTAL_STEPS,
   hasNextStep,
@@ -33,7 +34,7 @@ import { STEP_04_PATH_PUZZLE } from './step-04-path-puzzle';
   ],
   template: `
     <lm-step-frame
-      [chapter]="8"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="4"
@@ -94,6 +95,7 @@ export class Step04Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_04_PATH_PUZZLE;
+  protected readonly chapterRoute = CHAPTER_08_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_08_TITLE;
   protected readonly stepsTotal = CHAPTER_08_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

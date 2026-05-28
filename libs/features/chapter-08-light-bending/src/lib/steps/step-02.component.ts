@@ -14,6 +14,7 @@ import {
 } from '@lm/engine';
 import { LmKickerComponent } from '@lm/design';
 import {
+  CHAPTER_08_ROUTE_NUMBER,
   CHAPTER_08_TITLE,
   CHAPTER_08_TOTAL_STEPS,
   hasNextStep,
@@ -32,7 +33,7 @@ import { STEP_02_ONE_RAY } from './step-02-one-ray';
   ],
   template: `
     <lm-step-frame
-      [chapter]="8"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="2"
@@ -88,6 +89,7 @@ export class Step02Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_02_ONE_RAY;
+  protected readonly chapterRoute = CHAPTER_08_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_08_TITLE;
   protected readonly stepsTotal = CHAPTER_08_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

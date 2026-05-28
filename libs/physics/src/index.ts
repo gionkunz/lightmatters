@@ -1,5 +1,7 @@
 export * from './lib/physics';
 export * from './lib/lorentz';
+export * from './lib/length-contraction';
+export * from './lib/tick-period';
 export * from './lib/speed-budget';
 export * from './lib/traveller-readout';
 export * from './lib/signal-reception';

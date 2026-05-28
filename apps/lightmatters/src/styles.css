@@ -9,10 +9,12 @@
 @source '../../../libs/features/chapter-04-ether-was-wrong/src';
 @source '../../../libs/features/chapter-05-doppler-seeing-motion/src';
 @source '../../../libs/features/chapter-06-rolling-diagram/src';
+@source '../../../libs/features/chapter-06-clocks-and-rulers/src';
 @source '../../../libs/features/chapter-07-gravity-well/src';
 @source '../../../libs/features/chapter-08-light-bending/src';
 @source '../../../libs/primitives/spacetime-diagram/src';
 @source '../../../libs/primitives/light-scene/src';
+@source '../../../libs/primitives/light-clock/src';
 @source '../../../libs/primitives/curved-surface/src';
 
 @theme inline {

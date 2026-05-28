@@ -6,6 +6,7 @@ import {
   CHAPTER_04_STEPS,
   CHAPTER_05_PLACEHOLDER_STEPS,
   CHAPTER_05_STEPS,
+  CHAPTER_06_CLOCKS_STEPS,
   CHAPTER_06_STEPS,
   CHAPTER_07_STEPS,
   CHAPTER_08_STEPS,
@@ -42,6 +43,11 @@ export const serverRoutes: ServerRoute[] = [
     path: 'chapter/5/step/:step',
     renderMode: RenderMode.Prerender,
     getPrerenderParams: stepPrerenderParams(CHAPTER_05_PLACEHOLDER_STEPS),
+  },
+  {
+    path: 'chapter/6/step/:step',
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: stepPrerenderParams(CHAPTER_06_CLOCKS_STEPS),
   },
   {
     path: 'chapter/7/step/:step',

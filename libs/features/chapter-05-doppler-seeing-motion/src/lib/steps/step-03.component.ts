@@ -27,6 +27,7 @@ import {
   CH5_PULSE_INTERVAL
 } from '../pulse-train.constants';
 import {
+  CHAPTER_05_ROUTE_NUMBER,
   CHAPTER_05_TITLE,
   CHAPTER_05_TOTAL_STEPS,
   hasNextStep
@@ -45,7 +46,7 @@ import { STEP_03_APPROACHING_BLUESHIFT } from './step-03-approaching-blueshift';
   ],
   template: `
     <lm-step-frame
-      [chapter]="5"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="3"
@@ -109,6 +110,7 @@ export class Step03Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_03_APPROACHING_BLUESHIFT;
+  protected readonly chapterRoute = CHAPTER_05_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_05_TITLE;
   protected readonly stepsTotal = CHAPTER_05_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

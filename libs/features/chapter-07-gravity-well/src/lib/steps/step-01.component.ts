@@ -14,6 +14,7 @@ import {
 import { LmKickerComponent } from '@lm/design';
 import { LmCurvedSurfaceComponent } from '@lm/curved-surface';
 import {
+  CHAPTER_07_ROUTE_NUMBER,
   CHAPTER_07_TITLE,
   CHAPTER_07_TOTAL_STEPS,
   hasNextStep,
@@ -31,7 +32,7 @@ import { STEP_01_PUZZLE } from './step-01-puzzle';
   ],
   template: `
     <lm-step-frame
-      [chapter]="7"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="1"
@@ -92,6 +93,7 @@ export class Step01Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_01_PUZZLE;
+  protected readonly chapterRoute = CHAPTER_07_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_07_TITLE;
   protected readonly stepsTotal = CHAPTER_07_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

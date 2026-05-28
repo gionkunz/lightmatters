@@ -13,6 +13,7 @@ import {
 } from '@lm/engine';
 import { LmKickerComponent } from '@lm/design';
 import {
+  CHAPTER_08_ROUTE_NUMBER,
   CHAPTER_08_TITLE,
   CHAPTER_08_TOTAL_STEPS,
   hasNextStep,
@@ -31,7 +32,7 @@ import { STEP_01_DEEP_WELL } from './step-01-deep-well';
   ],
   template: `
     <lm-step-frame
-      [chapter]="8"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="1"
@@ -86,6 +87,7 @@ export class Step01Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_01_DEEP_WELL;
+  protected readonly chapterRoute = CHAPTER_08_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_08_TITLE;
   protected readonly stepsTotal = CHAPTER_08_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

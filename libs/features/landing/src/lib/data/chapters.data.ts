@@ -96,7 +96,7 @@ export const CHAPTERS: readonly ChapterPreview[] = [
 ];
 
 /** Authored chapter numbers with live routes. */
-const AUTHORED_CHAPTER_NUMBERS = new Set([1, 2, 3, 4, 5, 7, 10, 11, 12]);
+const AUTHORED_CHAPTER_NUMBERS = new Set([1, 2, 3, 4, 5, 6, 7, 10, 11, 12]);
 
 /** First-step URL when a chapter route exists; `null` for not yet authored. */
 export function chapterFirstStepHref(chapterNumber: number): string | null {

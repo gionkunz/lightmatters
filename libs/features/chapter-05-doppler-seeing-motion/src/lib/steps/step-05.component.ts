@@ -23,6 +23,7 @@ import {
   CH5_PULSE_INTERVAL
 } from '../pulse-train.constants';
 import {
+  CHAPTER_05_ROUTE_NUMBER,
   CHAPTER_05_TITLE,
   CHAPTER_05_TOTAL_STEPS,
   hasNextStep
@@ -40,7 +41,7 @@ import { STEP_05_OUTRO } from './step-05-outro';
   ],
   template: `
     <lm-step-frame
-      [chapter]="5"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="5"
@@ -98,6 +99,7 @@ export class Step05Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_05_OUTRO;
+  protected readonly chapterRoute = CHAPTER_05_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_05_TITLE;
   protected readonly stepsTotal = CHAPTER_05_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

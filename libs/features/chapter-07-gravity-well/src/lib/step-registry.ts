@@ -20,6 +20,8 @@ export interface StepEntry {
 
 export const CHAPTER_07_TOTAL_STEPS = 6;
 export const CHAPTER_07_TITLE = 'The center of the Earth';
+/** Journey URL chapter (`/chapter/11/...`). */
+export const CHAPTER_07_ROUTE_NUMBER = 11;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_PUZZLE, component: Step01Component }],

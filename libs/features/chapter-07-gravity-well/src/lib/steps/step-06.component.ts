@@ -22,6 +22,7 @@ import {
   wellStartXNormFromPositionFraction,
 } from '@lm/physics';
 import {
+  CHAPTER_07_ROUTE_NUMBER,
   CHAPTER_07_TITLE,
   CHAPTER_07_TOTAL_STEPS,
   hasNextStep,
@@ -43,7 +44,7 @@ const PASS_THROUGH_BASE_MS = 22_000;
   ],
   template: `
     <lm-step-frame
-      [chapter]="7"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="6"
@@ -129,6 +130,7 @@ export class Step06Component implements OnInit, OnDestroy {
   private loopGeneration = 0;
 
   protected readonly step = STEP_06_ESCAPE;
+  protected readonly chapterRoute = CHAPTER_07_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_07_TITLE;
   protected readonly stepsTotal = CHAPTER_07_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

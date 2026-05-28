@@ -26,6 +26,7 @@ import {
   CH5_PULSE_INTERVAL
 } from '../pulse-train.constants';
 import {
+  CHAPTER_05_ROUTE_NUMBER,
   CHAPTER_05_TITLE,
   CHAPTER_05_TOTAL_STEPS,
   hasNextStep
@@ -44,13 +45,13 @@ import { STEP_01_PULSE_TICKS } from './step-01-pulse-ticks';
   ],
   template: `
     <lm-step-frame
-      [chapter]="5"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="1"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(1)"
-      [prevStepUrl]="'/chapter/4/step/5'"
+      [prevStepUrl]="'/chapter/6/step/4'"
       [nextStepUrl]="'/chapter/7/step/2'"
       [showPlayback]="true"
       [progress]="runner.progress()"
@@ -108,6 +109,7 @@ export class Step01Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_01_PULSE_TICKS;
+  protected readonly chapterRoute = CHAPTER_05_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_05_TITLE;
   protected readonly stepsTotal = CHAPTER_05_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

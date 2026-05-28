@@ -15,6 +15,7 @@ import {
 import { LmKickerComponent } from '@lm/design';
 import { LmCurvedSurfaceComponent } from '@lm/curved-surface';
 import {
+  CHAPTER_07_ROUTE_NUMBER,
   CHAPTER_07_TITLE,
   CHAPTER_07_TOTAL_STEPS,
   hasNextStep,
@@ -32,7 +33,7 @@ import { STEP_05_FALL_THROUGH } from './step-05-fall-through';
   ],
   template: `
     <lm-step-frame
-      [chapter]="7"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="5"
@@ -97,6 +98,7 @@ export class Step05Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_05_FALL_THROUGH;
+  protected readonly chapterRoute = CHAPTER_07_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_07_TITLE;
   protected readonly stepsTotal = CHAPTER_07_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

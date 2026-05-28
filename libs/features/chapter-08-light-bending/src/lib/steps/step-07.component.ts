@@ -14,6 +14,7 @@ import {
 } from '@lm/engine';
 import { LmKickerComponent, LmSliderComponent } from '@lm/design';
 import {
+  CHAPTER_08_ROUTE_NUMBER,
   CHAPTER_08_TITLE,
   CHAPTER_08_TOTAL_STEPS,
   hasNextStep,
@@ -35,7 +36,7 @@ import { STEP_07_STRAIGHT_LINES } from './step-07-straight-lines';
   ],
   template: `
     <lm-step-frame
-      [chapter]="8"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="7"
@@ -110,6 +111,7 @@ export class Step07Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_07_STRAIGHT_LINES;
+  protected readonly chapterRoute = CHAPTER_08_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_08_TITLE;
   protected readonly stepsTotal = CHAPTER_08_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;

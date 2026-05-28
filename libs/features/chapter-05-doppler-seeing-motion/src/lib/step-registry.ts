@@ -18,6 +18,8 @@ export interface StepEntry {
 
 export const CHAPTER_05_TOTAL_STEPS = 5;
 export const CHAPTER_05_TITLE = 'Doppler and seeing motion';
+/** Journey URL chapter (`/chapter/7/...`). */
+export const CHAPTER_05_ROUTE_NUMBER = 7;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_PULSE_TICKS, component: Step01Component }],
