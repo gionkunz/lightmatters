@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LmButtonComponent, LmWordmarkComponent } from '@lm/design';
 
-/** Placeholder until Chapter 8 is authored. */
+/** Placeholder until the next chapter is authored. */
 @Component({
-  selector: 'lm-chapter-08-placeholder',
+  selector: 'app-chapter-09-placeholder',
   imports: [LmWordmarkComponent, LmButtonComponent, RouterLink],
   template: `
     <div
@@ -12,16 +12,15 @@ import { LmButtonComponent, LmWordmarkComponent } from '@lm/design';
     >
       <lm-wordmark [size]="28" />
       <p class="m-0 max-w-md text-2xl italic leading-snug">
-        Chapter 8 — Light bending around mass — is coming next.
+        More chapters are coming.
       </p>
       <p class="m-0 max-w-lg text-[17px] opacity-75">
-        A wide beam, two paths, one synchronised arrival — the geometry of bent
-        light.
+        Black holes, horizons, and beyond — the journey continues.
       </p>
-      <a routerLink="/ch/07/step/6">
-        <lm-button [emphasis]="true">← back to chapter 7</lm-button>
+      <a routerLink="/ch/08/step/7">
+        <lm-button [emphasis]="true">← back to chapter 8</lm-button>
       </a>
     </div>
   `,
 })
-export class Chapter08PlaceholderComponent {}
+export class Chapter09PlaceholderComponent {}

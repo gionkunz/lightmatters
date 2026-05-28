@@ -56,15 +56,22 @@ export const appRoutes: Routes = [
       ),
   },
   {
-    path: 'ch/08/step/:step',
-    loadComponent: () =>
-      import('./chapter-08-placeholder.component').then(
-        (m) => m.Chapter08PlaceholderComponent,
+    path: 'ch/08',
+    loadChildren: () =>
+      import('@lm/feature-chapter-08-light-bending').then(
+        (m) => m.chapter08Routes,
       ),
   },
   {
-    path: 'ch/08',
-    redirectTo: 'ch/08/step/1',
+    path: 'ch/09/step/:step',
+    loadComponent: () =>
+      import('./chapter-09-placeholder.component').then(
+        (m) => m.Chapter09PlaceholderComponent,
+      ),
+  },
+  {
+    path: 'ch/09',
+    redirectTo: 'ch/09/step/1',
     pathMatch: 'full',
   },
   {

@@ -136,12 +136,17 @@ Physics helpers: `wellRadiusAt`, `wellSurfacePoint`, `wellTrajectoryPoint`, `wel
 
 ### Chapter 8 — Light bending around mass
 
-General relativity applied to light.
+General relativity applied to light — the deep-well regime where deflection is visible.
 
-- A wide beam of light passes near a massive body. The whole beam bends.
-- Geometry says the outer edge of the beam travels a longer spatial path than the inner edge.
-- Both edges arrive synchronized. Why? The inner edge, deeper in the gravity well, experiences more time dilation — it has more *subjective* time to cover its shorter path.
-- The bending of light is not a force. It is straight-line travel through curved spacetime, and the geometry forces synchronization.
+- **Step 1 — The deep well.** Bridge from Chapter 7: Earth's shallow well barely bends light; introduce the extreme regime and a massive star at the well center.
+- **Step 2 — One ray.** Animate a single light geodesic skimming past the mass with visible deflection.
+- **Step 3 — Widen the beam.** Inner and outer edges both bend; the whole band curves together.
+- **Step 4 — The path puzzle.** Compare spatial path lengths: outer longer than inner; pose the synchronization question without resolving it.
+- **Step 5 — Time runs slower inside.** Gravitational time-dilation readout on inner vs outer edge; connect to Chapter 2 speed-budget vocabulary.
+- **Step 6 — Synchronized arrival.** Both edges reach the detector together; dilation compensates for the shorter inner path.
+- **Step 7 — Straight lines, curved canvas.** Payoff: light follows straight geodesics on curved spacetime, not a force; interactive skim-distance control; outro toward future chapters.
+
+Physics helpers: `lightGeodesicPoint`, `lightGeodesicSamples`, `lightGeodesicArcLength`, `gravitationalTimeDilationFactor`, `DEEP_WELL_PARAMS` in `@lm/physics`.
 
 ### Beyond — open
 

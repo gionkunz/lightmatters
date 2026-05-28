@@ -7,3 +7,5 @@ export * from './lib/light-scene';
 export * from './lib/ether-field';
 export * from './lib/curved-surface';
 export * from './lib/gravity-well';
+export * from './lib/light-bending';
+export * from './lib/light-bend-2d';

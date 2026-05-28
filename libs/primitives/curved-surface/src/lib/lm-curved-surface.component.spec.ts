@@ -60,6 +60,19 @@ describe('LmCurvedSurfaceComponent', () => {
     expect(fixture.componentInstance.wellUnfold()).toBe(0.7);
   });
 
+  it('accepts light beam inputs on well profile', () => {
+    fixture.componentRef.setInput('surfaceProfile', 'well');
+    fixture.componentRef.setInput('wellDepth', 'deep');
+    fixture.componentRef.setInput('showLightBeam', true);
+    fixture.componentRef.setInput('lightBeamProgress', 0.5);
+    fixture.componentRef.setInput('lightBeamMode', 'dual');
+    fixture.detectChanges();
+    expect(fixture.componentInstance.wellDepth()).toBe('deep');
+    expect(fixture.componentInstance.showLightBeam()).toBe(true);
+    expect(fixture.componentInstance.lightBeamProgress()).toBe(0.5);
+    expect(fixture.componentInstance.lightBeamMode()).toBe('dual');
+  });
+
   it('renders a reset view button', () => {
     fixture.detectChanges();
     const button = fixture.nativeElement.querySelector(

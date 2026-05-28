@@ -115,6 +115,12 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
   readonly showGeodesic = input(false);
   readonly showAxisLabels = input(false);
   readonly showEarthSphere = input(false);
+  readonly wellDepth = input<'earth' | 'deep'>('earth');
+  readonly showLightBeam = input(false);
+  readonly lightBeamProgress = input(0);
+  readonly lightBeamMissDistance = input(0.25);
+  readonly lightBeamHalfWidth = input(0.08);
+  readonly lightBeamMode = input<'single' | 'dual' | 'filled'>('single');
   readonly width = input(720);
   readonly height = input(520);
 
@@ -153,6 +159,12 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
         showGeodesic: this.showGeodesic(),
         showAxisLabels: this.showAxisLabels(),
         showEarthSphere: this.showEarthSphere(),
+        wellDepth: this.wellDepth(),
+        showLightBeam: this.showLightBeam(),
+        lightBeamProgress: this.lightBeamProgress(),
+        lightBeamMissDistance: this.lightBeamMissDistance(),
+        lightBeamHalfWidth: this.lightBeamHalfWidth(),
+        lightBeamMode: this.lightBeamMode(),
       });
     });
 
@@ -191,6 +203,12 @@ export class LmCurvedSurfaceComponent implements OnDestroy {
         showGeodesic: this.showGeodesic(),
         showAxisLabels: this.showAxisLabels(),
         showEarthSphere: this.showEarthSphere(),
+        wellDepth: this.wellDepth(),
+        showLightBeam: this.showLightBeam(),
+        lightBeamProgress: this.lightBeamProgress(),
+        lightBeamMissDistance: this.lightBeamMissDistance(),
+        lightBeamHalfWidth: this.lightBeamHalfWidth(),
+        lightBeamMode: this.lightBeamMode(),
       };
       this.renderer?.update(state);
     });

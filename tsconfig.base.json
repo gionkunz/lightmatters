@@ -44,6 +44,9 @@
       ],
       "@lm/feature-chapter-07-gravity-well": [
         "./libs/features/chapter-07-gravity-well/src/index.ts"
+      ],
+      "@lm/feature-chapter-08-light-bending": [
+        "./libs/features/chapter-08-light-bending/src/index.ts"
       ]
     }
   },

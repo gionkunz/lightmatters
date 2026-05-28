@@ -73,7 +73,7 @@ export const CHAPTERS: readonly ChapterPreview[] = [
 
 /** First-step URL when a chapter route exists; `null` for not yet authored. */
 export function chapterFirstStepHref(chapterNumber: number): string | null {
-  if (chapterNumber < 1 || chapterNumber > 7) {
+  if (chapterNumber < 1 || chapterNumber > 8) {
     return null;
   }
   return `/ch/${String(chapterNumber).padStart(2, '0')}/step/1`;

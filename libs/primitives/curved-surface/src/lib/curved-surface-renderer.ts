@@ -1,10 +1,12 @@
 import {
   buildAppleTreeScene,
+  DEFAULT_BEAM_HALF_WIDTH,
   DEFAULT_CURVED_SURFACE_PARAMS,
-  DEFAULT_WELL_PARAMS,
   earthSphereWireframeStrips,
   isWellXRevealed,
+  lightGeodesicSamples,
   morphSurfacePoint,
+  resolveWellParams,
   surfaceThetaSweep,
   unrolledSurfacePoint,
   wellRevealMaxX,
@@ -14,6 +16,7 @@ import {
   wellTrajectoryPointMorphed,
   wellSpatialBudgetTrajectoryPoint,
   wellSpatialBudgetTrajectorySamples,
+  type LightBeamEdge,
   type WellLaunchMode,
   type CurvedSurfaceParams,
   type Vec3,
@@ -40,6 +43,8 @@ import { WidePolylineOverlay, WidePolylineStrips, WideWireframeLines, OVERLAY_LI
 export type { AxisLabelAnchor };
 
 export type SurfaceProfile = 'cone' | 'well';
+export type WellDepth = 'earth' | 'deep';
+export type LightBeamMode = 'single' | 'dual' | 'filled';
 
 export interface CurvedSurfaceState {
   surfaceProfile: SurfaceProfile;
@@ -67,6 +72,12 @@ export interface CurvedSurfaceState {
   showGeodesic: boolean;
   showAxisLabels: boolean;
   showEarthSphere: boolean;
+  wellDepth: WellDepth;
+  showLightBeam: boolean;
+  lightBeamProgress: number;
+  lightBeamMissDistance: number;
+  lightBeamHalfWidth: number;
+  lightBeamMode: LightBeamMode;
 }
 
 /** Flat strip: face-on. Cylinder: oblique. Unrolled: face-on, pulled back. */
@@ -74,6 +85,7 @@ const CAMERA_FLAT = new THREE.Vector3(0, 0, 3.2);
 const CAMERA_CYLINDER = new THREE.Vector3(0.25, 0.55, 3.4);
 const CAMERA_UNROLLED = new THREE.Vector3(0, 0, 4.4);
 const CAMERA_WELL = new THREE.Vector3(0.06, 0.34, 5.35);
+const CAMERA_WELL_DEEP = new THREE.Vector3(0.06, 0.38, 5.95);
 /** Top-down view for the unfolded paper (Step 3). */
 const CAMERA_WELL_FLAT = new THREE.Vector3(0, 5.6, 0.001);
 const CAMERA_TARGET = new THREE.Vector3(0, 0, 0);
@@ -87,17 +99,19 @@ function computeAuthoredCamera(
   fold: number,
   unfold: number,
   wellUnfold: number,
+  wellDepth: WellDepth,
   outPosition: THREE.Vector3,
   outTarget: THREE.Vector3,
 ): void {
   if (surfaceProfile === 'well') {
     outTarget.copy(CAMERA_TARGET);
+    const baseWell = wellDepth === 'deep' ? CAMERA_WELL_DEEP : CAMERA_WELL;
     if (wellUnfold > 0) {
       const u = Math.max(0, Math.min(1, wellUnfold));
       const eased = u * u * (3 - 2 * u);
-      outPosition.lerpVectors(CAMERA_WELL, CAMERA_WELL_FLAT, eased);
+      outPosition.lerpVectors(baseWell, CAMERA_WELL_FLAT, eased);
     } else {
-      outPosition.copy(CAMERA_WELL);
+      outPosition.copy(baseWell);
     }
     return;
   }
@@ -114,6 +128,7 @@ function updateCamera(
   fold: number,
   unfold: number,
   wellUnfold: number,
+  wellDepth: WellDepth,
   azimuthDelta = 0,
   elevationDelta = 0,
 ): void {
@@ -122,6 +137,7 @@ function updateCamera(
     fold,
     unfold,
     wellUnfold,
+    wellDepth,
     _baseCameraPos,
     _vTarget,
   );
@@ -614,6 +630,30 @@ class WireframeLines {
   }
 }
 
+function buildLightBeamPoints(
+  missDistance: number,
+  edge: LightBeamEdge,
+  progress: number,
+  wellMorph: number,
+  params: WellParams,
+  beamHalfWidth: number,
+  sampleCount = 48,
+): Vec3[] {
+  if (progress <= 0) {
+    return [];
+  }
+  const full = lightGeodesicSamples(
+    missDistance,
+    edge,
+    sampleCount,
+    wellMorph,
+    params,
+    beamHalfWidth,
+  );
+  const endIndex = Math.max(1, Math.round(progress * (full.length - 1)));
+  return full.slice(0, endIndex + 1);
+}
+
 export class CurvedSurfaceRenderer {
   readonly renderer: THREE.WebGLRenderer;
   readonly camera: THREE.PerspectiveCamera;
@@ -631,7 +671,7 @@ export class CurvedSurfaceRenderer {
   private readonly dotMesh: THREE.Mesh;
   private colors: ThemeColors = readThemeColors();
   private readonly params: CurvedSurfaceParams = DEFAULT_CURVED_SURFACE_PARAMS;
-  private readonly wellParams: WellParams = DEFAULT_WELL_PARAMS;
+  private readonly lightBeamOuterLine: WidePolylineOverlay;
   private viewportWidth = 720;
   private viewportHeight = 520;
   private axisLabelAnchors: AxisLabelAnchor[] = [];
@@ -698,6 +738,12 @@ export class CurvedSurfaceRenderer {
     showGeodesic: false,
     showAxisLabels: false,
     showEarthSphere: false,
+    wellDepth: 'earth',
+    showLightBeam: false,
+    lightBeamProgress: 0,
+    lightBeamMissDistance: 0.25,
+    lightBeamHalfWidth: DEFAULT_BEAM_HALF_WIDTH,
+    lightBeamMode: 'single',
   };
 
   constructor(private readonly canvas: HTMLCanvasElement) {
@@ -710,7 +756,7 @@ export class CurvedSurfaceRenderer {
     this.renderer.setClearColor(0x000000, 0);
 
     this.camera = new THREE.PerspectiveCamera(42, 1, 0.05, 50);
-    updateCamera(this.camera, 'cone', 0, 0, 0);
+    updateCamera(this.camera, 'cone', 0, 0, 0, 'earth');
 
     const colors = readThemeColors();
     this.colors = colors;
@@ -729,7 +775,14 @@ export class CurvedSurfaceRenderer {
     this.geodesicLine = new WidePolylineOverlay(
       this.scene,
       colors.accent1,
-      0.35,
+      0.85,
+      OVERLAY_LINE_WIDTH,
+      true,
+    );
+    this.lightBeamOuterLine = new WidePolylineOverlay(
+      this.scene,
+      colors.accent2,
+      0.85,
       OVERLAY_LINE_WIDTH,
       true,
     );
@@ -836,6 +889,7 @@ export class CurvedSurfaceRenderer {
       this.state.fold,
       this.state.unfold,
       this.state.wellUnfold,
+      this.state.wellDepth,
       this.orbitAzimuth,
       this.orbitElevation,
     );
@@ -860,7 +914,8 @@ export class CurvedSurfaceRenderer {
     this.wireLinesBack.setColor(colors.ink, 0.09);
     this.wireLinesFront.setColor(colors.ink, 0.52);
     this.axisLines.setColor(colors.ink, 0.82);
-    this.geodesicLine.setColor(colors.accent1, 0.35);
+    this.geodesicLine.setColor(colors.accent1, 0.85);
+    this.lightBeamOuterLine.setColor(colors.accent2, 0.85);
     this.appleGeodesicLines.setColor(colors.accent1, 0.55);
     this.trailLine.setColor(colors.accent1, 0.95);
     this.appleTreeNearLines.setColor(colors.ink, 0.85);
@@ -903,6 +958,12 @@ export class CurvedSurfaceRenderer {
       showGeodesic,
       showAxisLabels,
       showEarthSphere,
+      wellDepth,
+      showLightBeam,
+      lightBeamProgress,
+      lightBeamMissDistance,
+      lightBeamHalfWidth,
+      lightBeamMode,
     } = this.state;
 
     this.applyCamera();
@@ -924,9 +985,17 @@ export class CurvedSurfaceRenderer {
         wellTrajectoryMode,
         showAxisLabels,
         showEarthSphere,
+        wellDepth,
+        showLightBeam,
+        lightBeamProgress,
+        lightBeamMissDistance,
+        lightBeamHalfWidth,
+        lightBeamMode,
       );
       return;
     }
+
+    this.lightBeamOuterLine.setPoints([]);
 
     this.earthSphereLines.setStrips([]);
 
@@ -1038,7 +1107,14 @@ export class CurvedSurfaceRenderer {
     wellTrajectoryMode: WellTrajectoryMode,
     showAxisLabels: boolean,
     showEarthSphere: boolean,
+    wellDepth: WellDepth,
+    showLightBeam: boolean,
+    lightBeamProgress: number,
+    lightBeamMissDistance: number,
+    lightBeamHalfWidth: number,
+    lightBeamMode: LightBeamMode,
   ): void {
+    const params = resolveWellParams(wellDepth);
     // Smooth bulge cannot lay perfectly flat — clamp unfold for any non-zero morph.
     const effectiveUnfold = wellMorph > 1e-6 ? 0 : wellUnfold;
 
@@ -1048,7 +1124,7 @@ export class CurvedSurfaceRenderer {
           wellReveal,
           wellMorph,
           effectiveUnfold,
-          this.wellParams,
+          params,
         ),
       );
       this.surface.setVisible(true);
@@ -1060,7 +1136,7 @@ export class CurvedSurfaceRenderer {
       wellReveal,
       wellMorph,
       effectiveUnfold,
-      this.wellParams,
+      params,
     );
     const { front, back } = splitStripsByFacing(strips, this.camera);
     this.wireLinesBack.setStrips(back);
@@ -1070,7 +1146,7 @@ export class CurvedSurfaceRenderer {
       const axisStrips = buildWellAxisStrips(
         wellReveal,
         wellMorph,
-        this.wellParams,
+        params,
       );
       this.axisLines.setStrips([axisStrips.space, axisStrips.time]);
       this.updateAxisLabelAnchors(axisStrips);
@@ -1081,14 +1157,46 @@ export class CurvedSurfaceRenderer {
     this.appleTreeNearLines.setStrips([]);
     this.appleTreeProjectedLines.setStrips([]);
     this.appleGeodesicLines.setStrips([]);
-    this.geodesicLine.setPoints([]);
+
+    if (showLightBeam && lightBeamProgress > 0) {
+      this.dotMesh.visible = false;
+      const beamEdge: LightBeamEdge =
+        lightBeamMode === 'single' ? 'center' : 'inner';
+      const innerPoints = buildLightBeamPoints(
+        lightBeamMissDistance,
+        beamEdge,
+        lightBeamProgress,
+        wellMorph,
+        params,
+        lightBeamHalfWidth,
+      );
+      this.geodesicLine.setPoints(innerPoints);
+      this.geodesicLine.setColor(this.colors.accent1, 0.9);
+
+      if (lightBeamMode === 'dual' || lightBeamMode === 'filled') {
+        const outerPoints = buildLightBeamPoints(
+          lightBeamMissDistance,
+          'outer',
+          lightBeamProgress,
+          wellMorph,
+          params,
+          lightBeamHalfWidth,
+        );
+        this.lightBeamOuterLine.setPoints(outerPoints);
+        this.lightBeamOuterLine.setColor(this.colors.accent2, 0.9);
+      } else {
+        this.lightBeamOuterLine.setPoints([]);
+      }
+    } else {
+      this.geodesicLine.setPoints([]);
+      this.lightBeamOuterLine.setPoints([]);
+      this.dotMesh.visible = true;
+    }
 
     // Hide the Earth globe as the paper unrolls (the globe is a 3-D artifact).
     const earthOpacity = effectiveUnfold > 0.01 ? 1 - smoothstep01(effectiveUnfold) : 1;
     if (showEarthSphere && wellReveal >= 0.38 && earthOpacity > 0.05) {
-      this.earthSphereLines.setStrips(
-        earthSphereWireframeStrips(this.wellParams),
-      );
+      this.earthSphereLines.setStrips(earthSphereWireframeStrips(params));
     } else {
       this.earthSphereLines.setStrips([]);
     }
@@ -1100,7 +1208,7 @@ export class CurvedSurfaceRenderer {
               spatialFraction,
               time,
               wellMorph,
-              this.wellParams,
+              params,
               wellTrajectoryMode,
               wellStartXNorm,
             )
@@ -1109,7 +1217,7 @@ export class CurvedSurfaceRenderer {
               time,
               wellMorph,
               effectiveUnfold,
-              this.wellParams,
+              params,
               wellTrajectoryMode,
             )
         : wellSurfaceMorphedPoint(
@@ -1117,18 +1225,29 @@ export class CurvedSurfaceRenderer {
             wellRevealMaxX(wellReveal),
             wellMorph,
             effectiveUnfold,
-            this.wellParams,
+            params,
           );
-    this.dotMesh.position.set(dot.x, dot.y, dot.z);
+    if (!showLightBeam) {
+      this.dotMesh.visible = worldlineMode === 'well-trajectory';
+    }
 
-    if (showTrail && time > 0 && worldlineMode === 'well-trajectory') {
+    if (!showLightBeam && worldlineMode === 'well-trajectory') {
+      this.dotMesh.position.set(dot.x, dot.y, dot.z);
+    }
+
+    if (
+      showTrail &&
+      time > 0 &&
+      worldlineMode === 'well-trajectory' &&
+      !showLightBeam
+    ) {
       const samples =
         wellLaunchMode === 'spatial-budget'
           ? wellSpatialBudgetTrajectorySamples(
               spatialFraction,
               trailLength,
               wellMorph,
-              this.wellParams,
+              params,
               time,
               trailSpan,
               wellTrajectoryMode,
@@ -1139,7 +1258,7 @@ export class CurvedSurfaceRenderer {
               trailLength,
               wellMorph,
               effectiveUnfold,
-              this.wellParams,
+              params,
               time,
               trailSpan,
               wellTrajectoryMode,
@@ -1178,7 +1297,7 @@ export class CurvedSurfaceRenderer {
           ? buildWellAxisStrips(
               this.state.wellReveal,
               this.state.wellMorph,
-              this.wellParams,
+              resolveWellParams(this.state.wellDepth),
             )
           : buildAxisStrips(
               this.state.fold,
@@ -1204,6 +1323,7 @@ export class CurvedSurfaceRenderer {
     this.wireLinesFront.dispose();
     this.axisLines.dispose();
     this.geodesicLine.dispose();
+    this.lightBeamOuterLine.dispose();
     this.appleGeodesicLines.dispose();
     this.trailLine.dispose();
     this.appleTreeNearLines.dispose();
