@@ -1,0 +1,22 @@
+# Hashed JS bundles
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# Hashed CSS bundles
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+# Web fonts
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+# MathJax (versioned with deploys, not content-hashed)
+/mathjax/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML — revalidate on deploy
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate

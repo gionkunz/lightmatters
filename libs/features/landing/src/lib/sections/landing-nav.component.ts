@@ -27,7 +27,7 @@ import { LmThemeToggleComponent, LmWordmarkComponent } from '@lm/design';
 export class LandingNavComponent {
   protected readonly links = [
     { label: 'Chapters', href: '#chapters' },
-    { label: 'About', href: '#' },
+    { label: 'About', href: '#about' },
     { label: 'Notes', href: '#' },
   ];
 }

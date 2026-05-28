@@ -10,6 +10,22 @@ import type {
 import { narrateTextTypingUnits } from './narrate-text';
 import { TargetRegistry } from './target-registry';
 
+const canUseAnimationFrame =
+  typeof globalThis.requestAnimationFrame === 'function';
+
+function scheduleAnimationFrame(callback: FrameRequestCallback): number | null {
+  if (!canUseAnimationFrame) {
+    return null;
+  }
+  return requestAnimationFrame(callback);
+}
+
+function cancelScheduledAnimationFrame(id: number | null): void {
+  if (id !== null && typeof cancelAnimationFrame === 'function') {
+    cancelAnimationFrame(id);
+  }
+}
+
 /** @deprecated Timed read pauses replaced by checkpoint hold; kept for authored timelines. */
 export const DEFAULT_NARRATE_READ_PAUSE_MS = 4000;
 
@@ -536,10 +552,10 @@ export class TimelineRunner {
         return;
       }
 
-      this.rafId = requestAnimationFrame(frame);
+      this.rafId = scheduleAnimationFrame(frame);
     };
 
-    this.rafId = requestAnimationFrame(frame);
+    this.rafId = scheduleAnimationFrame(frame);
   }
 
   private startCheckpointHold(): void {
@@ -741,24 +757,20 @@ export class TimelineRunner {
     const tick = () => {
       this.syncProgress();
       if (this._running() && !this.isComplete() && !this.waitingForUser()) {
-        this.progressRafId = requestAnimationFrame(tick);
+        this.progressRafId = scheduleAnimationFrame(tick);
       }
     };
-    this.progressRafId = requestAnimationFrame(tick);
+    this.progressRafId = scheduleAnimationFrame(tick);
   }
 
   private stopProgressLoop(): void {
-    if (this.progressRafId !== null) {
-      cancelAnimationFrame(this.progressRafId);
-      this.progressRafId = null;
-    }
+    cancelScheduledAnimationFrame(this.progressRafId);
+    this.progressRafId = null;
   }
 
   private cancelTimers(): void {
-    if (this.rafId !== null) {
-      cancelAnimationFrame(this.rafId);
-      this.rafId = null;
-    }
+    cancelScheduledAnimationFrame(this.rafId);
+    this.rafId = null;
     if (this.timeoutId !== null) {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;

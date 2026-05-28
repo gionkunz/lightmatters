@@ -40,6 +40,8 @@ nx affected -t lint test build --tui=false
 
 Always pass `--tui=false` on Nx task commands in non-interactive shells.
 
+Build output for deployment lives at `dist/apps/lightmatters/browser/`. See [`docs/architecture.md`](docs/architecture.md) for Cloudflare Pages setup.
+
 ## Documentation
 
 - [`docs/product.md`](docs/product.md) — vision, audience, chapter structure

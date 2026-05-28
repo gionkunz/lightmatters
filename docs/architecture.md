@@ -39,13 +39,13 @@ At any moment, at most two visualization canvases are on screen — typically on
 - **Typography:** **EB Garamond** for all body, narration, and display text. **IBM Plex Mono** for axis labels, chapter/step marks, and the small "Kicker" uppercase labels. Both served as web fonts.
 - **Inline math:** **MathJax v4** (TeX input → CHTML output). Authors write `$...$` LaTeX directly in narrate strings; MathJax loads lazily from `/mathjax/` on first inline formula (not in the main bundle). Formulas render in MathJax's math font — distinct from EB Garamond narration.
 - **Monorepo / tooling:** **Nx** in classic **integrated monorepo** mode (`apps/` + `libs/`, single `package.json`, Nx-managed Angular projects). Scaffolded with `create-nx-workspace` using the `angular-monorepo` preset. The integrated layout gives us enforced module boundaries between engine / primitives / chapters via the `@nx/enforce-module-boundaries` lint rule, `nx affected` graphs for fast CI, generators for new chapters and primitives, and a single source for tooling versions.
-- **Build:** Nx-driven Angular build. Static output deployed as-is.
-- **Hosting:** **Cloudflare Pages**, custom domain `lightmatters.app`.
+- **Build:** Nx-driven Angular build with build-time prerendering (SSG). Deploy artifact: `dist/apps/lightmatters/browser/`.
+- **Hosting:** **Cloudflare Pages** via native GitHub integration, custom domain `lightmatters.app`. Pure static assets — no Workers runtime.
 
 Deliberate non-choices:
 
 - No backend at first. The entire product is a static site. If we later need analytics, accounts, or saved progress, those are additive and live behind a small API.
-- No SSR. The product is a fully client-rendered app; SEO is satisfied by a minimal landing page with hand-written meta content.
+- **SSG, not runtime SSR.** Every known route is prerendered to HTML at build time (`outputMode: "static"`). There is no on-demand server renderer in production — Cloudflare Pages serves flat files.
 - No state management library beyond Angular signals. The engine itself is the source of truth for what is animating; UI components subscribe to it.
 
 ## Module layout
@@ -358,11 +358,27 @@ Fully responsive interaction design is deferred past v1.
 
 ## Build, deploy, infrastructure
 
-- Static build via `nx build lightmatters`.
-- Hosted on **Cloudflare Pages**, custom domain `lightmatters.app`.
+- **Build:** `nx build lightmatters --tui=false` produces prerendered HTML under `dist/apps/lightmatters/browser/`. Angular `outputMode: "static"` with server routes in `app.routes.server.ts` enumerates every chapter step via `getPrerenderParams`.
+- **Pre-build steps:** `copy-mathjax` (via `postinstall` and build `dependsOn`) and `generate-seo` (writes `robots.txt` + `sitemap.xml` from the same step enumeration as prerender).
+- **Hosting:** **Cloudflare Pages** connected directly to the GitHub repo. No GitHub Actions deploy workflow — Cloudflare's build runner handles production and PR preview deploys.
+- **Cloudflare Pages settings:**
+  - Build command: `npm ci && npx nx run-many -t lint test -p lightmatters --tui=false && npx nx build lightmatters --tui=false`
+  - Build output directory: `dist/apps/lightmatters/browser`
+  - Root directory: repo root
+  - Node version: `22` (pinned in `.nvmrc`; set `NODE_VERSION=22` in the Pages project env)
+- **Static hosting config** (in `apps/lightmatters/public/`, copied to deploy output):
+  - `_headers` — long-lived immutable cache for hashed JS/CSS/fonts and `/mathjax/*`; short cache for HTML.
+  - `_redirects` — `/ch/09` → `/ch/09/step/1` at the edge; SPA fallback `/* /index.html 200` for unprerendered paths.
+- Custom domain: `lightmatters.app`.
 - A single deployment target initially.
-- No backend, no database, no server-rendered routes in v1.
+- No backend, no database, no runtime server in production.
 - CI runs `nx affected -t lint test build` on every push; full `nx run-many -t ...` on main.
+
+### Prerender safety
+
+Build-time prerender runs components in a Node DOM shim. Code reachable from prerendered routes **must not** access browser-only globals (`window`, `document`, `WebGLRenderingContext`, `localStorage`, etc.) at module evaluation time or in constructors that run during server rendering. Defer browser work to `afterNextRender`, `afterRender`, or an `isPlatformBrowser` guard. WebGL primitives already follow this pattern.
+
+When adding a chapter step, update the chapter's `chapter-steps.ts` (exported `CHAPTER_NN_STEPS`) — prerender, sitemap, and SEO all read from that single list.
 
 ## Risks and open questions
 

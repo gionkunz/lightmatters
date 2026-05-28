@@ -15,13 +15,31 @@
         "command": "rm -rf apps/lightmatters/public/mathjax && cp -r node_modules/mathjax apps/lightmatters/public/mathjax"
       }
     },
+    "generate-seo": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/scripts/generate-seo.ts",
+        "{projectRoot}/src/app/site-routes.ts",
+        "{workspaceRoot}/libs/features/**/src/lib/chapter-steps.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/public/robots.txt",
+        "{projectRoot}/public/sitemap.xml"
+      ],
+      "options": {
+        "command": "npx jiti apps/lightmatters/scripts/generate-seo.ts"
+      }
+    },
     "build": {
-      "dependsOn": ["copy-mathjax"],
+      "dependsOn": ["copy-mathjax", "generate-seo"],
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/lightmatters",
         "browser": "apps/lightmatters/src/main.ts",
+        "server": "apps/lightmatters/src/main.server.ts",
+        "outputMode": "static",
         "tsConfig": "apps/lightmatters/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -71,7 +89,10 @@
       "defaultConfiguration": "development"
     },
     "lint": {
-      "executor": "@nx/eslint:lint"
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": ["apps/lightmatters/src/**/*.ts", "apps/lightmatters/src/**/*.html"]
+      }
     },
     "test": {
       "executor": "@nx/jest:jest",
