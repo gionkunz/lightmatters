@@ -12,7 +12,7 @@ import {
   TimelineRunner
 } from '@lm/engine';
 import { LmKickerComponent } from '@lm/design';
-import { buildPeriodicEmissions } from '@lm/physics';
+import { buildRelativisticPeriodicEmissions } from '@lm/physics';
 import {
   LmLightSceneComponent,
   type LightSceneObserver,
@@ -112,7 +112,7 @@ export class Step05Component implements OnInit, OnDestroy {
       y: 0,
       label: 'S',
       velocity: { x: -0.5, y: 0 },
-      emissions: buildPeriodicEmissions(5, CH5_PULSE_INTERVAL)
+      emissions: buildRelativisticPeriodicEmissions(5, CH5_PULSE_INTERVAL, 0.5)
 },
   ];
 

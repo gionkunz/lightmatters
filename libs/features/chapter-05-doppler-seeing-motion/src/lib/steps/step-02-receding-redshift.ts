@@ -15,7 +15,7 @@ export const STEP_02_RECEDING_REDSHIFT: Step = {
     },
     {
       type: 'narrate',
-      text: 'Watch the rings. Each is born at $c$, but the gaps between arrivals at $A$ grow wider. $A$ hears the clock run **slow**.',
+      text: 'Watch the rings. Each is born at $c$, but the gaps between arrivals at $A$ grow wider — partly because $S$\'s clock runs slow (Chapter 2), partly because each pulse has farther to travel. $A$ hears the clock run **slow**.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

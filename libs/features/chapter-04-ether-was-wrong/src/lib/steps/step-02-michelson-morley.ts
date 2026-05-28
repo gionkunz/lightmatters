@@ -50,7 +50,7 @@ export const STEP_02_MICHELSON_MORLEY: Step = {
     },
     {
       type: 'narrate',
-      text: 'The ether picture says light should inherit your speed — each flash dragged forward along with you, leaning into the direction you traveled.',
+      text: 'If the ether is a medium and Earth moves through it, light should travel at $c$ **relative to the ether** — but the whole medium streams past the apparatus like a wind. Each flash is carried along with that **ether wind**, not with the speed of whatever emitted it.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

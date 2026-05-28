@@ -1,5 +1,7 @@
 import {
   buildPeriodicEmissions,
+  buildRelativisticPeriodicEmissions,
+  classicalDopplerFactor,
   distance,
   emissionPosition,
   lightCircleRadius,
@@ -7,6 +9,8 @@ import {
   pulseArrivalSceneTimes,
   pulseReachesMoving,
   pulseReachesStationary,
+  relativisticDopplerApproachingFactor,
+  relativisticDopplerRecedingFactor,
   sourcePositionAt,
   vec2,
 } from './light-scene';
@@ -138,8 +142,94 @@ describe('light-scene physics', () => {
         vec2(-0.5, 0),
         undefined,
       );
-      expect(meanPulseInterval(receding)! > meanPulseInterval(still)!).toBe(
-        true,
+      const recedingMean = meanPulseInterval(receding);
+      const stillMean = meanPulseInterval(still);
+      expect(recedingMean).not.toBeNull();
+      expect(stillMean).not.toBeNull();
+      expect(recedingMean as number).toBeGreaterThan(stillMean as number);
+    });
+  });
+
+  describe('buildRelativisticPeriodicEmissions', () => {
+    const properInterval = 0.4;
+    const observer = vec2(-0.5, 0);
+    const beta = 0.5;
+
+    it('mean recession interval matches relativistic Doppler factor', () => {
+      const emissions = buildRelativisticPeriodicEmissions(
+        6,
+        properInterval,
+        beta,
+      );
+      const arrivals = pulseArrivalSceneTimes(
+        vec2(-0.2, 0),
+        { x: beta, y: 0 },
+        emissions,
+        observer,
+        undefined,
+      );
+      const mean = meanPulseInterval(arrivals);
+      const expected =
+        properInterval * relativisticDopplerRecedingFactor(beta);
+      expect(mean).not.toBeNull();
+      expect(mean as number).toBeCloseTo(expected, 2);
+      expect(mean as number).toBeGreaterThan(
+        properInterval * classicalDopplerFactor(beta, true),
+      );
+    });
+
+    it('mean approach interval matches relativistic Doppler factor', () => {
+      const emissions = buildRelativisticPeriodicEmissions(
+        6,
+        properInterval,
+        beta,
+      );
+      const arrivals = pulseArrivalSceneTimes(
+        vec2(2, 0),
+        { x: -beta, y: 0 },
+        emissions,
+        observer,
+        undefined,
+      );
+      const mean = meanPulseInterval(arrivals);
+      const expected =
+        properInterval * relativisticDopplerApproachingFactor(beta);
+      expect(mean).not.toBeNull();
+      expect(mean as number).toBeCloseTo(expected, 2);
+      expect(mean as number).toBeGreaterThan(
+        properInterval * classicalDopplerFactor(beta, false),
+      );
+    });
+
+    it('differs from classical coordinate-time emissions by γ', () => {
+      const classical = buildPeriodicEmissions(6, properInterval);
+      const relativistic = buildRelativisticPeriodicEmissions(
+        6,
+        properInterval,
+        beta,
+      );
+      const classicalArrivals = pulseArrivalSceneTimes(
+        vec2(-0.2, 0),
+        { x: beta, y: 0 },
+        classical,
+        observer,
+        undefined,
+      );
+      const relativisticArrivals = pulseArrivalSceneTimes(
+        vec2(-0.2, 0),
+        { x: beta, y: 0 },
+        relativistic,
+        observer,
+        undefined,
+      );
+      const classicalMean = meanPulseInterval(classicalArrivals);
+      const relativisticMean = meanPulseInterval(relativisticArrivals);
+      expect(classicalMean).not.toBeNull();
+      expect(relativisticMean).not.toBeNull();
+      expect((relativisticMean as number) / (classicalMean as number)).toBeCloseTo(
+        relativisticDopplerRecedingFactor(beta) /
+          classicalDopplerFactor(beta, true),
+        1,
       );
     });
   });

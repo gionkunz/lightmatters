@@ -15,7 +15,7 @@ export const STEP_05_OUTRO: Step = {
     },
     {
       type: 'narrate',
-      text: 'Chapter 3 showed that **when** news arrives depends on motion. This chapter showed that **how fast** it travels does not — not for the source, not for the observer. $c$ is the same for everyone because that is how light is born.',
+      text: 'Chapter 3 showed that **when** news arrives depends on motion. This chapter showed two failed pictures — an ether wind we cannot detect, and light that does not inherit its source\'s speed. $c$ belongs to light itself, not to a medium or a parent body.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

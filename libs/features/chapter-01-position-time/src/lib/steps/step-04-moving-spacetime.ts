@@ -24,11 +24,7 @@ export const STEP_04_MOVING_SPACETIME: Step = {
     },
     {
       type: 'narrate',
-      text: 'Spacetime works like a budget. Everything in the universe moves at $c$. You can spend it on motion through space, or motion through time — but the total is always the same.',
-    },
-    {
-      type: 'narrate',
-      text: 'Drag the slider. Watch the vector tilt. More through space means less through time — and vice versa.',
+      text: 'Spacetime works like a **budget** — everything moves at $c$, split between space and time. Drag the slider and watch the vector tilt. Chapter 2 will unpack what that budget really means.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

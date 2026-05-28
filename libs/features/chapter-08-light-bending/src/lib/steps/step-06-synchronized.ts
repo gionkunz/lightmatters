@@ -28,7 +28,7 @@ export const STEP_06_SYNCHRONIZED: Step = {
     },
     {
       type: 'narrate',
-      text: 'The only way out: the inner edge\'s **clock runs slow**. Less proper time per metre, so the inner edge falls behind in the right amount to keep the band square. Time dilation is what **buys** the bend.',
+      text: 'The only way out: the inner edge\'s **clock runs slow**. Less proper time per metre, so the inner edge falls behind in the right amount to keep the band square. Gravitational time dilation is what **buys a square wavefront** — one essential piece of why light bends at all.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

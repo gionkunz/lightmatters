@@ -51,12 +51,22 @@ export const STEP_04_TWO_FLASHES_ONE_WITNESS: Step = {
     },
     {
       type: 'narrate',
-      text: 'The right flash arrived first. Same pair of flashes — but for a moving witness, they did not happen "at the same time." This is **the relativity of simultaneity**.',
+      text: 'The right flash arrived first. But that is only what **you**, watching from outside, see.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
-      text: 'When you ask "when did this happen?" — the answer depends on who is moving.',
+      text: 'Switch to $W$\'s own frame. $W$ considers itself **at rest** and still **equidistant** from both sources. From that vantage, the flashes genuinely did **not** happen at the same instant — not because $W$ "moved into" one flash, but because simultaneity itself is relative. Every observer is equally entitled to their own rest frame.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'When you ask "when did this happen?" — the answer depends on who is moving. Chapter 4 will show why you cannot subtract motion from $c$ and restore a single universal "now."',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'This is **the relativity of simultaneity**.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

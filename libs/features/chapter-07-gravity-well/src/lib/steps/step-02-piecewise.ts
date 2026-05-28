@@ -10,7 +10,7 @@ export const STEP_02_PIECEWISE: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'Remember the tunnel and the center? Here is Epstein\'s answer — the same cylinder and cone, but read **outward**: gravity pulls where the paper is **widest**, not where it pinches shut.',
+      text: 'Remember the tunnel and the center? Here is Epstein\'s answer — the same cylinder and cone, but read **outward**: gravity pulls where the paper **slopes**, not where it is widest.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -36,7 +36,7 @@ export const STEP_02_PIECEWISE: Step = {
     },
     {
       type: 'narrate',
-      text: 'A **cone opening outward** — the circumference **grows** as you fall toward the surface. This is where gravity feels **strongest**: the paper is widest at the rim, not at the center.',
+      text: 'A **cone opening outward** — the circumference **grows** as you fall toward the surface. The **slope is steepest** here: that is where gravity feels **strongest**.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

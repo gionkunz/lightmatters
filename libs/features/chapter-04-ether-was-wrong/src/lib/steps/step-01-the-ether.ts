@@ -20,7 +20,7 @@ export const STEP_01_THE_ETHER: Step = {
     },
     {
       type: 'narrate',
-      text: 'If that were true, light from a moving source should be dragged along — faster when the source chases its own beam, slower when it recedes. We will test that intuition.',
+      text: 'If Earth moves through a stationary ether, we should feel an **ether wind** — and light should travel at $c$ relative to that medium, not relative to us. We will test both ideas.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

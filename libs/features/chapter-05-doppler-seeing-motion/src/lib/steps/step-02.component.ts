@@ -15,7 +15,7 @@ import {
 } from '@lm/engine';
 import { LmFactLineComponent, LmKickerComponent } from '@lm/design';
 import {
-  buildPeriodicEmissions,
+  buildRelativisticPeriodicEmissions,
   meanPulseInterval,
   vec2
 } from '@lm/physics';
@@ -119,9 +119,10 @@ export class Step02Component implements OnInit, OnDestroy {
 
   private readonly sourceStart = vec2(-0.15, 0);
   private readonly sourceVelocity = { x: 0.5, y: 0 };
-  private readonly emissions = buildPeriodicEmissions(
+  private readonly emissions = buildRelativisticPeriodicEmissions(
     CH5_PULSE_COUNT,
     CH5_PULSE_INTERVAL,
+    0.5,
   );
 
   protected readonly observers: LightSceneObserver[] = [

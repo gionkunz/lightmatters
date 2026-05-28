@@ -20,7 +20,7 @@ export const STEP_05_TIME_DILATION: Step = {
     },
     {
       type: 'narrate',
-      text: 'Two edges. Two clocks. One running slow. Hold that picture — next we let the band move and watch what happens.',
+      text: 'Two edges. Two clocks. One running slow — a **clock contribution** to what comes next, not the whole story by itself. Hold that picture; next we let the band move and watch what happens.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

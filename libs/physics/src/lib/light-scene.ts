@@ -6,6 +6,8 @@
  * scene unit per scene-time unit. Pass `c` explicitly to use other unit systems.
  */
 
+import { lorentz } from './lorentz';
+
 export interface Vec2 {
   readonly x: number;
   readonly y: number;
@@ -136,6 +138,44 @@ export function buildPeriodicEmissions(
     atTime: startTime + i * interval,
     pulseId: `${idPrefix}${i}`,
   }));
+}
+
+/**
+ * Build emissions spaced by the source's proper interval, mapped into scene time
+ * with γ(β). Used for relativistic longitudinal Doppler in Chapter 5.
+ */
+export function buildRelativisticPeriodicEmissions(
+  count: number,
+  properInterval: number,
+  beta: number,
+  startTime = 0,
+  idPrefix = 'p',
+): SceneEmission[] {
+  const gamma = lorentz(Math.abs(beta));
+  return buildPeriodicEmissions(
+    count,
+    gamma * properInterval,
+    startTime,
+    idPrefix,
+  );
+}
+
+/** Relativistic longitudinal Doppler factor on mean arrival interval (receding). */
+export function relativisticDopplerRecedingFactor(beta: number): number {
+  const b = Math.min(Math.max(0, Math.abs(beta)), 1 - Number.EPSILON);
+  return Math.sqrt((1 + b) / (1 - b));
+}
+
+/** Relativistic longitudinal Doppler factor on mean arrival interval (approaching). */
+export function relativisticDopplerApproachingFactor(beta: number): number {
+  const b = Math.min(Math.max(0, Math.abs(beta)), 1 - Number.EPSILON);
+  return Math.sqrt((1 - b) / (1 + b));
+}
+
+/** Classical light-travel-time-only factor (1±β) for comparison. */
+export function classicalDopplerFactor(beta: number, receding: boolean): number {
+  const b = Math.min(Math.max(0, Math.abs(beta)), 1 - Number.EPSILON);
+  return receding ? 1 + b : 1 - b;
 }
 
 /**

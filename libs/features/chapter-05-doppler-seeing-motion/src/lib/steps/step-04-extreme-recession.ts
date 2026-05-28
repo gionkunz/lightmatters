@@ -22,7 +22,7 @@ export const STEP_04_EXTREME_RECESSION: Step = {
       type: 'animate',
       target: 'scene.time',
       from: 0,
-      to: 5,
+      to: 6.5,
       duration: 6,
       easing: 'linear',
     },

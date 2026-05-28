@@ -12,7 +12,7 @@ export const STEP_01_ALWAYS_AT_C: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'Welcome to the speed budget. Everything in the universe moves through spacetime at exactly $c$. Not almost — exactly.',
+      text: 'Welcome to the speed budget — the idea Chapter 1 teased with the tilting vector. Everything in the universe moves through spacetime at exactly $c$. Not almost — exactly.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

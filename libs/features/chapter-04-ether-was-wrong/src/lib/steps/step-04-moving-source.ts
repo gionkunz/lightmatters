@@ -15,7 +15,7 @@ export const STEP_04_MOVING_SOURCE: Step = {
     },
     {
       type: 'narrate',
-      text: 'If light needed a medium, the expanding circle would be dragged forward with the source — a faster forward edge, a slower trailing edge. Watch what actually happens.',
+      text: '**Emission theory** says light inherits the source\'s velocity — the circle would lean forward, dragged along with $S$. Watch what actually happens.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -33,7 +33,7 @@ export const STEP_04_MOVING_SOURCE: Step = {
     },
     {
       type: 'narrate',
-      text: 'That is why Michelson and Morley saw nothing: there is no ether to move through, and no way to "add" your speed to light.',
+      text: 'Light does not inherit its source\'s speed — that kills **emission theory**. $c$ is a property of light itself, not something you add your motion to. A later chapter will show that $c$ is the same in every frame; for now, remember: no inheritance.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

@@ -38,6 +38,11 @@ export const STEP_07_STRAIGHT_LINES: Step = {
     },
     {
       type: 'narrate',
+      text: 'The clocks alone would bend light by only **half** the measured amount. Einstein\'s full picture also curves **space** itself — both halves together. We will go deeper into that geometry later.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
       text: 'Bent light is geometry, not a pull. From here it is a short walk to black holes — same picture, just a steeper bump.',
     },
     { type: 'wait', for: 'userAdvance' },

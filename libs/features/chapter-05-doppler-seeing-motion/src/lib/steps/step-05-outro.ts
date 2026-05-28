@@ -15,7 +15,7 @@ export const STEP_05_OUTRO: Step = {
     },
     {
       type: 'narrate',
-      text: 'Chapter 2 told you moving clocks run slow. Chapter 5 showed **why** a distant observer hears that slowness — the pulses simply arrive further apart.',
+      text: 'Chapter 2 told you moving clocks run slow. This chapter showed **why** a distant observer hears that slowness — the source\'s proper rhythm is γ-stretched in scene time, **and** the pulses travel farther between ticks.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

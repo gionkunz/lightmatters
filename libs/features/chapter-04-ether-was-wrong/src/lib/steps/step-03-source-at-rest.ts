@@ -33,7 +33,7 @@ export const STEP_03_SOURCE_AT_REST: Step = {
     },
     {
       type: 'narrate',
-      text: 'The ether picture says the wave should be dragged along. Reality says something else entirely.',
+      text: 'Emission theory says the wave should lean into the source\'s motion. Reality says something else entirely.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

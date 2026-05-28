@@ -5,7 +5,7 @@ TBD - created by archiving change chapter-01-step-04. Update Purpose after archi
 ## Requirements
 ### Requirement: Step 4 teaches motion through spacetime at c
 
-Chapter 1 Step 4 SHALL be authored as a step module exporting a `Step` object with id `moving-spacetime`, layout `intro`, a `single`-variant spacetime diagram with velocity vector, a `v / c` slider control, and a timeline that narrates the speed-budget concept then waits for user exploration.
+Chapter 1 Step 4 SHALL be authored as a step module exporting a `Step` object with id `moving-spacetime`, layout `intro`, a `single`-variant spacetime diagram with velocity vector, a `v / c` slider control, and a timeline that **foreshadows** the speed-budget concept then waits for user exploration. Step 4 is a teaser hook at the end of the "vocabulary" chapter; the full pure-time / pure-space treatment belongs to Chapter 2 Step 1 and SHALL NOT be duplicated here.
 
 #### Scenario: Step 4 renders full step experience
 
@@ -13,11 +13,12 @@ Chapter 1 Step 4 SHALL be authored as a step module exporting a `Step` object wi
 - **THEN** the step frame, narrator, single-variant spacetime diagram, and `v / c` slider all render
 - **AND** the timeline begins automatically on step entry
 
-#### Scenario: Step 4 narration introduces the speed budget
+#### Scenario: Step 4 narration foreshadows the speed budget
 
 - **WHEN** Step 4's timeline runs through its narrate events
-- **THEN** the user sees narration explaining that everything moves through spacetime at c
-- **AND** narration describes the fixed speed budget between space and time
+- **THEN** the user sees narration introducing the hook that everything moves through spacetime at c
+- **AND** narration poses the budget idea as a teaser inviting exploration
+- **AND** narration does NOT fully unpack the pure-time and pure-space extremes (deferred to Chapter 2 Step 1)
 - **AND** a final narration beat invites slider exploration
 
 #### Scenario: Entry animation tilts vector slightly
