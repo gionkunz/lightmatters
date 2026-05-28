@@ -22,7 +22,7 @@ import { LmButtonComponent, LmKickerComponent } from '@lm/design';
         lecture.
       </p>
       <div class="mt-10 flex items-center gap-4">
-        <a routerLink="/ch/01/step/1">
+        <a routerLink="/chapter/1/step/1">
           <lm-button [primary]="true">begin chapter 1 →</lm-button>
         </a>
         <lm-button>read the founder's note</lm-button>

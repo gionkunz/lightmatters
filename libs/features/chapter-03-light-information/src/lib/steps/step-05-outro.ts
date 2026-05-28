@@ -20,7 +20,7 @@ export const STEP_05_OUTRO: Step = {
     },
     {
       type: 'narrate',
-      text: 'Nor have we touched colour and rhythm — the **Doppler shift** that makes a moving source sound, and look, different. That is Chapter 5, along with the way starlight tilts forward when you accelerate.',
+      text: 'Nor have we touched colour and rhythm — the **Doppler shift** that makes a moving source sound, and look, different. That is Chapter 7, along with the way starlight tilts forward when you accelerate.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

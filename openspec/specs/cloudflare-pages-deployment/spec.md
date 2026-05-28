@@ -52,17 +52,17 @@ The deployed site SHALL serve hashed bundle assets and the `mathjax/` directory 
 
 ### Requirement: SPA fallback and edge redirects
 
-The deployment SHALL declare URL handling rules in `apps/lightmatters/public/_redirects` such that (a) navigations to any path not matching a prerendered file are served the SPA shell so the Angular router can attempt to handle them, and (b) the chapter-9 placeholder URL `/ch/09` redirects to `/ch/09/step/1` at the edge.
+The deployment SHALL declare URL handling rules in `apps/lightmatters/public/_redirects` such that (a) navigations to any path not matching a prerendered file are served the SPA shell so the Angular router can attempt to handle them, and (b) chapter index URLs for placeholder chapters (e.g. `/chapter/5`, `/chapter/13`) redirect to their first step at the edge per `chapter-routing`.
 
 #### Scenario: Unknown path falls back to SPA shell
 
 - **WHEN** a browser requests a path that does not correspond to a prerendered HTML file or static asset
 - **THEN** Cloudflare serves the SPA shell HTML so the client router can render or 404 internally
 
-#### Scenario: Chapter 9 root redirects at the edge
+#### Scenario: Placeholder chapter index redirects at the edge
 
-- **WHEN** a browser requests `/ch/09`
-- **THEN** Cloudflare responds with a redirect to `/ch/09/step/1` before the Angular bundle loads
+- **WHEN** a browser requests `/chapter/13` (or another placeholder chapter index with an edge redirect)
+- **THEN** Cloudflare responds with a redirect to `/chapter/13/step/1` before the Angular bundle loads
 
 ### Requirement: Custom domain `lightmatters.app`
 

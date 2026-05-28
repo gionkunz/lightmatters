@@ -15,7 +15,7 @@ The `lightmatters` app build SHALL emit a prerendered HTML file for every route 
 #### Scenario: Every registered chapter step has its own HTML file
 
 - **WHEN** the app is built
-- **THEN** for each `/ch/:c/step/:s` route registered in the app's chapter route tables, a corresponding `dist/apps/lightmatters/browser/ch/<c>/step/<s>/index.html` file exists with rendered step markup
+- **THEN** for each `/chapter/:chapter/step/:step` route registered in the app's chapter route tables, a corresponding `dist/apps/lightmatters/browser/chapter/<chapter>/step/<step>/index.html` file exists with rendered step markup
 
 #### Scenario: Adding a new step automatically prerenders it
 

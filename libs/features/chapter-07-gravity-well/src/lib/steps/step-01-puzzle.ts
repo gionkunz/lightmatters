@@ -25,7 +25,7 @@ export const STEP_01_PUZZLE: Step = {
     },
     {
       type: 'narrate',
-      text: 'In Chapter 6 we bent the paper into a **cone** — gravity as geometry, not a force. Epstein\'s next move is surprising: the full picture is not a **well** that dips down, but a **bulge** that swells outward.',
+      text: 'In Chapter 10 we bent the paper into a **cone** — gravity as geometry, not a force. Epstein\'s next move is surprising: the full picture is not a **well** that dips down, but a **bulge** that swells outward.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

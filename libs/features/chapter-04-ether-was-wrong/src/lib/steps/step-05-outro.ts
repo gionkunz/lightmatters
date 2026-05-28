@@ -25,7 +25,7 @@ export const STEP_05_OUTRO: Step = {
     },
     {
       type: 'narrate',
-      text: 'Compress the circles, watch the clock change colour. That is Chapter 5.',
+      text: 'Compress the circles, watch the clock change colour. That is Chapter 7.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

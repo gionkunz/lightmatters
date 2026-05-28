@@ -44,9 +44,26 @@ The visual design is mocked up in `visual-design-prototype/` and is the source o
 
 The product is organized as a sequence of **chapters**, each containing several **steps**. A step is the atomic unit — one visual, one beat of narration, one interaction.
 
-The chapter list below is the **working journey skeleton**. It is intended as a starting point; the engine is designed so chapters and steps can be reordered, added, or rewritten without touching the core.
+The **v1.0 journey map is locked** (see `openspec/changes/reorder-chapters-and-route-scheme`). The engine is designed so chapters and steps can still be reordered, added, or rewritten without touching the core, but the twelve-chapter v1.0 sequence below is the committed order:
 
-**Structure:** Chapters 1–5 build **flat spacetime** (special relativity intuition). Chapters 6–8 turn to **curved spacetime** (general relativity). Finish the speed-budget arc in Chapter 2 before opening Chapter 3.
+| # | Chapter | Block |
+|---|---------|-------|
+| 1 | Position, time, spacetime | flat (SR) |
+| 2 | The speed budget | flat (SR) |
+| 3 | Light and information | flat (SR) |
+| 4 | The ether was wrong | flat (SR) |
+| 5 | The same speed of light | flat (SR) |
+| 6 | Clocks & rulers | flat (SR) |
+| 7 | Doppler and seeing motion | flat (SR) |
+| 8 | The twin paradox | flat (SR) |
+| 9 | Mass is energy (E=mc²) | flat (SR) |
+| 10 | Rolling the diagram | curved (GR) |
+| 11 | The center of the Earth | curved (GR) |
+| 12 | Light bending around mass | curved (GR) |
+
+**Structure:** Chapters 1–9 build **flat spacetime** (special relativity intuition); chapters 10–12 turn to **curved spacetime** (general relativity). The SR block follows a strict dependency chain — see light move (3) → no medium (4) → c is the same for all (5) → clocks dilate & rulers shrink (6) → what you *see* when sources move (7) → path-dependence of time (8) → mass is energy (9). Finish the speed-budget arc in Chapter 2 before opening Chapter 3.
+
+**Routes:** chapter steps live at `/chapter/:chapter/step/:step` with unpadded integers (`/chapter/1/step/2`).
 
 ### Chapter 1 — Position, time, spacetime
 
@@ -72,15 +89,15 @@ The single most powerful idea in the journey: you are always moving through spac
 
 ### Chapter 3 — Light and information
 
-We **change cameras**. The Epstein spacetime diagram is set aside; both axes here are **space**, viewed from above. Light expands as visible circles in space. Time is the animation, not a dimension on the page. The diagram returns intact in Chapter 6.
+We **change cameras**. The Epstein spacetime diagram is set aside; both axes here are **space**, viewed from above. Light expands as visible circles in space. Time is the animation, not a dimension on the page. The diagram returns intact in Chapter 10.
 
 - **Step 1 — Light through space.** Camera-switch beat. One source $S$, one observer $A$. The wavefront expands at $c$ in every direction and reaches $A$.
 - **Step 2 — Two listeners.** Stationary $A$ and $B$, equidistant from $S$. The pulse arrives at both at the same instant — symmetry on display.
 - **Step 3 — One of them moves.** Same scene, but $B$ is moving toward $S$ at $0.4\,c$. $B$ hears the flash before $A$. Motion changed when the news arrived, not how fast it travelled.
 - **Step 4 — Two flashes, one witness.** Two equidistant sources flash simultaneously. A stationary witness in the middle sees both arrive together; a witness drifting rightward sees the right flash first. Relativity of simultaneity, made visible.
-- **Step 5 — Outro.** Tie back to Chapter 2's clocks; flag what is coming next: source motion and the constancy of $c$ (Chapter 4), Doppler and aberration (Chapter 5).
+- **Step 5 — Outro.** Tie back to Chapter 2's clocks; flag what is coming next: source motion and the constancy of $c$ (Chapter 4), the same speed of light for all (Chapter 5), Doppler and aberration (Chapter 7).
 
-Aberration ("rain on the windshield") and Doppler shift live in Chapter 5, not here. Chapter 3 is the conceptual unlock; later chapters reuse the same spatial primitive to add colour, rhythm, and source-motion.
+Aberration ("rain on the windshield") and Doppler shift live in Chapter 7, not here. Chapter 3 is the conceptual unlock; later chapters reuse the same spatial primitive to add colour, rhythm, and source-motion.
 
 ### Chapter 4 — The ether was wrong
 
@@ -90,11 +107,23 @@ A short detour with high payoff: dismantle the medium intuition, then show what 
 - **Step 2 — Ether wind and Michelson–Morley.** Animated ether vector field: at rest (dots), moving (headwind arrows), circular motion, ether-dragged light prediction, then Earth's orbital null result (expected fringe shift vs nothing observed). No apparatus schematic.
 - **Step 3 — Light at rest.** Back on `lm-light-scene`: stationary source, one pulse expanding at $c$ — baseline before the pivot.
 - **Step 4 — Moving source.** Source moving at $0.4\,c$ when it flashes; pulse circle anchored at the **birth point**, still expanding at $c$. Light does not inherit source velocity. FactLines track source position vs fixed emission origin.
-- **Step 5 — Outro.** Self-propagating EM wave; $c$ invariant for everyone; bridge to Chapter 5 Doppler.
+- **Step 5 — Outro.** Self-propagating EM wave; $c$ invariant for everyone; bridge to Chapter 5 (the same speed of light).
 
 The Michelson–Morley apparatus is a step-local schematic, not a reusable primitive. Moving-source pulse origin is implemented in `lm-light-scene` (`source.velocity` + emission-position rendering).
 
-### Chapter 5 — Doppler and seeing motion
+### Chapter 5 — The same speed of light
+
+*New chapter — see `openspec/changes/add-c-invariance-and-twin-paradox`.*
+
+Crystallizes the postulate the ether chapter set up: **everyone measures the same `c`**. Using the expanding light-circle/sphere from Chapter 3, switch frames and watch the sphere stay centered on *every* inertial observer. This is the chapter that *resolves* the simultaneity puzzle planted in Chapter 3, and supplies the premise the light clock needs next.
+
+### Chapter 6 — Clocks & rulers
+
+*New chapter — see `openspec/changes/add-light-clock-and-length-contraction`.*
+
+The concrete mechanism behind the Chapter 2 speed-budget vector. A **light clock** (photon bouncing between mirrors) ticks slower when it moves — time dilation derived, not asserted — reproducing the same Lorentz factor. Then **length contraction** as its partner. Introduces the `lm-light-clock` primitive.
+
+### Chapter 7 — Doppler and seeing motion
 
 Combine the constancy of $c$ with source motion on `lm-light-scene` — pulse trains, observed tick rhythm, redshift and blueshift.
 
@@ -102,26 +131,38 @@ Combine the constancy of $c$ with source motion on `lm-light-scene` — pulse tr
 - **Step 2 — Receding — redshift.** S moves away at $0.5\,c$; wavefronts space out; mean tick interval at A grows.
 - **Step 3 — Approaching — blueshift.** S moves toward A at $0.5\,c$; wavefronts compress; mean tick interval shrinks.
 - **Step 4 — Extreme recession.** S at $0.9\,c$ receding; ticks arrive nearly frozen; "since last tick" stretches dramatically.
-- **Step 5 — Outro.** Tie rhythm to Doppler, time dilation, and what you *see*; bridge to Chapter 6 (gravity as geometry).
+- **Step 5 — Outro.** Tie rhythm to Doppler, time dilation, and what you *see*; bridge to Chapter 8 (the twin paradox).
 
 Physics helpers: `buildPeriodicEmissions`, `pulseArrivalSceneTimes`, `meanPulseInterval` in `@lm/physics`.
 
+### Chapter 8 — The twin paradox
+
+*New chapter — see `openspec/changes/add-c-invariance-and-twin-paradox`.*
+
+The journey's first worldline puzzle. One twin stays, one travels out and back; the bend in the traveller's worldline breaks the symmetry, so less proper time elapses for them. Resolved by **path-dependence of proper time** (not by "acceleration causes it"), with a Doppler pulse-counting view that reuses Chapter 7's machinery.
+
+### Chapter 9 — Mass is energy (E=mc²)
+
+*New chapter — see `openspec/changes/add-matter-and-emc2`.*
+
+The capstone of the flat-spacetime block and the payoff of the product's name. Reinterpret the speed budget as energy (rest energy `mc²`), establish that light carries momentum, then derive `E=mc²` with the **photon-in-a-box** (center-of-mass) argument. Bridges to the gravity block: mass-energy is what curves spacetime.
+
 ---
 
-*Chapters 6–8 leave flat spacetime and introduce curved geometry.*
+*Chapters 10–12 leave flat spacetime and introduce curved geometry.*
 
-### Chapter 6 — Rolling the diagram: gravity as geometry
+### Chapter 10 — Rolling the diagram: gravity as geometry
 
 The cone visualization from Epstein, brought to life. Returns to the Epstein spacetime diagram and introduces WebGL (`lm-curved-surface`).
 
 - **Step 1 — A point in time.** Unrolled cylinder with **Space** / **time** axes; a body at rest moves along a line offset from the time axis, then the sheet **rolls into a tube** and the dot completes another lap around the rim.
 - **Step 2 — Bend into a cone.** Morph cylinder → cone; wide end = strong gravity, point = weak gravity.
 - **Step 3 — Gravity as geometry.** A straight geodesic on the cone curves spatially when unrolled.
-- **Step 4 — Newton's apple.** Tiny house on the rim; gravity is the geometry, not the apple. Bridge to Chapter 7.
+- **Step 4 — Newton's apple.** Tiny house on the rim; gravity is the geometry, not the apple. Bridge to Chapter 11.
 
 Physics helpers: `cylinderSurfacePoint`, `coneSurfacePoint`, `morphSurfacePoint`, `worldlineTrailSamples` in `@lm/physics`.
 
-### Chapter 7 — Why the center of the Earth is weightless
+### Chapter 11 — Why the center of the Earth is weightless
 
 A continuation of the cone idea, answering a question the founder asked himself as a child — opened with the tunnel-through-Earth thought experiment.
 
@@ -130,15 +171,15 @@ A continuation of the cone idea, answering a question the founder asked himself 
 - **Step 3 — Fall on folded paper.** A particle falls through the piecewise bulge, then the paper unrolls flat — the curving worldline straightens into a literal straight line. Gravity is the shape of the paper.
 - **Step 4 — Smooth the shape.** Morph the four creases into one continuous bulge; the smooth shape can't lay perfectly flat, but the straight-line truth from Step 3 still holds.
 - **Step 5 — Fall through Earth.** Pay off the tunnel: particle spirals in, passes the weightless center, climbs the far side (trail) — the same straight-line worldline you saw on the unrolled paper.
-- **Step 6 — Escape velocity.** Interactive energy dial: bound vs escape trajectories; bridge to Chapter 8.
+- **Step 6 — Escape velocity.** Interactive energy dial: bound vs escape trajectories; bridge to Chapter 12.
 
 Physics helpers: `wellRadiusAt`, `wellSurfacePoint`, `wellTrajectoryPoint`, `wellTrajectorySamples`, `isEscapeTrajectory` in `@lm/physics`.
 
-### Chapter 8 — Light bending around mass
+### Chapter 12 — Light bending around mass
 
 General relativity applied to light — the deep-well regime where deflection is visible.
 
-- **Step 1 — The deep well.** Bridge from Chapter 7: Earth's shallow well barely bends light; introduce the extreme regime and a massive star at the well center.
+- **Step 1 — The deep well.** Bridge from Chapter 11: Earth's shallow well barely bends light; introduce the extreme regime and a massive star at the well center.
 - **Step 2 — One ray.** Animate a single light geodesic skimming past the mass with visible deflection.
 - **Step 3 — Widen the beam.** Inner and outer edges both bend; the whole band curves together.
 - **Step 4 — The path puzzle.** Compare spatial path lengths: outer longer than inner; pose the synchronization question without resolving it.
@@ -150,7 +191,7 @@ Physics helpers: `lightGeodesicPoint`, `lightGeodesicSamples`, `lightGeodesicArc
 
 ### Beyond — open
 
-The structure is intentionally extensible. Candidate future chapters: black holes and event horizons, cosmological expansion, the twin paradox as a worldline puzzle, gravitational waves, frame dragging. The framework is designed so that adding a new chapter is a content task, not an engineering task.
+The structure is intentionally extensible. Candidate future chapters: black holes and event horizons, cosmological expansion, gravitational waves, frame dragging. The framework is designed so that adding a new chapter is a content task, not an engineering task.
 
 ## Recurring visual primitives
 

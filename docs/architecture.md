@@ -312,11 +312,21 @@ Both rendering primitives and narration call into this module. Narration may als
 
 ## Routing
 
-Per-step URLs: `/ch/:chapter/step/:step`, plus `/` (landing), `/chapters` (journey map), and `/design-sheet` (dev-only). Routing uses the standard Angular Router so browser back/forward, deep links, and bookmarks work out of the box. Each step route is the canonical share-able URL; a user can send a friend a link to a specific beat in the journey.
+Per-step URLs: `/chapter/:chapter/step/:step` with **unpadded** integers (`/chapter/1/step/2`, `/chapter/12/step/7`), plus `/` (landing), `/chapters` (journey map), and `/design-sheet` (dev-only). Routing uses the standard Angular Router so browser back/forward, deep links, and bookmarks work out of the box. Each step route is the canonical share-able URL; a user can send a friend a link to a specific beat in the journey.
+
+> The legacy `/ch/:c/step/:s` scheme (zero-padded chapter) is retired. Chapter numbering follows the locked v1.0 map (see below and `openspec/changes/reorder-chapters-and-route-scheme`). The `chapter-routing` capability is the single source of truth for route paths and numbering.
 
 **Route ownership is distributed.** The app shell's `app.routes.ts` declares one top-level entry per feature, each using `loadChildren` to import that feature's exported `Routes` array. The feature owns its own URL space below its mount point — child routes, redirects, route-level resolvers, route-scoped providers all live in the feature lib. The shell never knows what `step/:step` means; chapter features do.
 
-On invalid **app-level** routes, redirect to `/` (landing). Unknown **step numbers within a chapter** are handled by the chapter feature — e.g. `/ch/01/step/99` shows a brief not-found message with links back to Step 1 or home.
+On invalid **app-level** routes, redirect to `/` (landing). Unknown **step numbers within a chapter** are handled by the chapter feature — e.g. `/chapter/1/step/99` shows a brief not-found message with links back to Step 1 or home.
+
+### v1.0 journey map (locked)
+
+Twelve chapters; flat spacetime (SR) 1–9, curved spacetime (GR) 10–12:
+
+1 Position, time, spacetime · 2 The speed budget · 3 Light and information · 4 The ether was wrong · 5 The same speed of light · 6 Clocks & rulers · 7 Doppler and seeing motion · 8 The twin paradox · 9 Mass is energy (E=mc²) · 10 Rolling the diagram · 11 The center of the Earth · 12 Light bending around mass.
+
+Chapters 5, 6, 8, 9 are new (added by the `add-c-invariance-and-twin-paradox`, `add-light-clock-and-length-contraction`, and `add-matter-and-emc2` changes). Renumbering of existing chapters (Doppler 5→7; Rolling 6→10; Center 7→11; Bending 8→12) and the route rename are handled by `reorder-chapters-and-route-scheme`, which should land first.
 
 ## State and persistence
 
@@ -368,7 +378,7 @@ Fully responsive interaction design is deferred past v1.
   - Node version: `22` (pinned in `.nvmrc`; set `NODE_VERSION=22` in the Pages project env)
 - **Static hosting config** (in `apps/lightmatters/public/`, copied to deploy output):
   - `_headers` — long-lived immutable cache for hashed JS/CSS/fonts and `/mathjax/*`; short cache for HTML.
-  - `_redirects` — `/ch/09` → `/ch/09/step/1` at the edge; SPA fallback `/* /index.html 200` for unprerendered paths.
+  - `_redirects` — chapter index/placeholder → first step at the edge (e.g. `/chapter/13` → `/chapter/13/step/1`); SPA fallback `/* /index.html 200` for unprerendered paths. Optional courtesy redirects from legacy `/ch/0N/...` to `/chapter/N/...`.
 - Custom domain: `lightmatters.app`.
 - A single deployment target initially.
 - No backend, no database, no runtime server in production.

@@ -25,8 +25,8 @@ describe('LmStepFrameComponent', () => {
     fixture.componentRef.setInput('step', 2);
     fixture.componentRef.setInput('stepsTotal', 4);
     fixture.componentRef.setInput('showPlayback', true);
-    fixture.componentRef.setInput('prevStepUrl', '/ch/01/step/1');
-    fixture.componentRef.setInput('nextStepUrl', '/ch/01/step/3');
+    fixture.componentRef.setInput('prevStepUrl', '/chapter/1/step/1');
+    fixture.componentRef.setInput('nextStepUrl', '/chapter/1/step/3');
     fixture.componentRef.setInput('hasNextStep', true);
     fixture.componentRef.setInput('checkpoints', THREE_CHECKPOINTS);
   });
@@ -75,7 +75,7 @@ describe('LmStepFrameComponent', () => {
     const navigate = jest.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     const spy = jest.spyOn(fixture.componentInstance.goPrevious, 'emit');
     fixture.componentInstance.transportPrevious();
-    expect(navigate).toHaveBeenCalledWith('/ch/01/step/1');
+    expect(navigate).toHaveBeenCalledWith('/chapter/1/step/1');
     expect(spy).not.toHaveBeenCalled();
   });
 
@@ -87,7 +87,7 @@ describe('LmStepFrameComponent', () => {
     const navigate = jest.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
     const spy = jest.spyOn(fixture.componentInstance.goNext, 'emit');
     fixture.componentInstance.transportNext();
-    expect(navigate).toHaveBeenCalledWith('/ch/01/step/3');
+    expect(navigate).toHaveBeenCalledWith('/chapter/1/step/3');
     expect(spy).not.toHaveBeenCalled();
   });
 
@@ -119,7 +119,7 @@ describe('LmStepFrameComponent', () => {
   it('shows cross-chapter hints at step boundaries', () => {
     fixture.componentRef.setInput('chapter', 2);
     fixture.componentRef.setInput('step', 1);
-    fixture.componentRef.setInput('prevStepUrl', '/ch/01/step/4');
+    fixture.componentRef.setInput('prevStepUrl', '/chapter/1/step/4');
     fixture.componentRef.setInput('activeCheckpointIndex', 0);
     fixture.componentRef.setInput('nextChapter', true);
     fixture.componentRef.setInput('canGoPrevious', true);

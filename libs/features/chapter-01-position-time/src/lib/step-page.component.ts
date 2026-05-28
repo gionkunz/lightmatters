@@ -38,7 +38,7 @@ import { Step04Component } from './steps/step-04.component';
         >
           <p class="m-0 text-2xl italic">We couldn't find that step.</p>
           <div class="flex gap-4">
-            <a routerLink="/ch/01/step/1">
+            <a routerLink="/chapter/1/step/1">
               <lm-button [primary]="true">go to step 1</lm-button>
             </a>
             <lm-button (click)="goHome()">← home</lm-button>

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LmButtonComponent, LmWordmarkComponent } from '@lm/design';
+import { chapterStepHref } from '@lm/engine';
 
 /** Placeholder until the next chapter is authored. */
 @Component({
-  selector: 'app-chapter-09-placeholder',
+  selector: 'app-chapter-13-placeholder',
   imports: [LmWordmarkComponent, LmButtonComponent, RouterLink],
   template: `
     <div
@@ -17,10 +18,12 @@ import { LmButtonComponent, LmWordmarkComponent } from '@lm/design';
       <p class="m-0 max-w-lg text-[17px] opacity-75">
         Black holes, horizons, and beyond — the journey continues.
       </p>
-      <a routerLink="/ch/08/step/7">
-        <lm-button [emphasis]="true">← back to chapter 8</lm-button>
+      <a [routerLink]="chapterStepHref(12, 7)">
+        <lm-button [emphasis]="true">← back to chapter 12</lm-button>
       </a>
     </div>
   `,
 })
-export class Chapter09PlaceholderComponent {}
+export class Chapter13PlaceholderComponent {
+  protected readonly chapterStepHref = chapterStepHref;
+}

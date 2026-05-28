@@ -39,7 +39,7 @@ import { STEP_01_POSITION } from './step-01-position';
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(1)"
       [prevStepUrl]="'/'"
-      [nextStepUrl]="'/ch/01/step/2'"
+      [nextStepUrl]="'/chapter/1/step/2'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

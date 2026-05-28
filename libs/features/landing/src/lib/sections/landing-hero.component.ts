@@ -34,7 +34,7 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
           you ever see an equation.
         </p>
         <div class="mt-9 flex items-center gap-[18px]">
-          <a routerLink="/ch/01/step/1">
+          <a routerLink="/chapter/1/step/1">
             <lm-button [primary]="true">begin chapter 1 →</lm-button>
           </a>
           <a href="#chapters">

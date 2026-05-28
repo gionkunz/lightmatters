@@ -53,32 +53,18 @@ The landing feature library SHALL be tagged `scope:feature`. ESLint `@nx/enforce
 - **AND** an operator runs `nx lint feature-landing --tui=false`
 - **THEN** the lint command fails with a module-boundaries violation
 
-### Requirement: App routes lazy-load chapter 1 feature
+### Requirement: App routes lazy-load chapter features per chapter-routing
 
-`app.routes.ts` SHALL define a route at `/ch/01` that lazy-loads `chapter01Routes` from `@lm/feature-chapter-01-position-time`.
+`app.routes.ts` SHALL register lazy-loaded chapter feature routes per the `chapter-routing` capability (canonical `/chapter/:n` paths and v1.0 numbering). Each authored chapter feature library SHALL produce a separate lazy chunk distinct from the landing bundle and from other chapter bundles.
 
-#### Scenario: Chapter 1 chunk is lazy-loaded
-
-- **WHEN** an operator builds the app for production
-- **THEN** the chapter 1 feature produces a separate lazy chunk distinct from the landing bundle
-
-#### Scenario: Navigating to chapter 1 does not reload the shell
-
-- **WHEN** a user navigates from `/` to `/ch/01/step/1`
-- **THEN** the app shell (wordmark, theme toggle, router outlet) persists without a full page reload
-
-### Requirement: App routes lazy-load chapter 2 feature
-
-`app.routes.ts` SHALL define a route at `/ch/02` that lazy-loads `chapter02Routes` from `@lm/feature-chapter-02-speed-budget`.
-
-#### Scenario: Chapter 2 chunk is lazy-loaded
+#### Scenario: Chapter chunks are lazy-loaded
 
 - **WHEN** an operator builds the app for production
-- **THEN** the chapter 2 feature produces a separate lazy chunk distinct from the chapter 1 and landing bundles
+- **THEN** each registered chapter feature produces its own lazy chunk
 
-#### Scenario: Navigating to chapter 2 does not reload the shell
+#### Scenario: Navigating to a chapter does not reload the shell
 
-- **WHEN** a user navigates from `/` to `/ch/02/step/1`
+- **WHEN** a user navigates from `/` to `/chapter/1/step/1`
 - **THEN** the app shell (wordmark, theme toggle, router outlet) persists without a full page reload
 
 ### Requirement: Primitive scope tag is enforced
@@ -91,66 +77,13 @@ The spacetime-diagram primitive library SHALL be tagged `scope:primitive`. ESLin
 - **AND** an operator runs `nx lint spacetime-diagram --tui=false`
 - **THEN** the lint command passes
 
-### Requirement: Chapter 3 routes resolve to real components
-
-The application shell SHALL register routes `/ch/03/step/1` through `/ch/03/step/5` resolving to the corresponding step components from `@lm/feature-chapter-03-light-information`. The previous placeholder route SHALL be removed or replaced.
-
-#### Scenario: Routes resolve to real components
-- **WHEN** the reader navigates to any of `/ch/03/step/{1..5}`
-- **THEN** the router loads the matching step component (not a placeholder)
-
-### Requirement: Chapter 4 placeholder route exists
-
-The shell SHALL provide at least a placeholder route at `/ch/04/step/1` so that Chapter 3 Step 5's "next" navigation does not 404.
-
-#### Scenario: Outro forward navigation succeeds
-- **WHEN** the reader advances from Chapter 3 Step 5
-- **THEN** the router resolves `/ch/04/step/1` without error
-- **AND** the response is at least a placeholder component
-
-### Requirement: Chapter 4 routes
-
-The application SHALL register `/ch/04/step/1` through `/ch/04/step/5` lazy-loading `@lm/feature-chapter-04-ether-was-wrong`. The inline Chapter 4 placeholder SHALL be removed.
-
-#### Scenario: Routes resolve
-- **WHEN** navigating to `/ch/04/step/1`
-- **THEN** the Chapter 4 Step 1 component loads
-
-### Requirement: Chapter 5 routes
-
-The application SHALL register `/ch/05/step/1` through `/ch/05/step/5` lazy-loading `@lm/feature-chapter-05-doppler-seeing-motion`. The inline Chapter 5 placeholder SHALL be removed.
-
-#### Scenario: Routes resolve
-
-- **WHEN** navigating to `/ch/05/step/1`
-- **THEN** the Chapter 5 Step 1 component loads
-
-### Requirement: Chapter 6 placeholder route
-
-The shell SHALL lazy-load `@lm/feature-chapter-06-rolling-diagram` at `/ch/06/step/:step` and resolve steps 1 through 5 to real step components. The inline `Chapter06PlaceholderComponent` SHALL be removed.
-
-#### Scenario: Chapter 6 step routes resolve
-
-- **WHEN** the reader navigates to `/ch/06/step/1` through `/ch/06/step/5`
-- **THEN** the router loads the Chapter 6 feature chunk and renders the matching step component without error
-
-#### Scenario: Outro forward navigation from Chapter 5 succeeds
-
-- **WHEN** advancing from Chapter 5 Step 5
-- **THEN** the router resolves `/ch/06/step/1` to Chapter 6 Step 1
-
-#### Scenario: Chapter 6 index redirect
-
-- **WHEN** the reader navigates to `/ch/06`
-- **THEN** the router redirects to `/ch/06/step/1`
-
 ### Requirement: App loads with scaled typography and controls
 
 The application shell SHALL expose `--lm-type-scale: 1.5` and derived text/control size tokens. Narrator text, kickers, buttons, sliders, playback transport, and step chrome SHALL use those tokens so readable text and interactive targets match roughly 150% browser zoom. Diagram canvas pixel dimensions and WebGL render targets SHALL NOT be globally scaled via CSS `zoom` or viewport scale.
 
 #### Scenario: Step text and controls appear larger at 100% browser zoom
 
-- **WHEN** a reader opens any step route at 100% browser zoom (e.g. `/ch/01/step/1`)
+- **WHEN** a reader opens any step route at 100% browser zoom (e.g. `/chapter/1/step/1`)
 - **THEN** narrator text, playback controls, sliders, and footer buttons render larger than the pre-change baseline
 - **AND** WebGL diagrams render without CSS-zoom pixelation
 
@@ -171,7 +104,7 @@ The root application shell SHALL render the viewport resolution hint component f
 
 #### Scenario: Hint available on step route
 
-- **WHEN** a user opens a step route (e.g. `/ch/01/step/1`) with an undersized viewport
+- **WHEN** a user opens a step route (e.g. `/chapter/1/step/1`) with an undersized viewport
 - **THEN** the resolution hint may appear according to `viewport-resolution-hint` rules
 - **AND** the step feature does not register the hint separately
 

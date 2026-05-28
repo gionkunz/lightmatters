@@ -20,7 +20,7 @@ export const STEP_01_DEEP_WELL: Step = {
     },
     {
       type: 'narrate',
-      text: 'We will use the same **Epstein bulge** you met in Chapter 7 — but first, this plain side view: mass in the middle, light skimming past.',
+      text: 'We will use the same **Epstein bulge** you met in Chapter 11 — but first, this plain side view: mass in the middle, light skimming past.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

@@ -52,7 +52,7 @@ import { Step07Component } from './steps/step-07.component';
           class="flex min-h-screen flex-col items-center justify-center gap-6 bg-paper px-8 text-center font-serif text-ink"
         >
           <p class="m-0 text-2xl italic">We couldn't find that step.</p>
-          <a routerLink="/ch/08/step/1">
+          <a routerLink="/chapter/12/step/1">
             <lm-button [primary]="true">go to step 1</lm-button>
           </a>
         </div>

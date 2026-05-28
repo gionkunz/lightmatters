@@ -7,22 +7,25 @@ import { CHAPTER_05_STEPS } from '@lm/feature-chapter-05-doppler-seeing-motion';
 import { CHAPTER_06_STEPS } from '@lm/feature-chapter-06-rolling-diagram';
 import { CHAPTER_07_STEPS } from '@lm/feature-chapter-07-gravity-well';
 import { CHAPTER_08_STEPS } from '@lm/feature-chapter-08-light-bending';
+import { chapterStepHref } from '@lm/engine';
 
-export const CHAPTER_09_STEPS = [1] as const;
+export const CHAPTER_05_PLACEHOLDER_STEPS = [1] as const;
+export const CHAPTER_13_STEPS = [1] as const;
 
 const CHAPTER_STEP_ROUTES: ReadonlyArray<{
-  chapter: string;
+  chapter: number;
   steps: readonly number[];
 }> = [
-  { chapter: '01', steps: CHAPTER_01_STEPS },
-  { chapter: '02', steps: CHAPTER_02_STEPS },
-  { chapter: '03', steps: CHAPTER_03_STEPS },
-  { chapter: '04', steps: CHAPTER_04_STEPS },
-  { chapter: '05', steps: CHAPTER_05_STEPS },
-  { chapter: '06', steps: CHAPTER_06_STEPS },
-  { chapter: '07', steps: CHAPTER_07_STEPS },
-  { chapter: '08', steps: CHAPTER_08_STEPS },
-  { chapter: '09', steps: CHAPTER_09_STEPS },
+  { chapter: 1, steps: CHAPTER_01_STEPS },
+  { chapter: 2, steps: CHAPTER_02_STEPS },
+  { chapter: 3, steps: CHAPTER_03_STEPS },
+  { chapter: 4, steps: CHAPTER_04_STEPS },
+  { chapter: 5, steps: CHAPTER_05_PLACEHOLDER_STEPS },
+  { chapter: 7, steps: CHAPTER_05_STEPS },
+  { chapter: 10, steps: CHAPTER_06_STEPS },
+  { chapter: 11, steps: CHAPTER_07_STEPS },
+  { chapter: 12, steps: CHAPTER_08_STEPS },
+  { chapter: 13, steps: CHAPTER_13_STEPS },
 ];
 
 /** All site paths that should be prerendered at build time. */
@@ -31,7 +34,7 @@ export function allPrerenderPaths(): string[] {
 
   for (const { chapter, steps } of CHAPTER_STEP_ROUTES) {
     for (const step of steps) {
-      paths.push(`/ch/${chapter}/step/${step}`);
+      paths.push(chapterStepHref(chapter, step));
     }
   }
 

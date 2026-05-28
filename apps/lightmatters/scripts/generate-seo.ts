@@ -1,62 +1,40 @@
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { createRequire } from 'node:module';
+import { CHAPTER_01_STEPS } from '../../../libs/features/chapter-01-position-time/src/lib/chapter-steps';
+import { CHAPTER_02_STEPS } from '../../../libs/features/chapter-02-speed-budget/src/lib/chapter-steps';
+import { CHAPTER_03_STEPS } from '../../../libs/features/chapter-03-light-information/src/lib/chapter-steps';
+import { CHAPTER_04_STEPS } from '../../../libs/features/chapter-04-ether-was-wrong/src/lib/chapter-steps';
+import { CHAPTER_05_STEPS } from '../../../libs/features/chapter-05-doppler-seeing-motion/src/lib/chapter-steps';
+import { CHAPTER_06_STEPS } from '../../../libs/features/chapter-06-rolling-diagram/src/lib/chapter-steps';
+import { CHAPTER_07_STEPS } from '../../../libs/features/chapter-07-gravity-well/src/lib/chapter-steps';
+import { CHAPTER_08_STEPS } from '../../../libs/features/chapter-08-light-bending/src/lib/chapter-steps';
 
-const require = createRequire(import.meta.url);
+const CHAPTER_STEP_ROUTES: ReadonlyArray<{
+  chapter: number;
+  steps: readonly number[];
+}> = [
+  { chapter: 1, steps: CHAPTER_01_STEPS },
+  { chapter: 2, steps: CHAPTER_02_STEPS },
+  { chapter: 3, steps: CHAPTER_03_STEPS },
+  { chapter: 4, steps: CHAPTER_04_STEPS },
+  { chapter: 5, steps: [1] },
+  { chapter: 7, steps: CHAPTER_05_STEPS },
+  { chapter: 10, steps: CHAPTER_06_STEPS },
+  { chapter: 11, steps: CHAPTER_07_STEPS },
+  { chapter: 12, steps: CHAPTER_08_STEPS },
+  { chapter: 13, steps: [1] },
+];
 
-/** Resolve @lm/* imports the same way TypeScript path mapping does. */
-function loadChapterSteps(): Array<{ chapter: string; steps: readonly number[] }> {
-  return [
-    {
-      chapter: '01',
-      steps: require('../../../libs/features/chapter-01-position-time/src/lib/chapter-steps.ts')
-        .CHAPTER_01_STEPS,
-    },
-    {
-      chapter: '02',
-      steps: require('../../../libs/features/chapter-02-speed-budget/src/lib/chapter-steps.ts')
-        .CHAPTER_02_STEPS,
-    },
-    {
-      chapter: '03',
-      steps: require('../../../libs/features/chapter-03-light-information/src/lib/chapter-steps.ts')
-        .CHAPTER_03_STEPS,
-    },
-    {
-      chapter: '04',
-      steps: require('../../../libs/features/chapter-04-ether-was-wrong/src/lib/chapter-steps.ts')
-        .CHAPTER_04_STEPS,
-    },
-    {
-      chapter: '05',
-      steps: require('../../../libs/features/chapter-05-doppler-seeing-motion/src/lib/chapter-steps.ts')
-        .CHAPTER_05_STEPS,
-    },
-    {
-      chapter: '06',
-      steps: require('../../../libs/features/chapter-06-rolling-diagram/src/lib/chapter-steps.ts')
-        .CHAPTER_06_STEPS,
-    },
-    {
-      chapter: '07',
-      steps: require('../../../libs/features/chapter-07-gravity-well/src/lib/chapter-steps.ts')
-        .CHAPTER_07_STEPS,
-    },
-    {
-      chapter: '08',
-      steps: require('../../../libs/features/chapter-08-light-bending/src/lib/chapter-steps.ts')
-        .CHAPTER_08_STEPS,
-    },
-    { chapter: '09', steps: [1] },
-  ];
+function chapterStepHref(chapter: number, step: number): string {
+  return `/chapter/${chapter}/step/${step}`;
 }
 
 function allPrerenderPaths(): string[] {
   const paths = ['/'];
 
-  for (const { chapter, steps } of loadChapterSteps()) {
+  for (const { chapter, steps } of CHAPTER_STEP_ROUTES) {
     for (const step of steps) {
-      paths.push(`/ch/${chapter}/step/${step}`);
+      paths.push(chapterStepHref(chapter, step));
     }
   }
 
