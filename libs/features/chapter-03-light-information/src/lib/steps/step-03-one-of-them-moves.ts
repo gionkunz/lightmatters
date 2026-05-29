@@ -28,7 +28,7 @@ export const STEP_03_ONE_OF_THEM_MOVES: Step = {
     },
     {
       type: 'narrate',
-      text: '$B$ heard the flash earlier than $A$. Motion changed when the news arrived — not because the signal sped up or slowed down, but because $B$ moved into it.',
+      text: '$B$ saw the flash earlier than $A$. Motion changed when the news arrived — not because the signal sped up or slowed down, but because $B$ moved into it.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

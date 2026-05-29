@@ -93,7 +93,7 @@ We **change cameras**. The Epstein spacetime diagram is set aside; both axes her
 
 - **Step 1 — Light through space.** Camera-switch beat. One source $S$, one observer $A$. The wavefront expands at $c$ in every direction and reaches $A$.
 - **Step 2 — Two listeners.** Stationary $A$ and $B$, equidistant from $S$. The pulse arrives at both at the same instant — symmetry on display.
-- **Step 3 — One of them moves.** Same scene, but $B$ is moving toward $S$ at $0.4\,c$. $B$ hears the flash before $A$. Motion changed when the news arrived, not how fast it travelled.
+- **Step 3 — One of them moves.** Same scene, but $B$ is moving toward $S$ at $0.4\,c$. $B$ sees the flash before $A$. Motion changed when the news arrived, not how fast it travelled.
 - **Step 4 — Two flashes, one witness.** Two equidistant sources flash simultaneously. A stationary witness in the middle sees both arrive together; a witness drifting rightward sees the right flash first. Relativity of simultaneity, made visible.
 - **Step 5 — Outro.** Tie back to Chapter 2's clocks; flag what is coming next: source motion and the constancy of $c$ (Chapter 4), the same speed of light for all (Chapter 5), Doppler and aberration (Chapter 7).
 
