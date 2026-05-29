@@ -112,6 +112,122 @@ import type { DiagramVariant } from '../data/chapters.data';
             fill="none"
           />
         }
+        @case ('vector') {
+          <line
+            [attr.x1]="vectorGeom().sx"
+            [attr.y1]="vectorGeom().sy"
+            [attr.x2]="vectorGeom().ex"
+            [attr.y2]="vectorGeom().ey"
+            stroke="var(--lm-accent-1)"
+            stroke-width="2.2"
+            stroke-linecap="round"
+          />
+          <path
+            [attr.d]="vectorGeom().head"
+            stroke="var(--lm-accent-1)"
+            stroke-width="2.2"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        }
+        @case ('source') {
+          @for (r of waveRadii; track r) {
+            <circle
+              [attr.cx]="sourceGeom().cx"
+              [attr.cy]="sourceGeom().cy"
+              [attr.r]="r"
+              stroke="currentColor"
+              stroke-width="1"
+              fill="none"
+              opacity="0.5"
+            />
+          }
+          <circle
+            [attr.cx]="sourceGeom().cx"
+            [attr.cy]="sourceGeom().cy"
+            r="2.5"
+            fill="currentColor"
+          />
+          <circle
+            [attr.cx]="sourceGeom().dotX"
+            [attr.cy]="sourceGeom().cy"
+            r="3.5"
+            fill="var(--lm-accent-1)"
+          />
+        }
+        @case ('lightcone') {
+          <line
+            [attr.x1]="lightconeGeom().left"
+            [attr.y1]="lightconeGeom().top"
+            [attr.x2]="lightconeGeom().right"
+            [attr.y2]="lightconeGeom().bottom"
+            stroke="currentColor"
+            stroke-width="1.5"
+            opacity="0.8"
+          />
+          <line
+            [attr.x1]="lightconeGeom().left"
+            [attr.y1]="lightconeGeom().bottom"
+            [attr.x2]="lightconeGeom().right"
+            [attr.y2]="lightconeGeom().top"
+            stroke="currentColor"
+            stroke-width="1.5"
+            opacity="0.8"
+          />
+          <circle
+            [attr.cx]="width() / 2"
+            [attr.cy]="height() / 2"
+            r="3"
+            fill="currentColor"
+          />
+        }
+        @case ('contraction') {
+          <path
+            [attr.d]="contractionGeom().top"
+            stroke="currentColor"
+            stroke-width="1.5"
+            fill="none"
+            opacity="0.55"
+          />
+          <path
+            [attr.d]="contractionGeom().bottom"
+            stroke="var(--lm-accent-2)"
+            stroke-width="2"
+            fill="none"
+          />
+        }
+        @case ('twin') {
+          <line
+            [attr.x1]="twinGeom().cx"
+            [attr.y1]="twinGeom().yBottom"
+            [attr.x2]="twinGeom().cx"
+            [attr.y2]="twinGeom().yTop"
+            stroke="var(--lm-accent-1)"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <path
+            [attr.d]="twinGeom().travel"
+            stroke="var(--lm-accent-2)"
+            stroke-width="2"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <circle
+            [attr.cx]="twinGeom().cx"
+            [attr.cy]="twinGeom().yBottom"
+            r="3"
+            fill="currentColor"
+          />
+          <circle
+            [attr.cx]="twinGeom().cx"
+            [attr.cy]="twinGeom().yTop"
+            r="3"
+            fill="currentColor"
+          />
+        }
       }
     </svg>
   `,
@@ -147,5 +263,91 @@ export class LmDiagramPlaceholderComponent {
     const w = this.width();
     const h = this.height();
     return `M ${this.pad} ${h / 2} Q ${w / 2} ${this.pad} ${w - this.pad} ${h / 2}`;
+  });
+
+  /** Single speed vector rising from the origin, with arrowhead. */
+  readonly vectorGeom = computed(() => {
+    const w = this.width();
+    const h = this.height();
+    const sx = this.pad;
+    const sy = h - this.pad;
+    const ex = this.pad + (w - 2 * this.pad) * 0.5;
+    const ey = this.pad + (h - 2 * this.pad) * 0.18;
+    const dx = ex - sx;
+    const dy = ey - sy;
+    const len = Math.hypot(dx, dy) || 1;
+    const ux = dx / len;
+    const uy = dy / len;
+    const head = 11;
+    const wing = head * 0.55;
+    const b1x = ex - ux * head + -uy * wing;
+    const b1y = ey - uy * head + ux * wing;
+    const b2x = ex - ux * head - -uy * wing;
+    const b2y = ey - uy * head - ux * wing;
+    return {
+      sx,
+      sy,
+      ex,
+      ey,
+      head: `M ${b1x} ${b1y} L ${ex} ${ey} L ${b2x} ${b2y}`,
+    };
+  });
+
+  /** Wavefronts centred on an emission point, with the source dot moved on. */
+  readonly sourceGeom = computed(() => {
+    const w = this.width();
+    const h = this.height();
+    return {
+      cx: w * 0.4,
+      cy: h / 2,
+      dotX: w * 0.66,
+    };
+  });
+
+  /** Crossing 45° light lines through the origin — c is the same for all. */
+  readonly lightconeGeom = computed(() => {
+    const w = this.width();
+    const h = this.height();
+    const cx = w / 2;
+    const cy = h / 2;
+    const d = Math.min(cx - this.pad, cy - this.pad);
+    return {
+      left: cx - d,
+      right: cx + d,
+      top: cy - d,
+      bottom: cy + d,
+    };
+  });
+
+  /** Two rulers: full rest length on top, contracted length below. */
+  readonly contractionGeom = computed(() => {
+    const w = this.width();
+    const h = this.height();
+    const x0 = this.pad + 12;
+    const x1 = w - this.pad - 12;
+    const yTop = h / 2 - 14;
+    const yBottom = h / 2 + 14;
+    const xc = x0 + (x1 - x0) * 0.62;
+    return {
+      top: `M ${x0} ${yTop - 4} L ${x0} ${yTop + 4} M ${x0} ${yTop} L ${x1} ${yTop} M ${x1} ${yTop - 4} L ${x1} ${yTop + 4}`,
+      bottom: `M ${x0} ${yBottom - 4} L ${x0} ${yBottom + 4} M ${x0} ${yBottom} L ${xc} ${yBottom} M ${xc} ${yBottom - 4} L ${xc} ${yBottom + 4}`,
+    };
+  });
+
+  /** Stay-at-home worldline plus the traveller's out-and-back path. */
+  readonly twinGeom = computed(() => {
+    const w = this.width();
+    const h = this.height();
+    const cx = w / 2 - 6;
+    const yBottom = h - this.pad;
+    const yTop = this.pad;
+    const apexX = cx + 44;
+    const apexY = (yBottom + yTop) / 2;
+    return {
+      cx,
+      yBottom,
+      yTop,
+      travel: `M ${cx} ${yBottom} L ${apexX} ${apexY} L ${cx} ${yTop}`,
+    };
   });
 }

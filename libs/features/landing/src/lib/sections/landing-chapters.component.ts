@@ -25,7 +25,7 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
         <h3
           class="m-0 font-serif text-[30px] font-semibold italic text-ink"
         >
-          eight chapters, paced for an evening.
+          twelve chapters, paced for an evening.
         </h3>
         <span class="mb-2 h-px flex-1 bg-ink-faint"></span>
       </div>
@@ -61,7 +61,13 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
         <lm-kicker [opacity]="0.55"
           >ch. {{ chapter.n | number: '2.0-0' }}</lm-kicker
         >
-        <span class="font-mono text-[11px] text-ink opacity-35">→</span>
+        <span class="flex items-baseline gap-2.5">
+          <span
+            class="font-mono text-[10px] uppercase tracking-[0.14em] text-ink opacity-40"
+            >~ {{ chapter.minutes }} min</span
+          >
+          <span class="font-mono text-[11px] text-ink opacity-35">→</span>
+        </span>
       </div>
       <div class="mb-3.5 flex h-[100px] items-center justify-center">
         <lm-diagram-placeholder

@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LmButtonComponent, LmKickerComponent } from '@lm/design';
+import {
+  CHAPTER_COUNT,
+  TOTAL_CHAPTER_MINUTES,
+} from '../data/chapters.data';
 import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placeholder.component';
 
 @Component({
@@ -44,7 +48,10 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
         <div
           class="mt-7 flex items-center gap-4 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink opacity-45"
         >
-          <span>~ 90 min · 8 chapters · no prior physics</span>
+          <span
+            >~ {{ totalMinutes }} min · {{ chapterCount }} chapters · no prior
+            physics</span
+          >
         </div>
       </div>
 
@@ -106,4 +113,7 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
     </section>
   `,
 })
-export class LandingHeroComponent {}
+export class LandingHeroComponent {
+  protected readonly totalMinutes = TOTAL_CHAPTER_MINUTES;
+  protected readonly chapterCount = CHAPTER_COUNT;
+}
