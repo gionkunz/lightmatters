@@ -18,7 +18,7 @@ nx affected -t lint test build --tui=false  # only what changed
 
 ## What this is
 
-Light Matters (lightmatters.app) is an interactive web app that builds intuition for special and general relativity through a guided journey of small, narrated, interactive steps. Heavy inspiration from Lewis Carroll Epstein's *Relativity Visualized*. **Engine-first design:** a small timeline-driven engine with reusable visual primitives (spacetime diagram, expanding light circles, cone / curved-surface, etc.) on which chapters and steps are authored as small TypeScript modules.
+Light Matters (lightmatters.app) is an interactive web app that builds intuition for special and general relativity through a guided journey of small, narrated, interactive steps. Heavy inspiration from Lewis Carroll Epstein's _Relativity Visualized_. **Engine-first design:** a small timeline-driven engine with reusable visual primitives (spacetime diagram, expanding light circles, cone / curved-surface, etc.) on which chapters and steps are authored as small TypeScript modules.
 
 ### Always-loaded context
 
@@ -52,6 +52,8 @@ See `docs/architecture.md` for full reasoning. Highlights so you don't re-litiga
 ## Running Nx commands
 
 **Always disable Nx's interactive TUI when invoking any `nx` command.** The TUI breaks non-interactive shells: output is unparseable, the process can hang waiting for keypresses, and you lose the logs you need to reason about the result.
+
+Always assume the user is already running an nx serve command on the side. Check if there's already a process running on port 4200 and don't start an other server if it runs already started by the user.
 
 Two mechanisms — pick the right one for the command:
 
