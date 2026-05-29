@@ -49,7 +49,7 @@ import { STEP_05_OUTRO } from './step-05-outro';
       [hasNextStep]="true"
       [nextChapter]="true"
       [prevStepUrl]="'/chapter/7/step/4'"
-      [nextStepUrl]="'/chapter/10/step/1'"
+      [nextStepUrl]="'/chapter/8/step/1'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

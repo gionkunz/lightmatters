@@ -1,34 +1,29 @@
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import {
-  Component,
-  HostListener,
-  OnDestroy,
-  OnInit,
-  signal
-} from '@angular/core';
-import {
+  LmDiagramViewportComponent,
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  LmDiagramViewportComponent,
-    TargetRegistry,
-  TimelineRunner
+  TargetRegistry,
+  TimelineRunner,
 } from '@lm/engine';
 import { LmKickerComponent } from '@lm/design';
-import { LmCurvedSurfaceComponent } from '@lm/curved-surface';
+import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
+import { TWIN_TURNAROUND, TWIN_V_OVER_C } from '../twin.constants';
 import {
-  CHAPTER_06_ROUTE_NUMBER,
-  CHAPTER_06_TITLE,
-  CHAPTER_06_TOTAL_STEPS,
-  hasNextStep
+  CHAPTER_08_TWIN_ROUTE_NUMBER,
+  CHAPTER_08_TWIN_TITLE,
+  CHAPTER_08_TWIN_TOTAL_STEPS,
+  hasNextStep,
 } from '../step-registry';
-import { STEP_01_TIME_ONLY } from './step-01-time-only';
+import { STEP_02_APPARENT_PARADOX } from './step-02-apparent-paradox';
 
 @Component({
-  selector: 'lm-ch6-step-01',
+  selector: 'lm-ch8-twin-step-02',
   imports: [
     LmStepFrameComponent,
     LmDiagramViewportComponent,
-        LmNarratorChatFeedComponent,
-    LmCurvedSurfaceComponent,
+    LmNarratorChatFeedComponent,
+    LmSpacetimeDiagramComponent,
     LmKickerComponent,
   ],
   template: `
@@ -36,11 +31,11 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
       [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
-      [step]="1"
+      [step]="2"
       [stepsTotal]="stepsTotal"
-      [hasNextStep]="hasNextStep(1)"
-      [prevStepUrl]="'/chapter/8/step/5'"
-      [nextStepUrl]="'/chapter/10/step/2'"
+      [hasNextStep]="hasNextStep(2)"
+      [prevStepUrl]="'/chapter/8/step/1'"
+      [nextStepUrl]="'/chapter/8/step/3'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -57,63 +52,53 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
       (goNext)="runner.goToNextCheckpoint()"
       (checkpointSeek)="runner.goToCheckpoint($event)"
     >
-      <div class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]">
+      <div
+        class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]"
+      >
         <div class="flex min-h-0 h-full min-w-0 flex-col overflow-hidden">
-        <lm-narrator-chat-feed
-          [kicker]="step.kicker"
-          [pastBeats]="runner.completedNarrateTexts()"
-          [currentText]="runner.narrationText()"
-          [visibleCount]="runner.narrationVisibleCount()"
-        />
+          <lm-narrator-chat-feed
+            [kicker]="step.kicker"
+            [pastBeats]="runner.completedNarrateTexts()"
+            [currentText]="runner.narrationText()"
+            [visibleCount]="runner.narrationVisibleCount()"
+          />
         </div>
         <div class="flex min-h-0 flex-col bg-paper-alt px-[26px] py-[22px]">
-          <lm-kicker [opacity]="0.55" class="mb-3.5">laid flat, then rolled</lm-kicker>
+          <lm-kicker [opacity]="0.55" class="mb-3.5">
+            each says the other runs slow
+          </lm-kicker>
           <div class="flex min-h-0 flex-1 items-center justify-center">
-              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
-                <lm-curved-surface
+            <lm-diagram-viewport #diagramVp [aspectRatio]="520 / 460">
+              <lm-spacetime-diagram
                 [width]="diagramVp.size().width"
                 [height]="diagramVp.size().height"
-              [fold]="1"
-              [curvature]="0"
-              [time]="time()"
-              [unfold]="unfold()"
-              [showTrail]="true"
-              [showAxisLabels]="true"
-              [trailLength]="120"
-              [trailSpan]="1.85"
-              worldlineMode="time-only"
-            />
-              </lm-diagram-viewport>
+                variant="twin"
+                [twinVOverC]="vOverC"
+                [twinTurnaround]="turnaround"
+                [twinProgress]="1"
+              />
+            </lm-diagram-viewport>
           </div>
         </div>
       </div>
     </lm-step-frame>
-  `
+  `,
 })
-export class Step01Component implements OnInit, OnDestroy {
+export class Step02Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
-  protected readonly step = STEP_01_TIME_ONLY;
-  protected readonly chapterRoute = CHAPTER_06_ROUTE_NUMBER;
-  protected readonly chapterTitle = CHAPTER_06_TITLE;
-  protected readonly stepsTotal = CHAPTER_06_TOTAL_STEPS;
+  protected readonly step = STEP_02_APPARENT_PARADOX;
+  protected readonly chapterRoute = CHAPTER_08_TWIN_ROUTE_NUMBER;
+  protected readonly chapterTitle = CHAPTER_08_TWIN_TITLE;
+  protected readonly stepsTotal = CHAPTER_08_TWIN_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;
-  protected readonly time = signal(0);
-  protected readonly unfold = signal(1);
+  protected readonly vOverC = TWIN_V_OVER_C;
+  protected readonly turnaround = TWIN_TURNAROUND;
+
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
 
   constructor() {
-    this.registry.register('surface.time', {
-      get: () => this.time(),
-      set: (v) => this.time.set(v),
-      initial: 0
-});
-    this.registry.register('surface.unfold', {
-      get: () => this.unfold(),
-      set: (v) => this.unfold.set(v),
-      initial: 1
-});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -138,5 +123,4 @@ export class Step01Component implements OnInit, OnDestroy {
     else if (this.runner.playbackActive()) this.runner.pause();
     else if (!this.runner.isComplete()) this.runner.goToNextCheckpoint();
   }
-
 }

@@ -4,6 +4,8 @@ export * from './lib/length-contraction';
 export * from './lib/tick-period';
 export * from './lib/speed-budget';
 export * from './lib/traveller-readout';
+export * from './lib/worldline-proper-time';
+export * from './lib/twin-readout';
 export * from './lib/signal-reception';
 export * from './lib/light-scene';
 export * from './lib/ether-field';

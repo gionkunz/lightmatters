@@ -1,34 +1,32 @@
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import {
-  Component,
-  HostListener,
-  OnDestroy,
-  OnInit,
-  signal
-} from '@angular/core';
-import {
+  LmDiagramViewportComponent,
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  LmDiagramViewportComponent,
-    TargetRegistry,
-  TimelineRunner
+  TargetRegistry,
+  TimelineRunner,
 } from '@lm/engine';
 import { LmKickerComponent } from '@lm/design';
-import { LmCurvedSurfaceComponent } from '@lm/curved-surface';
 import {
-  CHAPTER_06_ROUTE_NUMBER,
-  CHAPTER_06_TITLE,
-  CHAPTER_06_TOTAL_STEPS,
-  hasNextStep
+  LmLightSceneComponent,
+  type LightSceneObserver,
+  type LightSceneSource,
+} from '@lm/light-scene';
+import { FLASH_EMISSION, SCENE_EXTENT } from '../light-sphere.constants';
+import {
+  CHAPTER_05_CONSTANT_C_ROUTE_NUMBER,
+  CHAPTER_05_CONSTANT_C_TITLE,
+  CHAPTER_05_CONSTANT_C_TOTAL_STEPS,
 } from '../step-registry';
-import { STEP_01_TIME_ONLY } from './step-01-time-only';
+import { STEP_04_OUTRO } from './step-04-outro';
 
 @Component({
-  selector: 'lm-ch6-step-01',
+  selector: 'lm-ch5-constant-c-step-04',
   imports: [
     LmStepFrameComponent,
     LmDiagramViewportComponent,
-        LmNarratorChatFeedComponent,
-    LmCurvedSurfaceComponent,
+    LmNarratorChatFeedComponent,
+    LmLightSceneComponent,
     LmKickerComponent,
   ],
   template: `
@@ -36,11 +34,12 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
       [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
-      [step]="1"
+      [step]="4"
       [stepsTotal]="stepsTotal"
-      [hasNextStep]="hasNextStep(1)"
-      [prevStepUrl]="'/chapter/8/step/5'"
-      [nextStepUrl]="'/chapter/10/step/2'"
+      [hasNextStep]="true"
+      [nextChapter]="true"
+      [prevStepUrl]="'/chapter/5/step/3'"
+      [nextStepUrl]="'/chapter/6/step/1'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -57,63 +56,59 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
       (goNext)="runner.goToNextCheckpoint()"
       (checkpointSeek)="runner.goToCheckpoint($event)"
     >
-      <div class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]">
+      <div
+        class="grid h-full min-h-0 grid-cols-[1fr_1.15fr] gap-14 px-16 pb-10 pt-[52px]"
+      >
         <div class="flex min-h-0 h-full min-w-0 flex-col overflow-hidden">
-        <lm-narrator-chat-feed
-          [kicker]="step.kicker"
-          [pastBeats]="runner.completedNarrateTexts()"
-          [currentText]="runner.narrationText()"
-          [visibleCount]="runner.narrationVisibleCount()"
-        />
+          <lm-narrator-chat-feed
+            [kicker]="step.kicker"
+            [pastBeats]="runner.completedNarrateTexts()"
+            [currentText]="runner.narrationText()"
+            [visibleCount]="runner.narrationVisibleCount()"
+          />
         </div>
         <div class="flex min-h-0 flex-col bg-paper-alt px-[26px] py-[22px]">
-          <lm-kicker [opacity]="0.55" class="mb-3.5">laid flat, then rolled</lm-kicker>
+          <lm-kicker [opacity]="0.55" class="mb-3.5">
+            same c · every frame
+          </lm-kicker>
           <div class="flex min-h-0 flex-1 items-center justify-center">
-              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
-                <lm-curved-surface
+            <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
+              <lm-light-scene
                 [width]="diagramVp.size().width"
                 [height]="diagramVp.size().height"
-              [fold]="1"
-              [curvature]="0"
-              [time]="time()"
-              [unfold]="unfold()"
-              [showTrail]="true"
-              [showAxisLabels]="true"
-              [trailLength]="120"
-              [trailSpan]="1.85"
-              worldlineMode="time-only"
-            />
-              </lm-diagram-viewport>
+                [time]="0.85"
+                [extent]="extent"
+                [fixedViewBox]="true"
+                [observers]="observers"
+                [sources]="sources"
+              />
+            </lm-diagram-viewport>
           </div>
         </div>
       </div>
     </lm-step-frame>
-  `
+  `,
 })
-export class Step01Component implements OnInit, OnDestroy {
+export class Step04Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
-  protected readonly step = STEP_01_TIME_ONLY;
-  protected readonly chapterRoute = CHAPTER_06_ROUTE_NUMBER;
-  protected readonly chapterTitle = CHAPTER_06_TITLE;
-  protected readonly stepsTotal = CHAPTER_06_TOTAL_STEPS;
-  protected readonly hasNextStep = hasNextStep;
-  protected readonly time = signal(0);
-  protected readonly unfold = signal(1);
+  protected readonly step = STEP_04_OUTRO;
+  protected readonly chapterRoute = CHAPTER_05_CONSTANT_C_ROUTE_NUMBER;
+  protected readonly chapterTitle = CHAPTER_05_CONSTANT_C_TITLE;
+  protected readonly stepsTotal = CHAPTER_05_CONSTANT_C_TOTAL_STEPS;
+  protected readonly extent = SCENE_EXTENT;
+
+  protected readonly observers: LightSceneObserver[] = [
+    { id: 'a', x: 0, y: 0, label: 'A', color: 'accent-1' },
+  ];
+  protected readonly sources: LightSceneSource[] = [
+    { id: 'flash', x: 0, y: 0, emissions: [FLASH_EMISSION] },
+  ];
+
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
 
   constructor() {
-    this.registry.register('surface.time', {
-      get: () => this.time(),
-      set: (v) => this.time.set(v),
-      initial: 0
-});
-    this.registry.register('surface.unfold', {
-      get: () => this.unfold(),
-      set: (v) => this.unfold.set(v),
-      initial: 1
-});
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
@@ -138,5 +133,4 @@ export class Step01Component implements OnInit, OnDestroy {
     else if (this.runner.playbackActive()) this.runner.pause();
     else if (!this.runner.isComplete()) this.runner.goToNextCheckpoint();
   }
-
 }

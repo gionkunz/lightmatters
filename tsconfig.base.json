@@ -37,6 +37,9 @@
       "@lm/feature-chapter-05-doppler-seeing-motion": [
         "./libs/features/chapter-05-doppler-seeing-motion/src/index.ts"
       ],
+      "@lm/feature-chapter-05-constant-c": [
+        "./libs/features/chapter-05-constant-c/src/index.ts"
+      ],
       "@lm/light-scene": ["./libs/primitives/light-scene/src/index.ts"],
       "@lm/curved-surface": ["./libs/primitives/curved-surface/src/index.ts"],
       "@lm/feature-chapter-06-rolling-diagram": [
@@ -50,6 +53,9 @@
       ],
       "@lm/feature-chapter-08-light-bending": [
         "./libs/features/chapter-08-light-bending/src/index.ts"
+      ],
+      "@lm/feature-chapter-08-twin-paradox": [
+        "./libs/features/chapter-08-twin-paradox/src/index.ts"
       ],
       "@lm/light-clock": ["./libs/primitives/light-clock/src/index.ts"]
     }

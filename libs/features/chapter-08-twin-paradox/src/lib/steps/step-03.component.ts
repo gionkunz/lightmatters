@@ -1,10 +1,4 @@
-import {
-  Component,
-  HostListener,
-  OnDestroy,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import {
   LmDiagramViewportComponent,
   LmNarratorChatFeedComponent,
@@ -12,34 +6,43 @@ import {
   TargetRegistry,
   TimelineRunner,
 } from '@lm/engine';
-import { LmKickerComponent } from '@lm/design';
-import { LmLightClockComponent } from '@lm/light-clock';
+import { LmFactLineComponent, LmKickerComponent } from '@lm/design';
+import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
+import { twinReadout } from '@lm/physics';
 import {
-  CHAPTER_06_CLOCKS_TITLE,
-  CHAPTER_06_CLOCKS_TOTAL_STEPS,
+  STAY_HOME_PROPER_YEARS,
+  TRAVELLER_PROPER_YEARS,
+  TWIN_TURNAROUND,
+  TWIN_V_OVER_C,
+} from '../twin.constants';
+import {
+  CHAPTER_08_TWIN_ROUTE_NUMBER,
+  CHAPTER_08_TWIN_TITLE,
+  CHAPTER_08_TWIN_TOTAL_STEPS,
   hasNextStep,
 } from '../step-registry';
-import { STEP_01_LIGHT_CLOCK_AT_REST } from './step-01-light-clock-at-rest';
+import { STEP_03_ASYMMETRY } from './step-03-asymmetry';
 
 @Component({
-  selector: 'lm-ch6-clocks-step-01',
+  selector: 'lm-ch8-twin-step-03',
   imports: [
     LmStepFrameComponent,
     LmDiagramViewportComponent,
     LmNarratorChatFeedComponent,
-    LmLightClockComponent,
+    LmSpacetimeDiagramComponent,
+    LmFactLineComponent,
     LmKickerComponent,
   ],
   template: `
     <lm-step-frame
-      [chapter]="6"
+      [chapter]="chapterRoute"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
-      [step]="1"
+      [step]="3"
       [stepsTotal]="stepsTotal"
-      [hasNextStep]="hasNextStep(1)"
-      [prevStepUrl]="'/chapter/5/step/4'"
-      [nextStepUrl]="'/chapter/6/step/2'"
+      [hasNextStep]="hasNextStep(3)"
+      [prevStepUrl]="'/chapter/8/step/2'"
+      [nextStepUrl]="'/chapter/8/step/4'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"
@@ -67,40 +70,68 @@ import { STEP_01_LIGHT_CLOCK_AT_REST } from './step-01-light-clock-at-rest';
             [visibleCount]="runner.narrationVisibleCount()"
           />
         </div>
-        <div class="flex min-h-0 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]">
-          <lm-kicker [opacity]="0.55" class="mb-3.5">clock at rest · v = 0</lm-kicker>
-          <div class="flex min-h-0 flex-1 items-center justify-center">
-            <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
-              <lm-light-clock
-                [width]="diagramVp.size().width"
-                [height]="diagramVp.size().height"
-                [velocity]="0"
-                [progress]="progress()"
-              />
-            </lm-diagram-viewport>
+        <div class="flex min-h-0 flex-col">
+          <div
+            class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]"
+          >
+            <lm-kicker [opacity]="0.55" class="mb-3.5">
+              straight worldline · most proper time
+            </lm-kicker>
+            <div class="flex min-h-0 flex-1 items-center justify-center">
+              <lm-diagram-viewport #diagramVp [aspectRatio]="520 / 420">
+                <lm-spacetime-diagram
+                  [width]="diagramVp.size().width"
+                  [height]="diagramVp.size().height"
+                  variant="twin"
+                  [twinVOverC]="vOverC"
+                  [twinTurnaround]="turnaround"
+                  [twinProgress]="1"
+                />
+              </lm-diagram-viewport>
+            </div>
+          </div>
+          <div
+            class="mt-[22px] grid grid-cols-3 gap-x-6 gap-y-2 border-t border-ink-faint pt-[22px]"
+          >
+            <lm-fact-line
+              label="A · stay-at-home"
+              [value]="readout.stayHomeLabel"
+              accent="accent-1"
+            />
+            <lm-fact-line
+              label="B · traveller"
+              [value]="readout.travellerLabel"
+              accent="accent-2"
+            />
+            <lm-fact-line
+              label="age difference"
+              [value]="readout.differenceLabel"
+            />
           </div>
         </div>
       </div>
     </lm-step-frame>
   `,
 })
-export class Step01Component implements OnInit, OnDestroy {
+export class Step03Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
-  protected readonly step = STEP_01_LIGHT_CLOCK_AT_REST;
-  protected readonly chapterTitle = CHAPTER_06_CLOCKS_TITLE;
-  protected readonly stepsTotal = CHAPTER_06_CLOCKS_TOTAL_STEPS;
+  protected readonly step = STEP_03_ASYMMETRY;
+  protected readonly chapterRoute = CHAPTER_08_TWIN_ROUTE_NUMBER;
+  protected readonly chapterTitle = CHAPTER_08_TWIN_TITLE;
+  protected readonly stepsTotal = CHAPTER_08_TWIN_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;
-  protected readonly progress = signal(0);
+  protected readonly vOverC = TWIN_V_OVER_C;
+  protected readonly turnaround = TWIN_TURNAROUND;
+  protected readonly readout = twinReadout(
+    STAY_HOME_PROPER_YEARS,
+    TRAVELLER_PROPER_YEARS,
+  );
+
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
 
   constructor() {
-    this.registry.register('clock.progress', {
-      get: () => this.progress(),
-      set: (v) => this.progress.set(v),
-      initial: 0,
-    });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }

@@ -35,22 +35,11 @@ export const appRoutes: Routes = [
       ),
   },
   {
-    path: 'chapter/5/step/:step',
-    loadComponent: () =>
-      import('./chapter-coming-soon-placeholder.component').then(
-        (m) => m.ChapterComingSoonPlaceholderComponent,
-      ),
-    data: {
-      chapter: 5,
-      title: 'The same speed of light',
-      backHref: '/chapter/4/step/5',
-      backLabel: '← back to chapter 4',
-    },
-  },
-  {
     path: 'chapter/5',
-    redirectTo: 'chapter/5/step/1',
-    pathMatch: 'full',
+    loadChildren: () =>
+      import('@lm/feature-chapter-05-constant-c').then(
+        (m) => m.chapter05ConstantCRoutes,
+      ),
   },
   {
     path: 'chapter/6',
@@ -64,6 +53,13 @@ export const appRoutes: Routes = [
     loadChildren: () =>
       import('@lm/feature-chapter-05-doppler-seeing-motion').then(
         (m) => m.chapter05Routes,
+      ),
+  },
+  {
+    path: 'chapter/8',
+    loadChildren: () =>
+      import('@lm/feature-chapter-08-twin-paradox').then(
+        (m) => m.chapter08TwinRoutes,
       ),
   },
   {
