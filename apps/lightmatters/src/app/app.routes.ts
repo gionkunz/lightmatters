@@ -63,6 +63,13 @@ export const appRoutes: Routes = [
       ),
   },
   {
+    path: 'chapter/9',
+    loadChildren: () =>
+      import('@lm/feature-chapter-09-mass-energy').then(
+        (m) => m.chapter09MassEnergyRoutes,
+      ),
+  },
+  {
     path: 'chapter/10',
     loadChildren: () =>
       import('@lm/feature-chapter-06-rolling-diagram').then(

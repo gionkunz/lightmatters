@@ -11,6 +11,7 @@ import {
   CHAPTER_07_STEPS,
   CHAPTER_08_STEPS,
   CHAPTER_08_TWIN_STEPS,
+  CHAPTER_09_MASS_ENERGY_STEPS,
   CHAPTER_13_STEPS,
   stepPrerenderParams,
 } from './site-routes';
@@ -59,6 +60,11 @@ export const serverRoutes: ServerRoute[] = [
     path: 'chapter/8/step/:step',
     renderMode: RenderMode.Prerender,
     getPrerenderParams: stepPrerenderParams(CHAPTER_08_TWIN_STEPS),
+  },
+  {
+    path: 'chapter/9/step/:step',
+    renderMode: RenderMode.Prerender,
+    getPrerenderParams: stepPrerenderParams(CHAPTER_09_MASS_ENERGY_STEPS),
   },
   {
     path: 'chapter/10/step/:step',

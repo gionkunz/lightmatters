@@ -10,6 +10,7 @@ import { CHAPTER_06_CLOCKS_STEPS } from '@lm/feature-chapter-06-clocks-and-ruler
 import { CHAPTER_07_STEPS } from '@lm/feature-chapter-07-gravity-well';
 import { CHAPTER_08_STEPS } from '@lm/feature-chapter-08-light-bending';
 import { CHAPTER_08_TWIN_STEPS } from '@lm/feature-chapter-08-twin-paradox';
+import { CHAPTER_09_MASS_ENERGY_STEPS } from '@lm/feature-chapter-09-mass-energy';
 import { chapterStepHref } from '@lm/engine';
 
 export const CHAPTER_13_STEPS = [1] as const;
@@ -26,6 +27,7 @@ const CHAPTER_STEP_ROUTES: ReadonlyArray<{
   { chapter: 6, steps: CHAPTER_06_CLOCKS_STEPS },
   { chapter: 7, steps: CHAPTER_05_STEPS },
   { chapter: 8, steps: CHAPTER_08_TWIN_STEPS },
+  { chapter: 9, steps: CHAPTER_09_MASS_ENERGY_STEPS },
   { chapter: 10, steps: CHAPTER_06_STEPS },
   { chapter: 11, steps: CHAPTER_07_STEPS },
   { chapter: 12, steps: CHAPTER_08_STEPS },
@@ -64,5 +66,6 @@ export {
   CHAPTER_07_STEPS,
   CHAPTER_08_STEPS,
   CHAPTER_08_TWIN_STEPS,
+  CHAPTER_09_MASS_ENERGY_STEPS,
   CHAPTER_STEP_ROUTES,
 };

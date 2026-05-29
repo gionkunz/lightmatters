@@ -1,5 +1,6 @@
 export * from './lib/physics';
 export * from './lib/lorentz';
+export * from './lib/mass-energy';
 export * from './lib/length-contraction';
 export * from './lib/tick-period';
 export * from './lib/speed-budget';

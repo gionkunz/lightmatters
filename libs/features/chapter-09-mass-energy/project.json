@@ -1,0 +1,13 @@
+{
+  "name": "feature-chapter-09-mass-energy",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/features/chapter-09-mass-energy/src",
+  "prefix": "lm",
+  "projectType": "library",
+  "tags": ["scope:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
