@@ -14,6 +14,7 @@ export const STEP_04_MOVING_SPACETIME: Step = {
       type: 'narrate',
       text: 'When you are at rest — and relativistically, almost everything around you is too — you are moving through time at nearly the full speed of light. Through space, barely at all.',
     },
+    { type: 'sound', sound: 'tilt', volume: 0.55 },
     {
       type: 'animate',
       target: 'diagram.velocity',

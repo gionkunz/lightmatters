@@ -13,6 +13,7 @@ export const STEP_02_PIECEWISE: Step = {
       text: 'Remember the tunnel and the center? Here is Epstein\'s answer — the same cylinder and cone, but read **outward**: gravity pulls where the paper **slopes**, not where it is widest.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.wellReveal',
@@ -26,6 +27,7 @@ export const STEP_02_PIECEWISE: Step = {
       text: '**Outer space** — a **narrow** cylinder. Flat geometry, far from the planet.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.wellReveal',
@@ -39,6 +41,7 @@ export const STEP_02_PIECEWISE: Step = {
       text: 'A **cone opening outward** — the circumference **grows** as you fall toward the surface. The **slope is steepest** here: that is where gravity feels **strongest**.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.wellReveal',
@@ -52,6 +55,7 @@ export const STEP_02_PIECEWISE: Step = {
       text: 'A **wide, flat** cylinder — **Earth** sits here. No slope in any direction. **Weightless.** Nothing pulls you toward a point; there is no point to fall toward.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.wellReveal',
@@ -65,6 +69,7 @@ export const STEP_02_PIECEWISE: Step = {
       text: 'A **cone closing inward** — the circumference shrinks again as you climb toward the far surface.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.wellReveal',

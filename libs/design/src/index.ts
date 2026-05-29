@@ -1,4 +1,6 @@
 export { ThemeService, type ThemeName } from './lib/theme/theme.service';
+export { AudioService } from './lib/audio/audio.service';
+export { type SoundType, type SoundPlayOptions } from './lib/audio/sound-types';
 export {
   ViewportResolutionHintService,
   MIN_VIEWPORT_WIDTH,
@@ -12,6 +14,7 @@ export { LmWordmarkComponent } from './lib/components/lm-wordmark.component';
 export { LmKickerComponent } from './lib/components/lm-kicker.component';
 export { LmButtonComponent } from './lib/components/lm-button.component';
 export { LmThemeToggleComponent } from './lib/components/lm-theme-toggle.component';
+export { LmAudioToggleComponent } from './lib/components/lm-audio-toggle.component';
 export { LmSliderComponent } from './lib/components/lm-slider.component';
 export { LmFactLineComponent } from './lib/components/lm-fact-line.component';
 export { LmLegendComponent } from './lib/components/lm-legend.component';

@@ -13,6 +13,7 @@ export const STEP_04_SMOOTH: Step = {
       text: 'The folded paper made the truth clear: free fall is a **straight line** when you let the geometry curl. Now smooth those four creases into one continuous **bulge**.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.wellMorph',

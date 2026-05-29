@@ -13,6 +13,7 @@ export const STEP_04_GEODESICS: Step = {
       text: 'Draw a **straight line** on the cone — as straight as the surface allows. That is a geodesic: the natural path through curved spacetime.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',
@@ -26,6 +27,7 @@ export const STEP_04_GEODESICS: Step = {
       text: 'On the cone the path looks curved — a spiral. But cut along the seam and **unroll** the cone, and the same path is a perfectly straight line.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.unfold',

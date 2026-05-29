@@ -10,6 +10,7 @@ export const STEP_03_SPACETIME: Step = {
       type: 'narrate',
       text: 'Position and time are not separate ideas — they are two axes of the same diagram. Every object traces a line through it.',
     },
+    { type: 'sound', sound: 'soft', volume: 0.4 },
     {
       type: 'animate',
       target: 'diagram.position',
@@ -18,6 +19,7 @@ export const STEP_03_SPACETIME: Step = {
       duration: 1.2,
       easing: 'ease-out',
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'diagram.time',

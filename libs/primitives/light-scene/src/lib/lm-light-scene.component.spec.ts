@@ -101,6 +101,26 @@ describe('LmLightSceneComponent', () => {
     expect(events[0].atTime).toBeCloseTo(0.5);
   });
 
+  it('re-emits reception after scene time rewinds before arrival', () => {
+    const events: { observerId: string }[] = [];
+    fixture.componentRef.setInput('observers', [
+      { id: 'a', x: -0.5, y: 0 },
+    ]);
+    fixture.componentRef.setInput('sources', [
+      { id: 's', x: 0, y: 0, emissions: [{ atTime: 0, pulseId: 'p1' }] },
+    ]);
+    fixture.componentInstance.reception.subscribe((e) => events.push(e));
+    fixture.componentRef.setInput('time', 0.6);
+    fixture.detectChanges();
+    expect(events).toHaveLength(1);
+
+    fixture.componentRef.setInput('time', 0.2);
+    fixture.detectChanges();
+    fixture.componentRef.setInput('time', 0.6);
+    fixture.detectChanges();
+    expect(events).toHaveLength(2);
+  });
+
   it('keeps pulse center at emission point when source moves', () => {
     fixture.componentRef.setInput('observers', []);
     fixture.componentRef.setInput('sources', [
@@ -176,7 +196,7 @@ describe('LmLightSceneComponent', () => {
     expect(Math.abs(vbW - vbH)).toBeLessThan(80);
   });
 
-  it('emits reception only once even if time scrubs back and forward', () => {
+  it('re-emits reception when time rewinds before arrival then crosses again', () => {
     const events: unknown[] = [];
     fixture.componentRef.setInput('observers', [
       { id: 'a', x: -0.3, y: 0 },
@@ -191,6 +211,6 @@ describe('LmLightSceneComponent', () => {
     fixture.detectChanges();
     fixture.componentRef.setInput('time', 0.5);
     fixture.detectChanges();
-    expect(events).toHaveLength(1);
+    expect(events).toHaveLength(2);
   });
 });

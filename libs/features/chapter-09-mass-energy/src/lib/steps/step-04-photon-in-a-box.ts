@@ -33,6 +33,7 @@ export const STEP_04_PHOTON_IN_A_BOX: Step = {
       text: 'Momentum has to stay balanced, so the box **recoils** the opposite way — drifting slowly left at some speed $v$.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'box.progress',

@@ -28,6 +28,7 @@ export const STEP_07_STRAIGHT_LINES: Step = {
       text: 'Watch what "straight" really means: we **unfold** the cone back to a flat sector. The geodesic becomes one straight chord. The bend was never in the line; it was always in the page.',
       pauseAfter: 1200,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'bump.unfold',

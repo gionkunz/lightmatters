@@ -13,6 +13,7 @@ export const STEP_03_WIDEN_BEAM: Step = {
       text: 'Real light arrives as a **beam** — two parallel edges, inner and outer. Light cannot **skew**: the band stays a band, never a parallelogram.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'bend.progress',

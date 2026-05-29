@@ -25,7 +25,27 @@ export interface WaitEvent {
   for: WaitCondition;
 }
 
-export type TimelineEvent = NarrateEvent | AnimateEvent | WaitEvent;
+/** Predefined effect sound types (local copy avoids engine→design import cycle). */
+export type TimelineSoundType =
+  | 'tick'
+  | 'tilt'
+  | 'expand'
+  | 'snap'
+  | 'arrive'
+  | 'soft';
+
+export interface SoundEvent {
+  type: 'sound';
+  sound: TimelineSoundType;
+  volume?: number;
+  pan?: number;
+}
+
+export type TimelineEvent =
+  | NarrateEvent
+  | AnimateEvent
+  | WaitEvent
+  | SoundEvent;
 
 /** A seekable beat on the timeline progress bar (start of a narrate or animate event). */
 export interface TimelineCheckpoint {

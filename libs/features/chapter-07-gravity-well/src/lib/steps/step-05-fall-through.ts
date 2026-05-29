@@ -13,6 +13,7 @@ export const STEP_05_FALL_THROUGH: Step = {
       text: 'Back to the tunnel. Drop a particle into the smooth bulge — the same jump you imagined at the start, the same straight-line worldline you saw on the unrolled paper.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',

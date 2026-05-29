@@ -18,6 +18,7 @@ export const STEP_03_SOURCE_AT_REST: Step = {
       text: 'Watch the circle grow. No medium, no ripples in water — just a pulse born at a point in space and expanding at the one speed light knows.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

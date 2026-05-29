@@ -20,6 +20,7 @@ export const STEP_06_ESCAPE: Step = {
       text: 'You always start in **outer space** — the narrow cylinder where gravity has no grip. Your motion budget is one light speed. How much do you spend on **space** — running toward Earth — versus **time** — winding around the cylinder?',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.spatialFraction',
@@ -28,6 +29,7 @@ export const STEP_06_ESCAPE: Step = {
       duration: 0.01,
       easing: 'linear',
     },
+    { type: 'sound', sound: 'soft', volume: 0.4 },
     {
       type: 'animate',
       target: 'surface.startPositionFraction',
@@ -36,6 +38,7 @@ export const STEP_06_ESCAPE: Step = {
       duration: 0.01,
       easing: 'linear',
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',
@@ -49,6 +52,7 @@ export const STEP_06_ESCAPE: Step = {
       text: 'Most of your budget on **time**, little on **space**: you spiral in slowly, pass the weightless center, and coast out to narrow outer space on the far side.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',
@@ -57,6 +61,7 @@ export const STEP_06_ESCAPE: Step = {
       duration: 0.01,
       easing: 'linear',
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.spatialFraction',
@@ -65,6 +70,7 @@ export const STEP_06_ESCAPE: Step = {
       duration: 1.5,
       easing: 'ease-out',
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',
@@ -83,6 +89,7 @@ export const STEP_06_ESCAPE: Step = {
       text: 'What if you start at the **center of the Earth** itself — the wide, flat cylinder from Step 1?',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',
@@ -91,6 +98,7 @@ export const STEP_06_ESCAPE: Step = {
       duration: 0.01,
       easing: 'linear',
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.spatialFraction',
@@ -99,6 +107,7 @@ export const STEP_06_ESCAPE: Step = {
       duration: 1,
       easing: 'ease-out',
     },
+    { type: 'sound', sound: 'soft', volume: 0.4 },
     {
       type: 'animate',
       target: 'surface.startPositionFraction',
@@ -107,6 +116,7 @@ export const STEP_06_ESCAPE: Step = {
       duration: 1.5,
       easing: 'ease-out',
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',
@@ -125,6 +135,7 @@ export const STEP_06_ESCAPE: Step = {
       text: 'How would **light** travel here? Light spends its entire budget on **space** — almost none on winding **time**.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',
@@ -133,6 +144,7 @@ export const STEP_06_ESCAPE: Step = {
       duration: 0.01,
       easing: 'linear',
     },
+    { type: 'sound', sound: 'soft', volume: 0.4 },
     {
       type: 'animate',
       target: 'surface.startPositionFraction',
@@ -141,6 +153,7 @@ export const STEP_06_ESCAPE: Step = {
       duration: 1.5,
       easing: 'ease-out',
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.spatialFraction',
@@ -149,6 +162,7 @@ export const STEP_06_ESCAPE: Step = {
       duration: 1.5,
       easing: 'ease-out',
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',

@@ -18,6 +18,7 @@ export const STEP_01_LIGHT_THROUGH_SPACE: Step = {
       text: 'A single source $S$ sends one flash. The wavefront expands outward at the speed of light, the same speed in every direction.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

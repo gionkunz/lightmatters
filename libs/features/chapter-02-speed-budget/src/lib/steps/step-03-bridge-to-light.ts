@@ -19,6 +19,7 @@ export const STEP_03_BRIDGE_TO_LIGHT: Step = {
       text: 'A and B stand at rest, far apart in space. B sends a single flash. Because the photon is timeless — no tick of its own clock — we can let its wavefront ride up B\'s worldline as a ring, expanding through space until it touches A.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'wavefront.time',

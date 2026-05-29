@@ -18,6 +18,7 @@ export const STEP_01_TWO_WORLDLINES: Step = {
       text: 'Draw it on the spacetime diagram — time running **up**, space across. $A$\'s path is a straight vertical line: standing still is still moving through time.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'twin.progress',

@@ -18,6 +18,7 @@ export const STEP_03_LENGTH_CONTRACTION: Step = {
       text: 'At rest, the photon crosses proper length $L_0$ each half-tick at $c$. The red dashed line is the path in the clock\'s own frame — straight across $L_0$.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'tilt', volume: 0.55 },
     {
       type: 'animate',
       target: 'clock.velocity',
@@ -31,6 +32,7 @@ export const STEP_03_LENGTH_CONTRACTION: Step = {
       text: 'Set the clock moving. The photon still travels at $c$ — but the far mirror slides **forward on the same axis**. While light crosses the gap, the target keeps running ahead.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'snap', volume: 0.5 },
     {
       type: 'animate',
       target: 'clock.showGhost',

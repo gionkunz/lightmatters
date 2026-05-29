@@ -186,8 +186,16 @@ export class LmLightSceneComponent {
 
   constructor() {
     effect(() => {
-      const events = this.activeReceptions();
-      for (const event of events) {
+      const t = this.time();
+      const times = this.receptionTimes();
+      for (const event of times) {
+        const key = `${event.observerId}|${event.sourceId}|${event.pulseId}`;
+        if (t < event.atTime - 1e-9) {
+          this.emitted.delete(key);
+        }
+      }
+
+      for (const event of this.activeReceptions()) {
         const key = `${event.observerId}|${event.sourceId}|${event.pulseId}`;
         if (!this.emitted.has(key)) {
           this.emitted.add(key);

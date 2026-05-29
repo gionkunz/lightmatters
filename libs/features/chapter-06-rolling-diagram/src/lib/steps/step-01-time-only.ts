@@ -13,6 +13,7 @@ export const STEP_01_TIME_ONLY: Step = {
       text: 'The spacetime diagram, **laid flat**. **Space** runs up the left edge; **time** runs along the bottom. A body at rest in space sits at one place in space and moves only through time — a line **parallel** to the time axis, slightly offset so we can see it.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',
@@ -26,6 +27,7 @@ export const STEP_01_TIME_ONLY: Step = {
       text: 'Now **roll the sheet** into a tube. The same straight worldline wraps into a circle around the rim — one lap for each unit of time.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.unfold',
@@ -34,6 +36,7 @@ export const STEP_01_TIME_ONLY: Step = {
       duration: 3,
       easing: 'ease-out',
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',

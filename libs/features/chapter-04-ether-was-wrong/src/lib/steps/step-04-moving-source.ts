@@ -18,6 +18,7 @@ export const STEP_04_MOVING_SOURCE: Step = {
       text: '**Emission theory** says light inherits the source\'s velocity — the circle would lean forward, dragged along with $S$. Watch what actually happens.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

@@ -13,6 +13,7 @@ export const STEP_02_ONE_RAY: Step = {
       text: 'One ray of light — a single line approaching the star.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'bend.progress',

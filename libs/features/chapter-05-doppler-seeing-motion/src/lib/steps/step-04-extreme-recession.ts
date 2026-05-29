@@ -18,6 +18,7 @@ export const STEP_04_EXTREME_RECESSION: Step = {
       text: 'Watch how rarely a ring reaches $A$. At high recession, the clock nearly **stops** — one long gap between ticks, then another.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

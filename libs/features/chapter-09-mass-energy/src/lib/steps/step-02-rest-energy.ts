@@ -28,6 +28,7 @@ export const STEP_02_REST_ENERGY: Step = {
       text: 'That enormous number is the $c^2$ at work. Light is fast, so $c^2$ is huge — multiplying even a crumb of mass by it yields a colossal energy. (*Why* squared and not just $c$ — the box, two steps from now, will show $c$ entering twice.)',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'tilt', volume: 0.55 },
     {
       type: 'animate',
       target: 'rest.velocity',

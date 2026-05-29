@@ -5,10 +5,17 @@ export type {
   NarrateEvent,
   AnimateEvent,
   WaitEvent,
+  SoundEvent,
+  TimelineSoundType,
   WaitCondition,
   AnimatableTarget,
   EasingName,
 } from './lib/timeline/types';
+export {
+  setTimelineSoundSink,
+  type TimelineSoundSink,
+  type TimelineSoundPlayOptions,
+} from './lib/timeline/timeline-sound-sink';
 export { applyEasing, interpolate } from './lib/timeline/easing';
 export {
   buildNarrateRenderPieces,

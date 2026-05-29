@@ -18,6 +18,7 @@ export const STEP_02_TWO_LISTENERS: Step = {
       text: 'When does each of them see the flash?',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

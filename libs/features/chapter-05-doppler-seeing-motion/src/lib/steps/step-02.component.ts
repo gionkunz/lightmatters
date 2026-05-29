@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   HostListener,
+  inject,
   OnDestroy,
   OnInit,
   signal
@@ -13,7 +14,7 @@ import {
     TargetRegistry,
   TimelineRunner
 } from '@lm/engine';
-import { LmFactLineComponent, LmKickerComponent } from '@lm/design';
+import { AudioService, LmFactLineComponent, LmKickerComponent } from '@lm/design';
 import {
   buildRelativisticPeriodicEmissions,
   meanPulseInterval,
@@ -36,6 +37,7 @@ import {
   CHAPTER_05_TOTAL_STEPS,
   hasNextStep
 } from '../step-registry';
+import { playObserverWaveCrossingSound } from '../wave-crossing-sound';
 import { STEP_02_RECEDING_REDSHIFT } from './step-02-receding-redshift';
 
 @Component({
@@ -112,6 +114,7 @@ import { STEP_02_RECEDING_REDSHIFT } from './step-02-receding-redshift';
 })
 export class Step02Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
+  readonly #audio = inject(AudioService);
 
   protected readonly step = STEP_02_RECEDING_REDSHIFT;
   protected readonly chapterRoute = CHAPTER_05_ROUTE_NUMBER;
@@ -174,6 +177,12 @@ export class Step02Component implements OnInit, OnDestroy {
   protected onReception(event: LightSceneReception): void {
     this.tickCount.update((n) => n + 1);
     this.arrivalTimes.update((times) => [...times, event.atTime]);
+    playObserverWaveCrossingSound(
+      this.#audio,
+      event,
+      this.time(),
+      this.observers,
+    );
   }
 
   @HostListener('document:keydown', ['$event'])

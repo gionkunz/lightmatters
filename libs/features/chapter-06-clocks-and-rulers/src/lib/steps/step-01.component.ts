@@ -1,6 +1,8 @@
 import {
   Component,
+  effect,
   HostListener,
+  inject,
   OnDestroy,
   OnInit,
   signal,
@@ -12,13 +14,14 @@ import {
   TargetRegistry,
   TimelineRunner,
 } from '@lm/engine';
-import { LmKickerComponent } from '@lm/design';
+import { AudioService, LmKickerComponent } from '@lm/design';
 import { LmLightClockComponent } from '@lm/light-clock';
 import {
   CHAPTER_06_CLOCKS_TITLE,
   CHAPTER_06_CLOCKS_TOTAL_STEPS,
   hasNextStep,
 } from '../step-registry';
+import { LightClockBounceSound } from '../light-clock-bounce-sound';
 import { STEP_01_LIGHT_CLOCK_AT_REST } from './step-01-light-clock-at-rest';
 
 @Component({
@@ -86,6 +89,8 @@ import { STEP_01_LIGHT_CLOCK_AT_REST } from './step-01-light-clock-at-rest';
 })
 export class Step01Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
+  readonly #audio = inject(AudioService);
+  readonly #bounceSound = new LightClockBounceSound(this.#audio);
 
   protected readonly step = STEP_01_LIGHT_CLOCK_AT_REST;
   protected readonly chapterTitle = CHAPTER_06_CLOCKS_TITLE;
@@ -103,6 +108,10 @@ export class Step01Component implements OnInit, OnDestroy {
     });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
+
+    effect(() => {
+      this.#bounceSound.onProgress(this.progress());
+    });
   }
 
   ngOnInit(): void {

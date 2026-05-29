@@ -13,6 +13,7 @@ export const STEP_02_MOVING_CLOCK: Step = {
       text: 'Set the clock moving. In your frame the mirrors drift sideways while the photon shuttles between them — the path becomes a **longer diagonal**, still at $c$.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'tilt', volume: 0.55 },
     {
       type: 'animate',
       target: 'clock.velocity',

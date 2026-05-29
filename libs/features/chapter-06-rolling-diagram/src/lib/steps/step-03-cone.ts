@@ -13,6 +13,7 @@ export const STEP_03_CONE: Step = {
       text: 'The cylinder can bend further. Pinch one end and you get a **cone** — the same diagram, rolled and tapered.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.curvature',

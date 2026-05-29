@@ -1,6 +1,8 @@
 import {
   Component,
+  effect,
   HostListener,
+  inject,
   OnDestroy,
   OnInit,
   signal
@@ -12,7 +14,7 @@ import {
     TargetRegistry,
   TimelineRunner
 } from '@lm/engine';
-import { LmFactLineComponent, LmKickerComponent } from '@lm/design';
+import { AudioService, LmFactLineComponent, LmKickerComponent } from '@lm/design';
 import {
   LmLightSceneComponent,
   type LightSceneObserver,
@@ -24,6 +26,10 @@ import {
   CHAPTER_03_TOTAL_STEPS,
   hasNextStep
 } from '../step-registry';
+import {
+  playObserverReceptionSound,
+  RECEPTION_SOUND_WINDOW,
+} from '../reception-sound';
 import { STEP_03_ONE_OF_THEM_MOVES } from './step-03-one-of-them-moves';
 
 @Component({
@@ -115,6 +121,7 @@ import { STEP_03_ONE_OF_THEM_MOVES } from './step-03-one-of-them-moves';
 })
 export class Step03Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
+  readonly #audio = inject(AudioService);
 
   protected readonly step = STEP_03_ONE_OF_THEM_MOVES;
   protected readonly chapterTitle = CHAPTER_03_TITLE;
@@ -143,8 +150,20 @@ export class Step03Component implements OnInit, OnDestroy {
   protected onReception(event: LightSceneReception): void {
     if (event.observerId === 'a' && this.aArrived() === null) {
       this.aArrived.set(event.atTime);
+      playObserverReceptionSound(
+        this.#audio,
+        event,
+        this.time(),
+        this.observers,
+      );
     } else if (event.observerId === 'b' && this.bArrived() === null) {
       this.bArrived.set(event.atTime);
+      playObserverReceptionSound(
+        this.#audio,
+        event,
+        this.time(),
+        this.observers,
+      );
     }
   }
   protected format(t: number | null): string {
@@ -162,6 +181,13 @@ export class Step03Component implements OnInit, OnDestroy {
 });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
+
+    effect(() => {
+      if (this.time() < RECEPTION_SOUND_WINDOW) {
+        this.aArrived.set(null);
+        this.bArrived.set(null);
+      }
+    });
   }
 
   ngOnInit(): void {

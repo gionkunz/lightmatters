@@ -23,6 +23,7 @@ export const STEP_02_TWO_TRAVELLERS: Step = {
       text: 'The other launches at half the speed of light — still moving through time, but a significant share of $c$ goes to space.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'tilt', volume: 0.55 },
     {
       type: 'animate',
       target: 'diagram.velocityB',

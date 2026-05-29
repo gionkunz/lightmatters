@@ -18,6 +18,7 @@ export const STEP_03_ONE_OF_THEM_MOVES: Step = {
       text: 'Watch the wavefront expand. Watch when each of them is reached.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

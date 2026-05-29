@@ -18,6 +18,7 @@ export const STEP_03_APPROACHING_BLUESHIFT: Step = {
       text: 'The wavefronts pile up — partly because $S$\'s clock runs fast in $A$\'s frame (Chapter 2), partly because each pulse has less distance to cover. $A$ hears ticks arriving closer together — the clock sounds **fast**.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

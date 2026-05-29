@@ -3,12 +3,18 @@ import { interpolate } from './easing';
 import type {
   AnimateEvent,
   NarrateEvent,
+  SoundEvent,
   TimelineCheckpoint,
   TimelineEvent,
   WaitEvent,
 } from './types';
 import { narrateTextTypingUnits } from './narrate-text';
 import { TargetRegistry } from './target-registry';
+import { getTimelineSoundSink } from './timeline-sound-sink';
+
+const canUseTimelineSound =
+  typeof globalThis.window !== 'undefined' &&
+  typeof globalThis.document !== 'undefined';
 
 const canUseAnimationFrame =
   typeof globalThis.requestAnimationFrame === 'function';
@@ -274,6 +280,7 @@ export class TimelineRunner {
     this.setProgress(this.eventOffsets[eventIndex] ?? 0);
     this.syncActiveCheckpoint();
     this.startProgressLoop();
+    this.#playSoundsLeadingInto(eventIndex);
     void this.runNext(this.nextRunGeneration());
   }
 
@@ -438,7 +445,29 @@ export class TimelineRunner {
     if (event.type === 'animate') {
       return this.beginAnimate(event);
     }
+    if (event.type === 'sound') {
+      this.playSoundEvent(event);
+    }
     return Promise.resolve();
+  }
+
+  private playSoundEvent(event: SoundEvent): void {
+    if (!canUseTimelineSound) {
+      return;
+    }
+
+    const sink = getTimelineSoundSink();
+    sink?.play(event.sound, {
+      volume: event.volume,
+      pan: event.pan,
+    });
+  }
+
+  /** Play sound cues authored immediately before a checkpoint beat. */
+  #playSoundsLeadingInto(eventIndex: number): void {
+    for (let i = eventIndex - 1; i >= 0 && this.events[i].type === 'sound'; i--) {
+      this.playSoundEvent(this.events[i] as SoundEvent);
+    }
   }
 
   private beginNarrate(event: NarrateEvent): Promise<void> {
@@ -654,7 +683,8 @@ export class TimelineRunner {
     const checkpoints: TimelineCheckpoint[] = [];
 
     for (let i = 0; i < this.events.length; i++) {
-      if (this.events[i].type === 'wait') {
+      const type = this.events[i].type;
+      if (type === 'wait' || type === 'sound') {
         continue;
       }
       checkpointEventIndices.push(i);

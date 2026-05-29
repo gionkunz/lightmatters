@@ -10,6 +10,7 @@ export const STEP_02_TIME: Step = {
       type: 'narrate',
       text: 'Position tells us where something is. Time tells us when. It is another axis — not a clock on the wall, but a dimension things move through.',
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'diagram.time',

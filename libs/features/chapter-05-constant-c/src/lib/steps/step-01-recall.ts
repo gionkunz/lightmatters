@@ -18,6 +18,7 @@ export const STEP_01_RECALL: Step = {
       text: 'But we only ever showed it from the **outside**, watching a single still observer. We never asked the harder question.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

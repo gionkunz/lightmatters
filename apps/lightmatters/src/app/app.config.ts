@@ -6,7 +6,8 @@ import {
 } from '@angular/core';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { ThemeService } from '@lm/design';
+import { AudioService, ThemeService } from '@lm/design';
+import { setTimelineSoundSink } from '@lm/engine';
 import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -19,6 +20,8 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       useFactory: () => {
         inject(ThemeService);
+        const audio = inject(AudioService);
+        setTimelineSoundSink(audio);
         return () => undefined;
       },
     },

@@ -1,6 +1,7 @@
 import {
   Component,
   HostListener,
+  inject,
   OnDestroy,
   OnInit,
   signal
@@ -13,6 +14,7 @@ import {
   TimelineRunner
 } from '@lm/engine';
 import {
+  AudioService,
   LmFactLineComponent,
   LmKickerComponent
 } from '@lm/design';
@@ -27,6 +29,7 @@ import {
   CHAPTER_03_TOTAL_STEPS,
   hasNextStep
 } from '../step-registry';
+import { playObserverReceptionSound } from '../reception-sound';
 import { STEP_01_LIGHT_THROUGH_SPACE } from './step-01-light-through-space';
 
 @Component({
@@ -118,6 +121,7 @@ import { STEP_01_LIGHT_THROUGH_SPACE } from './step-01-light-through-space';
 })
 export class Step01Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
+  readonly #audio = inject(AudioService);
 
   protected readonly step = STEP_01_LIGHT_THROUGH_SPACE;
   protected readonly chapterTitle = CHAPTER_03_TITLE;
@@ -151,6 +155,12 @@ export class Step01Component implements OnInit, OnDestroy {
   protected onReception(event: LightSceneReception): void {
     if (event.observerId === 'a') {
       this.aReceived.update((v) => v + 1);
+      playObserverReceptionSound(
+        this.#audio,
+        event,
+        this.time(),
+        this.observers,
+      );
     }
   }
 

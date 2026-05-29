@@ -3,6 +3,7 @@ import {
   afterNextRender,
   Component,
   computed,
+  effect,
   HostListener,
   inject,
   OnDestroy,
@@ -17,13 +18,14 @@ import {
   TargetRegistry,
   TimelineRunner,
 } from '@lm/engine';
-import { LmFactLineComponent, LmKickerComponent, LmSliderComponent } from '@lm/design';
+import { LmFactLineComponent, LmKickerComponent, LmSliderComponent, AudioService } from '@lm/design';
 import { lengthContraction, tickPeriod } from '@lm/physics';
 import {
   CHAPTER_06_CLOCKS_TITLE,
   CHAPTER_06_CLOCKS_TOTAL_STEPS,
   hasNextStep,
 } from '../step-registry';
+import { LightClockBounceSound } from '../light-clock-bounce-sound';
 import { LmHorizontalLightClockComponent } from './lm-horizontal-light-clock.component';
 import { STEP_03_LENGTH_CONTRACTION } from './step-03-length-contraction';
 
@@ -113,6 +115,8 @@ const REST_TICK = 1;
 export class Step03Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
   private readonly platformId = inject(PLATFORM_ID);
+  readonly #audio = inject(AudioService);
+  readonly #bounceSound = new LightClockBounceSound(this.#audio);
 
   protected readonly step = STEP_03_LENGTH_CONTRACTION;
   protected readonly chapterTitle = CHAPTER_06_CLOCKS_TITLE;
@@ -153,6 +157,10 @@ export class Step03Component implements OnInit, OnDestroy {
       if (isPlatformBrowser(this.platformId)) {
         this.startTickLoop();
       }
+    });
+
+    effect(() => {
+      this.#bounceSound.onProgress(this.progress());
     });
   }
 

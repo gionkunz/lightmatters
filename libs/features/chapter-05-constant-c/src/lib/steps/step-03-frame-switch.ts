@@ -13,6 +13,7 @@ export const STEP_03_FRAME_SWITCH: Step = {
       text: 'Now climb aboard $B$ and call **yourself** the one at rest. From here it is $A$ who slides away — to the left at $0.5\\,c$.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

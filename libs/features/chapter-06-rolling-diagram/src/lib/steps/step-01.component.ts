@@ -39,7 +39,7 @@ import { STEP_01_TIME_ONLY } from './step-01-time-only';
       [step]="1"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(1)"
-      [prevStepUrl]="'/chapter/8/step/5'"
+      [prevStepUrl]="'/chapter/9/step/6'"
       [nextStepUrl]="'/chapter/10/step/2'"
       [showPlayback]="true"
       [progress]="runner.progress()"

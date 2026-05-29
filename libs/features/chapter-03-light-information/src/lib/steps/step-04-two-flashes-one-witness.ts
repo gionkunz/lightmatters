@@ -18,6 +18,7 @@ export const STEP_04_TWO_FLASHES_ONE_WITNESS: Step = {
       text: 'First — $W$ is at rest. When does each flash reach them?',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',
@@ -41,6 +42,7 @@ export const STEP_04_TWO_FLASHES_ONE_WITNESS: Step = {
       text: 'Let us run it again — same two flashes at the same instant — but this time $W$ is moving rightward at $0.3\\,c$.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

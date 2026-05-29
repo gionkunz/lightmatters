@@ -13,6 +13,7 @@ export const STEP_03_LIGHT_MOMENTUM: Step = {
       text: 'We need one new fact, and only one. Light carries **momentum** — it does not just travel, it *pushes*.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'sail.progress',

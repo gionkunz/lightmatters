@@ -3,35 +3,46 @@ import {
   computed,
   effect,
   HostListener,
+  inject,
   OnDestroy,
   OnInit,
-  signal
+  signal,
 } from '@angular/core';
+import {
+  AudioService,
+  LmFactLineComponent,
+  LmKickerComponent,
+  LmPredictionChoiceComponent,
+  type PredictionOption,
+} from '@lm/design';
 import {
   LmDiagramViewportComponent,
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
   TargetRegistry,
-  TimelineRunner
+  TimelineRunner,
 } from '@lm/engine';
-import {
-  LmFactLineComponent,
-  LmKickerComponent,
-  LmPredictionChoiceComponent,
-  type PredictionOption
-} from '@lm/design';
 import {
   LmLightSceneComponent,
   type LightSceneObserver,
   type LightSceneReception,
-  type LightSceneSource
+  type LightSceneSource,
 } from '@lm/light-scene';
+import {
+  playSourceReceptionSound,
+  RECEPTION_SOUND_WINDOW,
+} from '../reception-sound';
 import {
   CHAPTER_03_TITLE,
   CHAPTER_03_TOTAL_STEPS,
-  hasNextStep
+  hasNextStep,
 } from '../step-registry';
 import { STEP_04_TWO_FLASHES_ONE_WITNESS } from './step-04-two-flashes-one-witness';
+
+const SOURCE_ARRIVAL_PAN: Record<string, number> = {
+  's-left': -0.75,
+  's-right': 0.75,
+};
 
 const ORDER_OPTIONS: PredictionOption[] = [
   { id: 'left', label: 'Left flash first' },
@@ -102,7 +113,9 @@ const ORDER_OPTIONS: PredictionOption[] = [
         </div>
 
         <div class="flex min-h-0 flex-col">
-          <div class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]">
+          <div
+            class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]"
+          >
             <div class="mb-3.5 flex items-baseline justify-between gap-4">
               <lm-kicker [opacity]="0.55">{{ phaseKicker() }}</lm-kicker>
             </div>
@@ -138,10 +151,11 @@ const ORDER_OPTIONS: PredictionOption[] = [
         </div>
       </div>
     </lm-step-frame>
-  `
+  `,
 })
 export class Step04Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
+  readonly #audio = inject(AudioService);
 
   protected readonly step = STEP_04_TWO_FLASHES_ONE_WITNESS;
   protected readonly chapterTitle = CHAPTER_03_TITLE;
@@ -155,15 +169,15 @@ export class Step04Component implements OnInit, OnDestroy {
       x: -0.5,
       y: 0,
       label: 'S_L',
-      emissions: [{ atTime: 0, pulseId: 'p-left' }]
-},
+      emissions: [{ atTime: 0, pulseId: 'p-left' }],
+    },
     {
       id: 's-right',
       x: 0.5,
       y: 0,
       label: 'S_R',
-      emissions: [{ atTime: 0, pulseId: 'p-right' }]
-},
+      emissions: [{ atTime: 0, pulseId: 'p-right' }],
+    },
   ];
 
   protected readonly time = signal(0);
@@ -223,8 +237,8 @@ export class Step04Component implements OnInit, OnDestroy {
             x: 0,
             y: 0,
             label: 'W',
-            velocity: { x: 0.3, y: 0 }
-},
+            velocity: { x: 0.3, y: 0 },
+          },
         ],
   );
 
@@ -246,14 +260,18 @@ export class Step04Component implements OnInit, OnDestroy {
   }
 
   protected onReception(event: LightSceneReception): void {
-    // Reset on phase change is done in an effect-like way: when phase moves to 'moving',
-    // we want the second-run arrivals to populate fresh values. We track the latest event
-    // per source-pulse pair, overwriting on the second run.
     if (event.sourceId === 's-left') {
       this.leftArrived.set(event.atTime);
     } else if (event.sourceId === 's-right') {
       this.rightArrived.set(event.atTime);
     }
+
+    playSourceReceptionSound(
+      this.#audio,
+      event,
+      this.time(),
+      SOURCE_ARRIVAL_PAN,
+    );
   }
   protected format(t: number | null): string {
     return t === null ? '—' : `${t.toFixed(2)} t`;
@@ -266,8 +284,8 @@ export class Step04Component implements OnInit, OnDestroy {
     this.registry.register('scene.time', {
       get: () => this.time(),
       set: (v) => this.time.set(v),
-      initial: 0
-});
+      initial: 0,
+    });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
 
@@ -283,6 +301,10 @@ export class Step04Component implements OnInit, OnDestroy {
 
     effect(() => {
       const t = this.time();
+      if (t < RECEPTION_SOUND_WINDOW && !this.hasEnteredMoving()) {
+        this.leftArrived.set(null);
+        this.rightArrived.set(null);
+      }
       if (this.inSecondSegment()) {
         if (!this.hasEnteredMoving() && t < 0.05) {
           this.hasEnteredMoving.set(true);

@@ -18,6 +18,7 @@ export const STEP_05_APPLE: Step = {
       text: 'Project the **same tree** further around the cone — the same shape, but farther along **proper time**. Not a second tree: one tree, two moments.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',
@@ -36,6 +37,7 @@ export const STEP_05_APPLE: Step = {
       text: 'Cut along the seam and **unroll** the cone. The same fall is a perfectly straight line — gravity is the geometry, not the apple.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.unfold',

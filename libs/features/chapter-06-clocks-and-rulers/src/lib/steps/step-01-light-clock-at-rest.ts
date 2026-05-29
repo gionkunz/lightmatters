@@ -18,6 +18,7 @@ export const STEP_01_LIGHT_CLOCK_AT_REST: Step = {
       text: 'The photon always travels at $c$. At rest, the path is straight up and down — as short as it can be.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'clock.progress',

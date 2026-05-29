@@ -2,6 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import {
   afterNextRender,
   Component,
+  effect,
   HostListener,
   inject,
   OnDestroy,
@@ -16,7 +17,7 @@ import {
   TargetRegistry,
   TimelineRunner,
 } from '@lm/engine';
-import { LmKickerComponent } from '@lm/design';
+import { AudioService, LmKickerComponent } from '@lm/design';
 import { LmLightClockComponent } from '@lm/light-clock';
 import { tickPeriod } from '@lm/physics';
 import {
@@ -24,6 +25,7 @@ import {
   CHAPTER_06_CLOCKS_TOTAL_STEPS,
   hasNextStep,
 } from '../step-registry';
+import { LightClockBounceSound } from '../light-clock-bounce-sound';
 import { STEP_04_OUTRO } from './step-04-outro';
 
 const REST_TICK = 1;
@@ -96,6 +98,8 @@ const OUTRO_VELOCITY = 0.5;
 export class Step04Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
   private readonly platformId = inject(PLATFORM_ID);
+  readonly #audio = inject(AudioService);
+  readonly #bounceSound = new LightClockBounceSound(this.#audio);
 
   protected readonly step = STEP_04_OUTRO;
   protected readonly chapterTitle = CHAPTER_06_CLOCKS_TITLE;
@@ -114,6 +118,10 @@ export class Step04Component implements OnInit, OnDestroy {
       if (isPlatformBrowser(this.platformId)) {
         this.startTickLoop();
       }
+    });
+
+    effect(() => {
+      this.#bounceSound.onProgress(this.progress());
     });
   }
 

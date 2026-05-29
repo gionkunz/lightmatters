@@ -1,6 +1,7 @@
 import {
   Component,
   HostListener,
+  inject,
   OnDestroy,
   OnInit,
   signal
@@ -12,7 +13,7 @@ import {
     TargetRegistry,
   TimelineRunner
 } from '@lm/engine';
-import { LmFactLineComponent, LmKickerComponent } from '@lm/design';
+import { AudioService, LmFactLineComponent, LmKickerComponent } from '@lm/design';
 import { buildRelativisticPeriodicEmissions } from '@lm/physics';
 import {
   LmLightSceneComponent,
@@ -30,6 +31,7 @@ import {
   CHAPTER_05_TOTAL_STEPS,
   hasNextStep
 } from '../step-registry';
+import { playObserverWaveCrossingSound } from '../wave-crossing-sound';
 import { STEP_04_EXTREME_RECESSION } from './step-04-extreme-recession';
 
 @Component({
@@ -106,6 +108,7 @@ import { STEP_04_EXTREME_RECESSION } from './step-04-extreme-recession';
 })
 export class Step04Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
+  readonly #audio = inject(AudioService);
 
   protected readonly step = STEP_04_EXTREME_RECESSION;
   protected readonly chapterRoute = CHAPTER_05_ROUTE_NUMBER;
@@ -159,6 +162,12 @@ export class Step04Component implements OnInit, OnDestroy {
       this.lastInterval.set(event.atTime - this.lastArrival);
     }
     this.lastArrival = event.atTime;
+    playObserverWaveCrossingSound(
+      this.#audio,
+      event,
+      this.time(),
+      this.observers,
+    );
   }
 
   protected intervalLabel(): string {

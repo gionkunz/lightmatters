@@ -18,6 +18,7 @@ export const STEP_01_PULSE_TICKS: Step = {
       text: 'Every time a wavefront reaches observer $A$, $A$ hears one tick of the emitter\'s clock. One pulse, one tick — the wavefront is the clock\'s hand.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

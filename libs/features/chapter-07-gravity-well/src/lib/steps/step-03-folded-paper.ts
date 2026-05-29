@@ -13,6 +13,7 @@ export const STEP_03_FOLDED_PAPER: Step = {
       text: 'Five segments — two cylinders, two cones, a wide center. Drop a particle in. Watch it spiral inward, cross the weightless middle, and climb out the far side.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'surface.time',
@@ -26,6 +27,7 @@ export const STEP_03_FOLDED_PAPER: Step = {
       text: 'Curved on the surface. But the cones and cylinders are made of **flat paper** — you can pick up scissors and unroll them.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'surface.wellUnfold',

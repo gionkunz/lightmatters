@@ -25,6 +25,7 @@ export const STEP_01_ALWAYS_AT_C: Step = {
       text: "Not that I'm calling you lazy — but this is how we usually move through spacetime. Nearly all time, almost no space. We never get anywhere near relativistic speeds.",
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'tilt', volume: 0.55 },
     {
       type: 'animate',
       target: 'diagram.velocity',
@@ -43,6 +44,7 @@ export const STEP_01_ALWAYS_AT_C: Step = {
       text: "That's how light moves through spacetime — at $c$ through space, and completely timeless!",
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'tilt', volume: 0.55 },
     {
       type: 'animate',
       target: 'diagram.velocity',

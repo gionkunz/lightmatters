@@ -2,6 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { Component, HostListener, inject, input, output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
+  LmAudioToggleComponent,
   LmInteractiveDirective,
   LmKickerComponent,
   LmThemeToggleComponent,
@@ -19,6 +20,7 @@ import { parseStepUrl } from './step-url';
     RouterLink,
     LmWordmarkComponent,
     LmKickerComponent,
+    LmAudioToggleComponent,
     LmThemeToggleComponent,
     LmPlaybackBarComponent,
     LmInteractiveDirective,
@@ -58,7 +60,10 @@ import { parseStepUrl } from './step-url';
           >
         </div>
 
-        <lm-theme-toggle />
+        <div class="flex shrink-0 items-center gap-2">
+          <lm-audio-toggle />
+          <lm-theme-toggle [withDot]="false" />
+        </div>
       </nav>
 
       <lm-playback-bar

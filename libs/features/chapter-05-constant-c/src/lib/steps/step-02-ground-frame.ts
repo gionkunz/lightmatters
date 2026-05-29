@@ -13,6 +13,7 @@ export const STEP_02_GROUND_FRAME: Step = {
       text: 'At the moment of the flash, $A$ and $B$ are at the same place. $A$ stays put; $B$ glides to the right at $0.5\\,c$.',
       pauseAfter: BEAT_PAUSE_MS,
     },
+    { type: 'sound', sound: 'expand', volume: 0.45 },
     {
       type: 'animate',
       target: 'scene.time',

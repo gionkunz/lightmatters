@@ -19,6 +19,7 @@ export const STEP_02_MICHELSON_MORLEY: Step = {
       text: 'Move forward through the ether and the medium pushes back. Everywhere you look, the wind points **against** your motion — a headwind you can never outrun.',
       pauseAfter: 0,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'ether.frameSpeed',
@@ -32,6 +33,7 @@ export const STEP_02_MICHELSON_MORLEY: Step = {
       text: 'Follow a circular path and the wind keeps changing direction — but it always blows **against** how you are moving right now.',
       pauseAfter: 0,
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'ether.orbitAngle',
@@ -40,6 +42,7 @@ export const STEP_02_MICHELSON_MORLEY: Step = {
       duration: 4,
       easing: 'linear',
     },
+    { type: 'sound', sound: 'arrive', volume: 0.5 },
     {
       type: 'animate',
       target: 'ether.dragScene',
@@ -58,6 +61,7 @@ export const STEP_02_MICHELSON_MORLEY: Step = {
       text: 'Michelson and Morley looked for that ether wind in Earth\'s orbit. At different seasons, our motion through the ether should favor one direction over another — the interference pattern should **shift**.',
       pauseAfter: 0,
     },
+    { type: 'sound', sound: 'snap', volume: 0.5 },
     {
       type: 'animate',
       target: 'ether.earthOrbitIndex',

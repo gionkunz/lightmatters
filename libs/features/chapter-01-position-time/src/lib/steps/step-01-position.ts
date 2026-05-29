@@ -10,6 +10,7 @@ export const STEP_01_POSITION: Step = {
       type: 'narrate',
       text: 'Before we talk about relativity, we need a place to stand. Position is simply where something is — a location on a line.',
     },
+    { type: 'sound', sound: 'soft', volume: 0.4 },
     {
       type: 'animate',
       target: 'diagram.position',

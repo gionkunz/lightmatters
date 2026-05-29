@@ -1,14 +1,23 @@
 import { TimelineRunner } from './timeline-runner';
 import { TargetRegistry } from './target-registry';
+import {
+  setTimelineSoundSink,
+  type TimelineSoundSink,
+} from './timeline-sound-sink';
 import type { TimelineEvent } from './types';
 
 describe('TimelineRunner', () => {
+  let sink: jest.Mocked<TimelineSoundSink>;
+
   beforeEach(() => {
     jest.useFakeTimers();
+    sink = { play: jest.fn() };
+    setTimelineSoundSink(sink);
   });
 
   afterEach(() => {
     jest.useRealTimers();
+    setTimelineSoundSink(null);
   });
 
   it('reveals narration character by character', async () => {
@@ -610,5 +619,103 @@ describe('TimelineRunner', () => {
     expect(value).toBe(0);
     expect(runner.narrationVisibleCount()).toBe(0);
     expect(runner.isComplete()).toBe(false);
+  });
+
+  it('plays sound events during forward playback with volume and pan', async () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'sound', sound: 'expand', volume: 0.5, pan: -0.3 },
+      { type: 'narrate', text: 'Hi', speed: 10, pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+    await Promise.resolve();
+
+    expect(sink.play).toHaveBeenCalledWith('expand', {
+      volume: 0.5,
+      pan: -0.3,
+    });
+  });
+
+  it('excludes sound events from checkpoints and total duration', () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'narrate', text: 'A', speed: 10, pauseAfter: 0 },
+      { type: 'sound', sound: 'tick' },
+      { type: 'narrate', text: 'B', speed: 10, pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    expect(runner.checkpoints().length).toBe(2);
+    expect(runner.getTotalDurationMs()).toBe(20);
+  });
+
+  it('does not replay sound events on skip but plays leading sounds on checkpoint seek', async () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'sound', sound: 'tilt' },
+      { type: 'narrate', text: 'First', speed: 10, pauseAfter: 0 },
+      { type: 'sound', sound: 'snap' },
+      { type: 'narrate', text: 'Second', speed: 10, pauseAfter: 0 },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+    await Promise.resolve();
+    expect(sink.play).toHaveBeenCalledTimes(1);
+    expect(sink.play).toHaveBeenCalledWith('tilt', {
+      volume: undefined,
+      pan: undefined,
+    });
+
+    runner.skip();
+    expect(sink.play).toHaveBeenCalledTimes(1);
+
+    sink.play.mockClear();
+    runner.goToCheckpoint(3);
+    await Promise.resolve();
+    expect(sink.play).toHaveBeenCalledTimes(1);
+    expect(sink.play).toHaveBeenCalledWith('snap', {
+      volume: undefined,
+      pan: undefined,
+    });
+  });
+
+  it('goToNextCheckpoint plays sound leading into the next beat', async () => {
+    const registry = new TargetRegistry();
+    const events: TimelineEvent[] = [
+      { type: 'narrate', text: 'First', speed: 10, pauseAfter: 0 },
+      { type: 'sound', sound: 'expand', volume: 0.6 },
+      {
+        type: 'animate',
+        target: 'diagram.value',
+        from: 0,
+        to: 1,
+        duration: 0.05,
+      },
+      { type: 'wait', for: 'userAdvance' },
+    ];
+
+    registry.register('diagram.value', {
+      get: () => 0,
+      set: () => undefined,
+    });
+
+    const runner = new TimelineRunner(events, registry);
+    runner.start();
+    await Promise.resolve();
+    sink.play.mockClear();
+
+    runner.goToNextCheckpoint();
+    await Promise.resolve();
+
+    expect(sink.play).toHaveBeenCalledWith('expand', {
+      volume: 0.6,
+      pan: undefined,
+    });
   });
 });
