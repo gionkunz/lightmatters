@@ -2,7 +2,6 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
   Injectable,
   PLATFORM_ID,
-  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -12,7 +11,7 @@ export const MIN_VIEWPORT_HEIGHT = 1080;
 
 const RESIZE_DEBOUNCE_MS = 100;
 
-/** True when either viewport dimension is below the recommended minimum. */
+/** True when either viewport dimension is below the desktop minimum. */
 export function isViewportUndersized(
   width: number,
   height: number,
@@ -23,20 +22,14 @@ export function isViewportUndersized(
 }
 
 /**
- * Tracks undersized viewports and episode-based dismiss state for the
- * resolution hint (no persistence across reloads).
+ * Tracks undersized viewports for the blocking resolution modal.
  */
 @Injectable({ providedIn: 'root' })
 export class ViewportResolutionHintService {
   readonly #document = inject(DOCUMENT);
   readonly #platformId = inject(PLATFORM_ID);
 
-  readonly #undersized = signal(false);
-  readonly #dismissedForEpisode = signal(false);
-
-  readonly visible = computed(
-    () => this.#undersized() && !this.#dismissedForEpisode(),
-  );
+  readonly visible = signal(false);
 
   #resizeTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -52,12 +45,6 @@ export class ViewportResolutionHintService {
 
     this.#sync();
     win.addEventListener('resize', this.#onResize);
-  }
-
-  dismiss(): void {
-    if (this.#undersized()) {
-      this.#dismissedForEpisode.set(true);
-    }
   }
 
   #onResize = (): void => {
@@ -76,14 +63,8 @@ export class ViewportResolutionHintService {
       return;
     }
 
-    const undersized = isViewportUndersized(win.innerWidth, win.innerHeight);
-    const wasUndersized = this.#undersized();
-    this.#undersized.set(undersized);
-
-    if (!undersized) {
-      this.#dismissedForEpisode.set(false);
-    } else if (!wasUndersized && undersized) {
-      this.#dismissedForEpisode.set(false);
-    }
+    this.visible.set(
+      isViewportUndersized(win.innerWidth, win.innerHeight),
+    );
   }
 }

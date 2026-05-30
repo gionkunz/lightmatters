@@ -53,45 +53,32 @@ describe('ViewportResolutionHintService', () => {
     setViewportSize(MIN_VIEWPORT_WIDTH, MIN_VIEWPORT_HEIGHT);
   });
 
-  it('shows hint when viewport is undersized', fakeAsync(() => {
+  it('shows modal when viewport is undersized', fakeAsync(() => {
     setViewportSize(1919, 1080);
     tick(150);
     expect(service.visible()).toBe(true);
   }));
 
-  it('hides hint at 1920×1080', fakeAsync(() => {
+  it('hides modal at 1920×1080', fakeAsync(() => {
     setViewportSize(1920, 1080);
     tick(150);
     expect(service.visible()).toBe(false);
   }));
 
-  it('hides hint after dismiss while still undersized', fakeAsync(() => {
+  it('hides modal when viewport grows from undersized', fakeAsync(() => {
     setViewportSize(1919, 1080);
     tick(150);
     expect(service.visible()).toBe(true);
 
-    service.dismiss();
-    expect(service.visible()).toBe(false);
-  }));
-
-  it('clears dismiss episode when viewport grows', fakeAsync(() => {
-    setViewportSize(1919, 1080);
-    tick(150);
-    service.dismiss();
-    expect(service.visible()).toBe(false);
-
     setViewportSize(1920, 1080);
     tick(150);
     expect(service.visible()).toBe(false);
   }));
 
-  it('shows hint again after shrink following dismiss', fakeAsync(() => {
-    setViewportSize(1919, 1080);
-    tick(150);
-    service.dismiss();
-
+  it('shows modal again when viewport shrinks below minimum', fakeAsync(() => {
     setViewportSize(1920, 1080);
     tick(150);
+    expect(service.visible()).toBe(false);
 
     setViewportSize(1919, 1080);
     tick(150);
