@@ -182,6 +182,23 @@ import type { DiagramVariant } from '../data/chapters.data';
             fill="currentColor"
           />
         }
+        @case ('emwave') {
+          <polyline
+            [attr.points]="emWaveE()"
+            stroke="var(--lm-accent-1)"
+            stroke-width="1.8"
+            fill="none"
+            stroke-linejoin="round"
+          />
+          <polyline
+            [attr.points]="emWaveB()"
+            stroke="var(--lm-accent-2)"
+            stroke-width="1.5"
+            fill="none"
+            stroke-linejoin="round"
+            opacity="0.85"
+          />
+        }
         @case ('contraction') {
           <path
             [attr.d]="contractionGeom().top"
@@ -349,5 +366,37 @@ export class LmDiagramPlaceholderComponent {
       yTop,
       travel: `M ${cx} ${yBottom} L ${apexX} ${apexY} L ${cx} ${yTop}`,
     };
+  });
+
+  readonly emWaveE = computed(() => {
+    const w = this.width();
+    const h = this.height();
+    const mid = h / 2;
+    const amp = h * 0.22;
+    const left = this.pad;
+    const right = w - this.pad;
+    const pts: string[] = [];
+    for (let i = 0; i <= 24; i++) {
+      const x = left + ((right - left) * i) / 24;
+      const y = mid - amp * Math.sin((i / 24) * Math.PI * 3);
+      pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+    }
+    return pts.join(' ');
+  });
+
+  readonly emWaveB = computed(() => {
+    const w = this.width();
+    const h = this.height();
+    const mid = h / 2;
+    const amp = h * 0.16;
+    const left = this.pad;
+    const right = w - this.pad;
+    const pts: string[] = [];
+    for (let i = 0; i <= 24; i++) {
+      const x = left + ((right - left) * i) / 24;
+      const s = Math.sin((i / 24) * Math.PI * 3);
+      pts.push(`${(x + amp * s * 0.55).toFixed(1)},${(mid + amp * s * 0.42).toFixed(1)}`);
+    }
+    return pts.join(' ');
   });
 }

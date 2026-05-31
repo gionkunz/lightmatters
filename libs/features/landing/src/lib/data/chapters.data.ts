@@ -11,7 +11,8 @@ export type DiagramVariant =
   | 'source'
   | 'lightcone'
   | 'contraction'
-  | 'twin';
+  | 'twin'
+  | 'emwave';
 
 export interface ChapterPreview {
   readonly n: number;
@@ -22,7 +23,7 @@ export interface ChapterPreview {
   readonly minutes: number;
 }
 
-/** Chapters 1–9: flat spacetime (SR). Chapters 10–12: curved spacetime (GR). */
+/** Chapters 1–10: flat spacetime (SR). Chapters 11–13: curved spacetime (GR). */
 export const CHAPTERS: readonly ChapterPreview[] = [
   {
     n: 1,
@@ -34,13 +35,21 @@ export const CHAPTERS: readonly ChapterPreview[] = [
   },
   {
     n: 2,
+    title: 'The speed of light',
+    blurb:
+      'How fast is c? The limit of causality. What light is — and two ways to measure it.',
+    mini: 'emwave',
+    minutes: 12,
+  },
+  {
+    n: 3,
     title: 'The speed budget',
     blurb: 'You move through spacetime at c — always. Choose how to spend it.',
     mini: 'vector',
     minutes: 5,
   },
   {
-    n: 3,
+    n: 4,
     title: 'Light and information',
     blurb:
       'Wavefronts and observers. Why simultaneity is in the eye of the beholder.',
@@ -48,7 +57,7 @@ export const CHAPTERS: readonly ChapterPreview[] = [
     minutes: 8,
   },
   {
-    n: 4,
+    n: 5,
     title: 'The ether was wrong',
     blurb:
       'Light does not inherit the motion of its source. Why c is the same for everyone.',
@@ -56,49 +65,49 @@ export const CHAPTERS: readonly ChapterPreview[] = [
     minutes: 8,
   },
   {
-    n: 5,
+    n: 6,
     title: 'The same speed of light',
     blurb: 'Every observer measures the same c — the postulate made visible.',
     mini: 'lightcone',
     minutes: 7,
   },
   {
-    n: 6,
+    n: 7,
     title: 'Clocks & rulers',
     blurb: 'Moving clocks tick slowly. Moving rulers shrink. Same geometry, two lessons.',
     mini: 'contraction',
     minutes: 6,
   },
   {
-    n: 7,
+    n: 8,
     title: 'Doppler and seeing motion',
     blurb: 'Compress the wavefronts and watch the clock change colour.',
     mini: 'doppler',
     minutes: 8,
   },
   {
-    n: 8,
+    n: 9,
     title: 'The twin paradox',
     blurb: 'Two paths through spacetime. Two elapsed times. One reunion.',
     mini: 'twin',
     minutes: 8,
   },
   {
-    n: 9,
+    n: 10,
     title: 'Mass is energy (E=mc²)',
     blurb: 'Rest mass is bottled spacetime motion — energy you can release.',
     mini: 'single',
     minutes: 9,
   },
   {
-    n: 10,
+    n: 11,
     title: 'Rolling the diagram',
     blurb: 'Bend the paper into a cone. Gravity is the geometry, not a force.',
     mini: 'cone',
     minutes: 6,
   },
   {
-    n: 11,
+    n: 12,
     title: 'The center of the Earth',
     blurb:
       'A gravity well that bottoms out in weightlessness. Drop a particle and watch.',
@@ -106,7 +115,7 @@ export const CHAPTERS: readonly ChapterPreview[] = [
     minutes: 9,
   },
   {
-    n: 12,
+    n: 13,
     title: 'Light bending around mass',
     blurb: 'Two edges of a beam. Two paths. One synchronised arrival.',
     mini: 'bend',
@@ -124,7 +133,9 @@ export const TOTAL_CHAPTER_MINUTES = CHAPTERS.reduce(
 export const CHAPTER_COUNT = CHAPTERS.length;
 
 /** Authored chapter numbers with live routes. */
-const AUTHORED_CHAPTER_NUMBERS = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+const AUTHORED_CHAPTER_NUMBERS = new Set([
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+]);
 
 /** First-step URL when a chapter route exists; `null` for not yet authored. */
 export function chapterFirstStepHref(chapterNumber: number): string | null {
