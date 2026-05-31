@@ -45,14 +45,14 @@ const ORBIT_ARC_PHASE3 = Math.PI / 2;
   ],
   template: `
     <lm-step-frame
-      [chapter]="4"
+      [chapter]="5"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="2"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(2)"
-      [prevStepUrl]="'/chapter/4/step/1'"
-      [nextStepUrl]="'/chapter/4/step/3'"
+      [prevStepUrl]="'/chapter/5/step/1'"
+      [nextStepUrl]="'/chapter/5/step/3'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

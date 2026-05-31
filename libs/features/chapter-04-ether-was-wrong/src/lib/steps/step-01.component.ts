@@ -23,14 +23,14 @@ import { STEP_01_THE_ETHER } from './step-01-the-ether';
   imports: [LmStepFrameComponent, LmNarratorChatFeedComponent, LmKickerComponent],
   template: `
     <lm-step-frame
-      [chapter]="4"
+      [chapter]="5"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="1"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(1)"
-      [prevStepUrl]="'/chapter/3/step/5'"
-      [nextStepUrl]="'/chapter/4/step/2'"
+      [prevStepUrl]="'/chapter/4/step/5'"
+      [nextStepUrl]="'/chapter/5/step/2'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

@@ -45,14 +45,14 @@ const REST_TICK = 1;
   ],
   template: `
     <lm-step-frame
-      [chapter]="6"
+      [chapter]="7"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="3"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(3)"
-      [prevStepUrl]="'/chapter/6/step/2'"
-      [nextStepUrl]="'/chapter/6/step/4'"
+      [prevStepUrl]="'/chapter/7/step/2'"
+      [nextStepUrl]="'/chapter/7/step/4'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

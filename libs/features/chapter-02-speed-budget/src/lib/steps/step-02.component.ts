@@ -42,14 +42,14 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
   ],
   template: `
     <lm-step-frame
-      [chapter]="2"
+      [chapter]="3"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="2"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(2)"
-      [prevStepUrl]="'/chapter/2/step/1'"
-      [nextStepUrl]="'/chapter/2/step/3'"
+      [prevStepUrl]="'/chapter/3/step/1'"
+      [nextStepUrl]="'/chapter/3/step/3'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

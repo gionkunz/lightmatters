@@ -42,15 +42,15 @@ const OUTRO_VELOCITY = 0.5;
   ],
   template: `
     <lm-step-frame
-      [chapter]="6"
+      [chapter]="7"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="4"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="true"
       [nextChapter]="true"
-      [prevStepUrl]="'/chapter/6/step/3'"
-      [nextStepUrl]="'/chapter/7/step/1'"
+      [prevStepUrl]="'/chapter/7/step/3'"
+      [nextStepUrl]="'/chapter/8/step/1'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

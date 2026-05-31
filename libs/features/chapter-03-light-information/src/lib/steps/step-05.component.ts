@@ -36,15 +36,15 @@ import { STEP_05_OUTRO } from './step-05-outro';
   ],
   template: `
     <lm-step-frame
-      [chapter]="3"
+      [chapter]="4"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="5"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="true"
       [nextChapter]="true"
-      [prevStepUrl]="'/chapter/3/step/4'"
-      [nextStepUrl]="'/chapter/4/step/1'"
+      [prevStepUrl]="'/chapter/4/step/4'"
+      [nextStepUrl]="'/chapter/5/step/1'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

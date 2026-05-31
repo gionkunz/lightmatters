@@ -32,14 +32,14 @@ import { STEP_01_ALWAYS_AT_C } from './step-01-always-at-c';
   ],
   template: `
     <lm-step-frame
-      [chapter]="2"
+      [chapter]="3"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="1"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(1)"
-      [prevStepUrl]="'/chapter/1/step/4'"
-      [nextStepUrl]="'/chapter/2/step/2'"
+      [prevStepUrl]="'/chapter/2/step/8'"
+      [nextStepUrl]="'/chapter/3/step/2'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

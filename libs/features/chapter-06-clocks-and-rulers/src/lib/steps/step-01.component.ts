@@ -35,14 +35,14 @@ import { STEP_01_LIGHT_CLOCK_AT_REST } from './step-01-light-clock-at-rest';
   ],
   template: `
     <lm-step-frame
-      [chapter]="6"
+      [chapter]="7"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="1"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(1)"
-      [prevStepUrl]="'/chapter/5/step/4'"
-      [nextStepUrl]="'/chapter/6/step/2'"
+      [prevStepUrl]="'/chapter/6/step/4'"
+      [nextStepUrl]="'/chapter/7/step/2'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

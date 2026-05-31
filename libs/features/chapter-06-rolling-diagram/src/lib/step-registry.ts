@@ -16,8 +16,8 @@ export interface StepEntry {
 
 export const CHAPTER_06_TOTAL_STEPS = 4;
 export const CHAPTER_06_TITLE = 'Rolling the diagram: gravity as geometry';
-/** Journey URL chapter (`/chapter/10/...`). */
-export const CHAPTER_06_ROUTE_NUMBER = 10;
+/** Journey URL chapter (`/chapter/11/...`). */
+export const CHAPTER_06_ROUTE_NUMBER = 11;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_TIME_ONLY, component: Step01Component }],

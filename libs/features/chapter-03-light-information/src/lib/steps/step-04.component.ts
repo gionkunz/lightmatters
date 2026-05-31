@@ -63,14 +63,14 @@ const ORDER_OPTIONS: PredictionOption[] = [
   ],
   template: `
     <lm-step-frame
-      [chapter]="3"
+      [chapter]="4"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="4"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(4)"
-      [prevStepUrl]="'/chapter/3/step/3'"
-      [nextStepUrl]="'/chapter/3/step/5'"
+      [prevStepUrl]="'/chapter/4/step/3'"
+      [nextStepUrl]="'/chapter/4/step/5'"
       [advanceDisabled]="!runner.allowsStepExit()"
       [showPlayback]="true"
       [progress]="runner.progress()"

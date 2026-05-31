@@ -22,8 +22,8 @@ export interface StepEntry {
 
 export const CHAPTER_08_TOTAL_STEPS = 7;
 export const CHAPTER_08_TITLE = 'Light bending around mass';
-/** Journey URL chapter (`/chapter/12/...`). */
-export const CHAPTER_08_ROUTE_NUMBER = 12;
+/** Journey URL chapter (`/chapter/13/...`). */
+export const CHAPTER_08_ROUTE_NUMBER = 13;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_DEEP_WELL, component: Step01Component }],

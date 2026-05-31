@@ -16,90 +16,97 @@ export const appRoutes: Routes = [
   {
     path: 'chapter/2',
     loadChildren: () =>
+      import('@lm/feature-chapter-02-speed-of-light').then(
+        (m) => m.chapter02SpeedOfLightRoutes,
+      ),
+  },
+  {
+    path: 'chapter/3',
+    loadChildren: () =>
       import('@lm/feature-chapter-02-speed-budget').then(
         (m) => m.chapter02Routes,
       ),
   },
   {
-    path: 'chapter/3',
+    path: 'chapter/4',
     loadChildren: () =>
       import('@lm/feature-chapter-03-light-information').then(
         (m) => m.chapter03Routes,
       ),
   },
   {
-    path: 'chapter/4',
+    path: 'chapter/5',
     loadChildren: () =>
       import('@lm/feature-chapter-04-ether-was-wrong').then(
         (m) => m.chapter04Routes,
       ),
   },
   {
-    path: 'chapter/5',
+    path: 'chapter/6',
     loadChildren: () =>
       import('@lm/feature-chapter-05-constant-c').then(
         (m) => m.chapter05ConstantCRoutes,
       ),
   },
   {
-    path: 'chapter/6',
+    path: 'chapter/7',
     loadChildren: () =>
       import('@lm/feature-chapter-06-clocks-and-rulers').then(
         (m) => m.chapter06ClocksRoutes,
       ),
   },
   {
-    path: 'chapter/7',
+    path: 'chapter/8',
     loadChildren: () =>
       import('@lm/feature-chapter-05-doppler-seeing-motion').then(
         (m) => m.chapter05Routes,
       ),
   },
   {
-    path: 'chapter/8',
+    path: 'chapter/9',
     loadChildren: () =>
       import('@lm/feature-chapter-08-twin-paradox').then(
         (m) => m.chapter08TwinRoutes,
       ),
   },
   {
-    path: 'chapter/9',
+    path: 'chapter/10',
     loadChildren: () =>
       import('@lm/feature-chapter-09-mass-energy').then(
         (m) => m.chapter09MassEnergyRoutes,
       ),
   },
   {
-    path: 'chapter/10',
+    path: 'chapter/11',
     loadChildren: () =>
       import('@lm/feature-chapter-06-rolling-diagram').then(
         (m) => m.chapter06Routes,
       ),
   },
   {
-    path: 'chapter/11',
+    path: 'chapter/12',
     loadChildren: () =>
       import('@lm/feature-chapter-07-gravity-well').then(
         (m) => m.chapter07Routes,
       ),
   },
   {
-    path: 'chapter/12',
+    path: 'chapter/13',
     loadChildren: () =>
       import('@lm/feature-chapter-08-light-bending').then(
         (m) => m.chapter08Routes,
       ),
   },
   {
-    path: 'chapter/13/step/:step',
+    path: 'chapter/14/step/:step',
     loadComponent: () =>
       import('./chapter-13-placeholder.component').then(
         (m) => m.Chapter13PlaceholderComponent,
       ),
   },
   {
-    path: 'chapter/13',
-    redirectTo: 'chapter/13/step/1',
+    path: 'chapter/14',
+    redirectTo: 'chapter/14/step/1',
     pathMatch: 'full',
   },
   {

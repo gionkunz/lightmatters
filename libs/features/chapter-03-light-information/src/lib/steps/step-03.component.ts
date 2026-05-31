@@ -44,14 +44,14 @@ import { STEP_03_ONE_OF_THEM_MOVES } from './step-03-one-of-them-moves';
   ],
   template: `
     <lm-step-frame
-      [chapter]="3"
+      [chapter]="4"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="3"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(3)"
-      [prevStepUrl]="'/chapter/3/step/2'"
-      [nextStepUrl]="'/chapter/3/step/4'"
+      [prevStepUrl]="'/chapter/4/step/2'"
+      [nextStepUrl]="'/chapter/4/step/4'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

@@ -20,8 +20,8 @@ export interface StepEntry {
 
 export const CHAPTER_09_MASS_ENERGY_TOTAL_STEPS = 6;
 export const CHAPTER_09_MASS_ENERGY_TITLE = 'Mass is energy (E=mc²)';
-/** Journey URL chapter (`/chapter/9/...`). */
-export const CHAPTER_09_MASS_ENERGY_ROUTE_NUMBER = 9;
+/** Journey URL chapter (`/chapter/10/...`). */
+export const CHAPTER_09_MASS_ENERGY_ROUTE_NUMBER = 10;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_HOOK, component: Step01Component }],

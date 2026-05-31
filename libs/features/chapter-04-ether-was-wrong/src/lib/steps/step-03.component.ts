@@ -36,14 +36,14 @@ import { STEP_03_SOURCE_AT_REST } from './step-03-source-at-rest';
   ],
   template: `
     <lm-step-frame
-      [chapter]="4"
+      [chapter]="5"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="3"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(3)"
-      [prevStepUrl]="'/chapter/4/step/2'"
-      [nextStepUrl]="'/chapter/4/step/4'"
+      [prevStepUrl]="'/chapter/5/step/2'"
+      [nextStepUrl]="'/chapter/5/step/4'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

@@ -46,15 +46,15 @@ import { STEP_03_BRIDGE_TO_LIGHT } from './step-03-bridge-to-light';
   ],
   template: `
     <lm-step-frame
-      [chapter]="2"
+      [chapter]="3"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="3"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="true"
       [nextChapter]="true"
-      [prevStepUrl]="'/chapter/2/step/2'"
-      [nextStepUrl]="'/chapter/3/step/1'"
+      [prevStepUrl]="'/chapter/3/step/2'"
+      [nextStepUrl]="'/chapter/4/step/1'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

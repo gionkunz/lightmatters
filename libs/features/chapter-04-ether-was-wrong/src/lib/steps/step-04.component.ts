@@ -38,14 +38,14 @@ import { STEP_04_MOVING_SOURCE } from './step-04-moving-source';
   ],
   template: `
     <lm-step-frame
-      [chapter]="4"
+      [chapter]="5"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="4"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(4)"
-      [prevStepUrl]="'/chapter/4/step/3'"
-      [nextStepUrl]="'/chapter/4/step/5'"
+      [prevStepUrl]="'/chapter/5/step/3'"
+      [nextStepUrl]="'/chapter/5/step/5'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

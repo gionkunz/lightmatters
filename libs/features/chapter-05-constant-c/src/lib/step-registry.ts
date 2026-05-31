@@ -16,8 +16,8 @@ export interface StepEntry {
 
 export const CHAPTER_05_CONSTANT_C_TOTAL_STEPS = 4;
 export const CHAPTER_05_CONSTANT_C_TITLE = 'The same speed of light';
-/** Journey URL chapter (`/chapter/5/...`). */
-export const CHAPTER_05_CONSTANT_C_ROUTE_NUMBER = 5;
+/** Journey URL chapter (`/chapter/6/...`). */
+export const CHAPTER_05_CONSTANT_C_ROUTE_NUMBER = 6;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_RECALL, component: Step01Component }],

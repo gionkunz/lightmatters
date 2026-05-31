@@ -18,8 +18,8 @@ export interface StepEntry {
 
 export const CHAPTER_08_TWIN_TOTAL_STEPS = 5;
 export const CHAPTER_08_TWIN_TITLE = 'The twin paradox';
-/** Journey URL chapter (`/chapter/8/...`). */
-export const CHAPTER_08_TWIN_ROUTE_NUMBER = 8;
+/** Journey URL chapter (`/chapter/9/...`). */
+export const CHAPTER_08_TWIN_ROUTE_NUMBER = 9;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_TWO_WORLDLINES, component: Step01Component }],

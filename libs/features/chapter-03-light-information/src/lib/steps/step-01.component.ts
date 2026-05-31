@@ -44,14 +44,14 @@ import { STEP_01_LIGHT_THROUGH_SPACE } from './step-01-light-through-space';
   ],
   template: `
     <lm-step-frame
-      [chapter]="3"
+      [chapter]="4"
       [chapterTitle]="chapterTitle"
       [stepTitle]="step.title"
       [step]="1"
       [stepsTotal]="stepsTotal"
       [hasNextStep]="hasNextStep(1)"
-      [prevStepUrl]="'/chapter/2/step/3'"
-      [nextStepUrl]="'/chapter/3/step/2'"
+      [prevStepUrl]="'/chapter/3/step/3'"
+      [nextStepUrl]="'/chapter/4/step/2'"
       [showPlayback]="true"
       [progress]="runner.progress()"
       [elapsedMs]="runner.elapsedMs()"

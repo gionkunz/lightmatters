@@ -1,5 +1,6 @@
 /* eslint-disable @nx/enforce-module-boundaries -- prerender metadata imports constants from lazy-loaded chapter libs */
 import { CHAPTER_01_STEPS } from '@lm/feature-chapter-01-position-time';
+import { CHAPTER_02_SPEED_OF_LIGHT_STEPS } from '@lm/feature-chapter-02-speed-of-light';
 import { CHAPTER_02_STEPS } from '@lm/feature-chapter-02-speed-budget';
 import { CHAPTER_03_STEPS } from '@lm/feature-chapter-03-light-information';
 import { CHAPTER_04_STEPS } from '@lm/feature-chapter-04-ether-was-wrong';
@@ -13,25 +14,26 @@ import { CHAPTER_08_TWIN_STEPS } from '@lm/feature-chapter-08-twin-paradox';
 import { CHAPTER_09_MASS_ENERGY_STEPS } from '@lm/feature-chapter-09-mass-energy';
 import { chapterStepHref } from '@lm/engine';
 
-export const CHAPTER_13_STEPS = [1] as const;
+export const CHAPTER_14_STEPS = [1] as const;
 
 const CHAPTER_STEP_ROUTES: ReadonlyArray<{
   chapter: number;
   steps: readonly number[];
 }> = [
   { chapter: 1, steps: CHAPTER_01_STEPS },
-  { chapter: 2, steps: CHAPTER_02_STEPS },
-  { chapter: 3, steps: CHAPTER_03_STEPS },
-  { chapter: 4, steps: CHAPTER_04_STEPS },
-  { chapter: 5, steps: CHAPTER_05_CONSTANT_C_STEPS },
-  { chapter: 6, steps: CHAPTER_06_CLOCKS_STEPS },
-  { chapter: 7, steps: CHAPTER_05_STEPS },
-  { chapter: 8, steps: CHAPTER_08_TWIN_STEPS },
-  { chapter: 9, steps: CHAPTER_09_MASS_ENERGY_STEPS },
-  { chapter: 10, steps: CHAPTER_06_STEPS },
-  { chapter: 11, steps: CHAPTER_07_STEPS },
-  { chapter: 12, steps: CHAPTER_08_STEPS },
-  { chapter: 13, steps: CHAPTER_13_STEPS },
+  { chapter: 2, steps: CHAPTER_02_SPEED_OF_LIGHT_STEPS },
+  { chapter: 3, steps: CHAPTER_02_STEPS },
+  { chapter: 4, steps: CHAPTER_03_STEPS },
+  { chapter: 5, steps: CHAPTER_04_STEPS },
+  { chapter: 6, steps: CHAPTER_05_CONSTANT_C_STEPS },
+  { chapter: 7, steps: CHAPTER_06_CLOCKS_STEPS },
+  { chapter: 8, steps: CHAPTER_05_STEPS },
+  { chapter: 9, steps: CHAPTER_08_TWIN_STEPS },
+  { chapter: 10, steps: CHAPTER_09_MASS_ENERGY_STEPS },
+  { chapter: 11, steps: CHAPTER_06_STEPS },
+  { chapter: 12, steps: CHAPTER_07_STEPS },
+  { chapter: 13, steps: CHAPTER_08_STEPS },
+  { chapter: 14, steps: CHAPTER_14_STEPS },
 ];
 
 /** All site paths that should be prerendered at build time. */
@@ -56,6 +58,7 @@ export function stepPrerenderParams(
 
 export {
   CHAPTER_01_STEPS,
+  CHAPTER_02_SPEED_OF_LIGHT_STEPS,
   CHAPTER_02_STEPS,
   CHAPTER_03_STEPS,
   CHAPTER_04_STEPS,
