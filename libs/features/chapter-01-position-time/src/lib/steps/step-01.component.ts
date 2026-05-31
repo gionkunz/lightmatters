@@ -9,8 +9,9 @@ import {
   LmNarratorComponent,
   LmStepFrameComponent,
   LmDiagramViewportComponent,
-    TargetRegistry,
-  TimelineRunner
+  registerFeedbackStepContext,
+  TargetRegistry,
+  TimelineRunner,
 } from '@lm/engine';
 import { LmSliderComponent } from '@lm/design';
 import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
@@ -107,6 +108,7 @@ export class Step01Component implements OnInit, OnDestroy {
 });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     this.totalDurationMs = this.runner.getTotalDurationMs();
+    registerFeedbackStepContext(this.runner, 1, 1);
   }
 
   ngOnInit(): void {

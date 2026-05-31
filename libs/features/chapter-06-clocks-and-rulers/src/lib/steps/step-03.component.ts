@@ -15,6 +15,7 @@ import {
   LmDiagramViewportComponent,
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
+  registerFeedbackStepContext,
   TargetRegistry,
   TimelineRunner,
 } from '@lm/engine';
@@ -151,6 +152,7 @@ export class Step03Component implements OnInit, OnDestroy {
       initial: 0,
     });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
+    registerFeedbackStepContext(this.runner, 7, 3);
     this.totalDurationMs = this.runner.getTotalDurationMs();
 
     afterNextRender(() => {

@@ -1,0 +1,17 @@
+{
+  "name": "functions",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "functions",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/functions"],
+      "options": {
+        "jestConfig": "functions/jest.config.cts",
+        "passWithNoTests": false
+      }
+    }
+  }
+}

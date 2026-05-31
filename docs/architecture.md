@@ -40,11 +40,11 @@ At any moment, at most two visualization canvases are on screen — typically on
 - **Inline math:** **MathJax v4** (TeX input → CHTML output). Authors write `$...$` LaTeX directly in narrate strings; MathJax loads lazily from `/mathjax/` on first inline formula (not in the main bundle). Formulas render in MathJax's math font — distinct from EB Garamond narration.
 - **Monorepo / tooling:** **Nx** in classic **integrated monorepo** mode (`apps/` + `libs/`, single `package.json`, Nx-managed Angular projects). Scaffolded with `create-nx-workspace` using the `angular-monorepo` preset. The integrated layout gives us enforced module boundaries between engine / primitives / chapters via the `@nx/enforce-module-boundaries` lint rule, `nx affected` graphs for fast CI, generators for new chapters and primitives, and a single source for tooling versions.
 - **Build:** Nx-driven Angular build with build-time prerendering (SSG). Deploy artifact: `dist/apps/lightmatters/browser/`.
-- **Hosting:** **Cloudflare Pages** via native GitHub integration, custom domain `lightmatters.app`. Pure static assets — no Workers runtime.
+- **Hosting:** **Cloudflare Pages** via native GitHub integration, custom domain `lightmatters.app`. Static SSG assets plus one auto-discovered Pages Function for user feedback (`POST /api/feedback`).
 
 Deliberate non-choices:
 
-- No backend at first. The entire product is a static site. If we later need analytics, accounts, or saved progress, those are additive and live behind a small API.
+- No general-purpose backend. Aside from the feedback endpoint and its D1 database, the product remains a static site. Analytics, accounts, or saved progress would be additive behind separate APIs.
 - **SSG, not runtime SSR.** Every known route is prerendered to HTML at build time (`outputMode: "static"`). There is no on-demand server renderer in production — Cloudflare Pages serves flat files.
 - No state management library beyond Angular signals. The engine itself is the source of truth for what is animating; UI components subscribe to it.
 
@@ -381,7 +381,13 @@ Fully responsive interaction design is deferred past v1.
   - `_redirects` — chapter index/placeholder → first step at the edge (e.g. `/chapter/13` → `/chapter/13/step/1`); SPA fallback `/* /index.html 200` for unprerendered paths. Optional courtesy redirects from legacy `/ch/0N/...` to `/chapter/N/...`.
 - Custom domain: `lightmatters.app`.
 - A single deployment target initially.
-- No backend, no database, no runtime server in production.
+- **Feedback API (Pages Functions + D1):** repo-root `functions/api/feedback.ts` maps to `POST /api/feedback` via file-based routing (the `/functions` directory lives at the **Pages project root**, not inside `dist/`). All setup can be done with Wrangler (no dashboard required):
+  1. `npx wrangler login`
+  2. `npx wrangler d1 create lightmatters-feedback` — copy the printed `database_id` into `wrangler.jsonc` under `d1_databases` (binding `FEEDBACK_DB`).
+  3. `npx wrangler d1 execute lightmatters-feedback --file=db/feedback.sql --remote` (and `--local` for Miniflare during `pages dev`).
+  4. `npx nx build lightmatters --tui=false` then `npx wrangler pages dev dist/apps/lightmatters/browser` (Wrangler reads `wrangler.jsonc` bindings automatically).
+  5. Production/preview: Git push still deploys static + Functions; ensure the Pages project uses the repo-root `wrangler.jsonc` (or mirror the D1 binding in dashboard **Settings → Functions → Bindings** if the dashboard remains source of truth).
+  Regenerate Worker types after config changes: `npx wrangler types --path='./functions/types.d.ts'`. Optional `_routes.json` in `apps/lightmatters/public/` excludes hashed static assets from Function invocations. **Privacy:** no accounts; optional user-provided name only; submissions store message, category, route, theme, playback context (chapter/step/checkpoint when registered), server timestamp, and User-Agent — no cookies or tracking IDs.
 - CI runs `nx affected -t lint test build` on every push; full `nx run-many -t ...` on main.
 
 ### Prerender safety

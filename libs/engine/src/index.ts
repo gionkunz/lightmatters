@@ -38,3 +38,4 @@ export { chapterStepHref, parseStepUrl } from './lib/components/step-url';
 export type { ParsedStepUrl } from './lib/components/step-url';
 export { LmPlaybackControlsComponent } from './lib/components/lm-playback-controls.component';
 export { LmPlaybackBarComponent } from './lib/components/lm-playback-bar.component';
+export { registerFeedbackStepContext } from './lib/feedback/register-feedback-step-context';

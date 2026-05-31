@@ -5,11 +5,12 @@ import {
   OnInit
 } from '@angular/core';
 import {
+  LmDiagramViewportComponent,
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
-  LmDiagramViewportComponent,
-    TargetRegistry,
-  TimelineRunner
+  registerFeedbackStepContext,
+  TargetRegistry,
+  TimelineRunner,
 } from '@lm/engine';
 import { LmKickerComponent } from '@lm/design';
 import { buildRelativisticPeriodicEmissions } from '@lm/physics';
@@ -123,6 +124,7 @@ export class Step05Component implements OnInit, OnDestroy {
 
   constructor() {
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
+    registerFeedbackStepContext(this.runner, this.chapterRoute, 5);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
 

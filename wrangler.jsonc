@@ -1,0 +1,12 @@
+{
+  "name": "lightmatters",
+  "pages_build_output_dir": "./dist/apps/lightmatters/browser",
+  "compatibility_date": "2025-05-31",
+  "d1_databases": [
+    {
+      "binding": "FEEDBACK_DB",
+      "database_name": "lightmatters-feedback",
+      "database_id": "ee4b5f29-30ff-44db-8d4f-6db2457cf02f",
+    },
+  ],
+}

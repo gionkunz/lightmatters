@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import {
   LmNarratorChatFeedComponent,
   LmStepFrameComponent,
+  registerFeedbackStepContext,
   TargetRegistry,
   TimelineRunner,
 } from '@lm/engine';
@@ -94,6 +95,7 @@ export class Step06Component implements OnInit, OnDestroy {
 
   constructor() {
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
+    registerFeedbackStepContext(this.runner, this.chapterRoute, 6);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
 

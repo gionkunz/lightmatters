@@ -1,4 +1,17 @@
 export { ThemeService, type ThemeName } from './lib/theme/theme.service';
+export {
+  FeedbackContextService,
+  type FeedbackStepContext,
+} from './lib/feedback/feedback-context.service';
+export {
+  FeedbackService,
+  FEEDBACK_CATEGORIES,
+  type FeedbackCategory,
+  type FeedbackSubmitInput,
+  type FeedbackSubmitResult,
+  type FeedbackPayload,
+} from './lib/feedback/feedback.service';
+export { LmFeedbackFabComponent } from './lib/components/lm-feedback-fab.component';
 export { AudioService } from './lib/audio/audio.service';
 export { type SoundType, type SoundPlayOptions } from './lib/audio/sound-types';
 export {

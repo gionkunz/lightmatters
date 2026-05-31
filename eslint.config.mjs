@@ -8,7 +8,8 @@ export default [
       "ignores": [
         "**/dist",
         "**/vite.config.*.timestamp*",
-        "**/vitest.config.*.timestamp*"
+        "**/vitest.config.*.timestamp*",
+        "functions/types.d.ts"
       ]
   },
   {

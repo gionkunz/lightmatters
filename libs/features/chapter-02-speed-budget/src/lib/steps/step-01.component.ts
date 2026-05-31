@@ -6,11 +6,12 @@ import {
   signal
 } from '@angular/core';
 import {
+  LmDiagramViewportComponent,
   LmNarratorComponent,
   LmStepFrameComponent,
-  LmDiagramViewportComponent,
-    TargetRegistry,
-  TimelineRunner
+  registerFeedbackStepContext,
+  TargetRegistry,
+  TimelineRunner,
 } from '@lm/engine';
 import { LmSliderComponent } from '@lm/design';
 import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
@@ -108,6 +109,7 @@ export class Step01Component implements OnInit, OnDestroy {
       initial: 0
 });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
+    registerFeedbackStepContext(this.runner, 3, 1);
     this.totalDurationMs = this.runner.getTotalDurationMs();
   }
 
