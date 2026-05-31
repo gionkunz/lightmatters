@@ -13,11 +13,14 @@ import { ViewportResolutionHintService } from '../viewport/viewport-resolution-h
         role="alertdialog"
         aria-modal="true"
         aria-label="Light Matters — desktop experience required"
-        class="fixed inset-0 z-[100] flex min-h-dvh flex-col items-center justify-center bg-paper px-6 py-10"
+        class="lm-scrollbar fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-paper"
       >
         <div
-          class="flex w-full max-w-[22rem] flex-col items-center text-center sm:max-w-md"
+          class="flex min-h-dvh w-full flex-col items-center justify-center pl-[max(1.5rem,env(safe-area-inset-left))] pr-[max(1.5rem,env(safe-area-inset-right))] pt-[max(2rem,env(safe-area-inset-top))] pb-[max(2rem,env(safe-area-inset-bottom))] sm:pt-10 sm:pb-10"
         >
+          <div
+            class="flex w-full max-w-[22rem] flex-col items-center text-center sm:max-w-md"
+          >
           <lm-wordmark [size]="40" class="mb-3 block" />
           <p
             class="font-serif text-[length:var(--lm-text-button-sm)] italic leading-snug text-ink opacity-[0.78]"
@@ -66,6 +69,7 @@ import { ViewportResolutionHintService } from '../viewport/viewport-resolution-h
           >
             lightmatters.app
           </p>
+          </div>
         </div>
       </div>
     }
