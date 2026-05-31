@@ -10,7 +10,7 @@ export const STEP_06_SYNCHRONIZED: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'Recall the rule from Chapter 3: **a wavefront is always perpendicular to its direction of travel.** Light cannot move obliquely — wavelets are circles, never ellipses.',
+      text: 'Recall the rule from Chapter 4: **a wavefront is always perpendicular to its direction of travel.** Light cannot move obliquely — wavelets are circles, never ellipses.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     { type: 'sound', sound: 'expand', volume: 0.45 },

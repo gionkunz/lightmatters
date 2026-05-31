@@ -10,6 +10,11 @@ export const STEP_03_FRAME_SWITCH: Step = {
   timeline: [
     {
       type: 'narrate',
+      text: 'A **frame of reference** is simply a point of view that calls **itself** at rest — whoever is standing still in that picture. From here on we will switch frames freely.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
       text: 'Now climb aboard $B$ and call **yourself** the one at rest. From here it is $A$ who slides away — to the left at $0.5\\,c$.',
       pauseAfter: BEAT_PAUSE_MS,
     },
@@ -24,7 +29,7 @@ export const STEP_03_FRAME_SWITCH: Step = {
     },
     {
       type: 'narrate',
-      text: 'And the experiment answers honestly: in $B$\'s frame the wavefront is *also* a perfect circle, expanding at $c$ — centred on **$B$**. The light never picked a favourite.',
+      text: 'And the experiment answers honestly: in $B$\'s frame the wavefront is *also* a perfect circle, expanding at $c$ — centred on **$B$**. That is the **principle of relativity**: no experiment can crown one inertial observer "truly at rest," so $B$\'s frame is as valid as $A$\'s — and $c$ is the same in both.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -35,6 +40,11 @@ export const STEP_03_FRAME_SWITCH: Step = {
     {
       type: 'narrate',
       text: 'To keep $c$ fixed, a moving clock must run **slow**, a moving ruler must **shrink**, and the two cannot even agree on what counts as "now". Constancy of $c$ does not sit beside those effects — it **forces** them.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'Drag $B$\'s speed and watch: the sphere stays centred on $B$ no matter what. The light never picked a favourite.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

@@ -39,3 +39,12 @@ export type { ParsedStepUrl } from './lib/components/step-url';
 export { LmPlaybackControlsComponent } from './lib/components/lm-playback-controls.component';
 export { LmPlaybackBarComponent } from './lib/components/lm-playback-bar.component';
 export { registerFeedbackStepContext } from './lib/feedback/register-feedback-step-context';
+export {
+  CHAPTER_ROUTE_BY_TOPIC,
+  CHAPTER_MIN,
+  CHAPTER_MAX,
+  CHAPTER_ROUTE_NUMBERS,
+  getChapterRouteForTopic,
+  type ChapterTopicSlug,
+  type ChapterRouteNumber,
+} from './lib/chapter-route-map';

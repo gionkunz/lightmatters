@@ -29,7 +29,7 @@ export const STEP_02_MOVING_CLOCK: Step = {
     },
     {
       type: 'narrate',
-      text: 'This is the concrete mechanism behind the Chapter 2 speed budget: motion through space steals from motion through time. The tick readout shows the Lorentz factor directly.',
+      text: 'This is the concrete mechanism behind the Chapter 3 speed budget: motion through space steals from motion through time. The tick readout shows the Lorentz factor directly.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

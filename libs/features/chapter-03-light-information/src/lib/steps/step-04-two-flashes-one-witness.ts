@@ -58,17 +58,32 @@ export const STEP_04_TWO_FLASHES_ONE_WITNESS: Step = {
     },
     {
       type: 'narrate',
-      text: 'Switch to $W$\'s own frame. $W$ considers itself **at rest** and still **equidistant** from both sources. From that vantage, the flashes genuinely did **not** happen at the same instant — not because $W$ "moved into" one flash, but because simultaneity itself is relative. Every observer is equally entitled to their own rest frame.',
+      text: 'Flip the frame toggle to stand in $W$\'s shoes — $W$ is **at rest**, exactly **halfway** between the sources. The timing control starts on the naïve guess: both flashes fired at the **same instant**.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
-      text: 'When you ask "when did this happen?" — the answer depends on who is moving. Chapter 4 will show why you cannot subtract motion from $c$ and restore a single universal "now."',
+      text: 'Watch what breaks. Equidistant light from a single instant would reach $W$ **together** — one merged flash. But you just saw the right flash arrive **first**. Both frames must agree on what $W$ witnessed.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'The only escape: the flashes were **not** simultaneous for $W$ — the right source fired **earlier**. Switch the timing to **staggered** and the right-then-left order returns.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'When you ask "when did this happen?" — the answer depends on who is moving. Chapter 5 will show why you cannot subtract motion from $c$ and restore a single universal "now."',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
       text: 'This is **the relativity of simultaneity**.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'Yet one thing never budged: $W$ met the right flash **first** in every frame. *When* the flashes fired is relative — but the **order** $W$ witnesses them is not. Simultaneity bends; cause and effect hold firm.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

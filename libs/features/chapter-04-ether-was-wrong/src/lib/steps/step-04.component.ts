@@ -74,7 +74,40 @@ import { STEP_04_MOVING_SOURCE } from './step-04-moving-source';
         </div>
         <div class="flex min-h-0 flex-col">
           <div class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]">
-            <lm-kicker [opacity]="0.55" class="mb-3.5">S moving at 0.4 c · pulse anchored at birth</lm-kicker>
+            <div class="mb-3.5 flex items-baseline justify-between gap-4">
+              <lm-kicker [opacity]="0.55">S moving at 0.4 c · pulse anchored at birth</lm-kicker>
+              <div
+                class="flex items-center gap-4 font-mono text-[length:var(--lm-text-mono-sm)] uppercase tracking-wider opacity-75"
+              >
+                <span class="flex items-center gap-1.5">
+                  <svg width="22" height="6" aria-hidden="true">
+                    <line
+                      x1="0"
+                      y1="3"
+                      x2="22"
+                      y2="3"
+                      class="stroke-ink"
+                      stroke-width="1.6"
+                    />
+                  </svg>
+                  actual · c
+                </span>
+                <span class="flex items-center gap-1.5 text-accent-1">
+                  <svg width="22" height="6" aria-hidden="true">
+                    <line
+                      x1="0"
+                      y1="3"
+                      x2="22"
+                      y2="3"
+                      class="stroke-accent-1"
+                      stroke-width="1.6"
+                      stroke-dasharray="4 4"
+                    />
+                  </svg>
+                  emission theory · c + v
+                </span>
+              </div>
+            </div>
             <div class="flex min-h-0 flex-1 items-center justify-center">
               <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
                 <lm-light-scene
@@ -84,6 +117,8 @@ import { STEP_04_MOVING_SOURCE } from './step-04-moving-source';
                 [extent]="0.95"
                 [observers]="[]"
                 [sources]="sources"
+                [showEmissionTheoryGhost]="true"
+                [showSourceEmissionOrigins]="true"
               />
               </lm-diagram-viewport>
             </div>

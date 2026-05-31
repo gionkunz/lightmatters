@@ -10,7 +10,7 @@ export const STEP_01_PULSE_TICKS: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'Chapter 4 showed that each flash expands at $c$ regardless of source motion. Now: a source that **pulses** — a regular rhythm of flashes, like a clock.',
+      text: 'Chapter 6 showed that each flash expands at $c$ regardless of source motion. Now: a source that **pulses** — a regular rhythm of flashes, like a clock.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

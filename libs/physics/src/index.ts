@@ -8,6 +8,7 @@ export * from './lib/speed-of-light';
 export * from './lib/traveller-readout';
 export * from './lib/worldline-proper-time';
 export * from './lib/twin-readout';
+export * from './lib/twin-proper-times';
 export * from './lib/signal-reception';
 export * from './lib/light-scene';
 export * from './lib/ether-field';

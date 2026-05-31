@@ -20,7 +20,7 @@ export const STEP_06_PAYOFF: Step = {
     },
     {
       type: 'narrate',
-      text: 'Mass is simply energy that is standing still — bottled spacetime motion, the rest energy of Chapter 2 given a name.',
+      text: 'Mass is simply energy that is standing still — bottled spacetime motion, the rest energy of Chapter 3 given a name.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

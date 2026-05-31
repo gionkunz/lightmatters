@@ -15,6 +15,8 @@ export interface StepEntry {
 export const CHAPTER_02_TOTAL_STEPS = 11;
 
 export const CHAPTER_02_TITLE = 'The speed budget';
+/** Journey URL chapter (`/chapter/3/...`). */
+export const CHAPTER_02_SPEED_BUDGET_ROUTE_NUMBER = 3;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_ALWAYS_AT_C, component: Step01Component }],

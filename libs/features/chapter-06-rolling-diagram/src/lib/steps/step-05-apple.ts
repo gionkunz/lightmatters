@@ -48,7 +48,7 @@ export const STEP_05_APPLE: Step = {
     },
     {
       type: 'narrate',
-      text: 'Next we compose the full gravity well — cylinder, cone, and the weightless center of the Earth. Chapter 11 awaits.',
+      text: 'Next we compose the full gravity well — cylinder, cone, and the weightless center of the Earth. Chapter 12 awaits.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

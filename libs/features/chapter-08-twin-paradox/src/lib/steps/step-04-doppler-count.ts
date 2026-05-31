@@ -15,7 +15,12 @@ export const STEP_04_DOPPLER_COUNT: Step = {
     },
     {
       type: 'narrate',
-      text: 'Each pulse is a beam of light — a 45° line on the diagram. Going out, the gap between arrivals stretches (redshift); coming back, it compresses (blueshift).',
+      text: 'Each pulse is a beam of light — a **45° line** on this diagram. That is a different convention from the speed-budget pictures earlier, where light lay flat along the space axis: here we plot coordinate time and space together, so light runs at 45°.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'Going out, the gap between arrivals stretches (redshift); coming back, it compresses (blueshift).',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -30,7 +35,12 @@ export const STEP_04_DOPPLER_COUNT: Step = {
     },
     {
       type: 'narrate',
-      text: 'Count them up and the totals land exactly where the proper time said they would: $B$ aged 8 years, $A$ aged 10. The light delay on the return signal **is** the asymmetry, made visible.',
+      text: 'Drag the traveller\'s speed and watch the proper-time totals and pulse counts move together — at $0.6\\,c$ the split lands near eight years versus ten, but you can discover the numbers yourself.',
+      pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'narrate',
+      text: 'The light delay on the return signal **is** the asymmetry, made visible.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

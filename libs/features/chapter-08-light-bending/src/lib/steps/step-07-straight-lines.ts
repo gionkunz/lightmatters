@@ -39,7 +39,7 @@ export const STEP_07_STRAIGHT_LINES: Step = {
     },
     {
       type: 'narrate',
-      text: 'The clocks alone would bend light by only **half** the measured amount. Einstein\'s full picture also curves **space** itself — both halves together. We will go deeper into that geometry later.',
+      text: 'The clocks gave us the **time-curvature** half we promised at the opening. Here is the **spatial** half: Einstein\'s full picture also curves **space** itself — both halves together give the measured bend. Not a correction to the clock story; the other piece we set aside on purpose.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

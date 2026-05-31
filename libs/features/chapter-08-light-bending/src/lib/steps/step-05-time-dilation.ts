@@ -10,7 +10,7 @@ export const STEP_05_TIME_DILATION: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'A clock placed near the mass ticks **more slowly** than one far away. Same lesson as the speed budget in Chapter 2 — only this time it is **gravity** stealing time from space.',
+      text: 'A clock placed near the mass ticks **more slowly** than one far away. Same lesson as the speed budget in Chapter 3 — only this time it is **gravity** stealing time from space.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

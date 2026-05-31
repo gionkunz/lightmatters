@@ -14,7 +14,7 @@ import {
   TargetRegistry,
   TimelineRunner,
 } from '@lm/engine';
-import { LmFactLineComponent, LmKickerComponent, LmSliderComponent } from '@lm/design';
+import { LmFactLineComponent, LmKickerComponent, LmSliderComponent, LmDerivationComponent } from '@lm/design';
 import { massEnergyEquivalent } from '@lm/physics';
 import { BalanceBeamComponent } from '../visuals/balance-beam.component';
 import {
@@ -28,7 +28,7 @@ import {
   CHAPTER_09_MASS_ENERGY_TOTAL_STEPS,
   hasNextStep,
 } from '../step-registry';
-import { STEP_05_BALANCE } from './step-05-balance';
+import { STEP_05_BALANCE, STEP_05_DERIVATION_FRAMES } from './step-05-balance';
 
 @Component({
   selector: 'lm-ch9-mass-energy-step-05',
@@ -41,6 +41,7 @@ import { STEP_05_BALANCE } from './step-05-balance';
     LmFactLineComponent,
     LmKickerComponent,
     SymbolLegendComponent,
+    LmDerivationComponent,
   ],
   template: `
     <lm-step-frame
@@ -86,6 +87,12 @@ import { STEP_05_BALANCE } from './step-05-balance';
             <lm-kicker [opacity]="0.55" class="mb-3.5">
               moments balance · M·Δx = m·L
             </lm-kicker>
+            <div class="mb-4 flex justify-center">
+              <lm-derivation
+                [frames]="derivationFrames"
+                [playhead]="derivationFrame()"
+              />
+            </div>
             <div class="flex min-h-0 flex-1 items-center justify-center">
               <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
                 <lm-balance-beam
@@ -130,11 +137,13 @@ export class Step05Component implements OnInit, OnDestroy {
   private readonly registry = new TargetRegistry();
 
   protected readonly step = STEP_05_BALANCE;
+  protected readonly derivationFrames = STEP_05_DERIVATION_FRAMES;
   protected readonly chapterRoute = CHAPTER_09_MASS_ENERGY_ROUTE_NUMBER;
   protected readonly chapterTitle = CHAPTER_09_MASS_ENERGY_TITLE;
   protected readonly stepsTotal = CHAPTER_09_MASS_ENERGY_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;
   protected readonly energy = signal(DEFAULT_PHOTON_ENERGY);
+  protected readonly derivationFrame = signal(0);
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
 
@@ -153,6 +162,11 @@ export class Step05Component implements OnInit, OnDestroy {
   );
 
   constructor() {
+    this.registry.register('derivation.frame', {
+      get: () => this.derivationFrame(),
+      set: (v) => this.derivationFrame.set(v),
+      initial: 0,
+    });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     registerFeedbackStepContext(this.runner, this.chapterRoute, 5);
     this.totalDurationMs = this.runner.getTotalDurationMs();

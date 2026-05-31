@@ -17,6 +17,8 @@ export interface StepEntry {
 export const CHAPTER_01_TOTAL_STEPS = 6;
 
 export const CHAPTER_01_TITLE = 'Position, time, spacetime';
+/** Journey URL chapter (`/chapter/1/...`). */
+export const CHAPTER_01_POSITION_TIME_ROUTE_NUMBER = 1;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_POSITION, component: Step01Component }],

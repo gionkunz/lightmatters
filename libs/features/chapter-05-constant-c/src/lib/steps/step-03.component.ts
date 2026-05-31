@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   HostListener,
   OnDestroy,
   OnInit,
@@ -13,7 +14,7 @@ import {
   TargetRegistry,
   TimelineRunner,
 } from '@lm/engine';
-import { LmKickerComponent } from '@lm/design';
+import { LmKickerComponent, LmSliderComponent } from '@lm/design';
 import {
   LmLightSceneComponent,
   type LightSceneObserver,
@@ -40,6 +41,7 @@ import { STEP_03_FRAME_SWITCH } from './step-03-frame-switch';
     LmNarratorChatFeedComponent,
     LmLightSceneComponent,
     LmKickerComponent,
+    LmSliderComponent,
   ],
   template: `
     <lm-step-frame
@@ -78,22 +80,33 @@ import { STEP_03_FRAME_SWITCH } from './step-03-frame-switch';
             [visibleCount]="runner.narrationVisibleCount()"
           />
         </div>
-        <div class="flex min-h-0 flex-col bg-paper-alt px-[26px] py-[22px]">
-          <lm-kicker [opacity]="0.55" class="mb-3.5">
-            B's frame · centred on B
-          </lm-kicker>
-          <div class="flex min-h-0 flex-1 items-center justify-center">
-            <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
-              <lm-light-scene
-                [width]="diagramVp.size().width"
-                [height]="diagramVp.size().height"
-                [time]="time()"
-                [extent]="extent"
-                [fixedViewBox]="true"
-                [observers]="observers"
-                [sources]="sources"
-              />
-            </lm-diagram-viewport>
+        <div class="flex min-h-0 flex-col">
+          <div class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] py-[22px]">
+            <lm-kicker [opacity]="0.55" class="mb-3.5">
+              B's frame · centred on B
+            </lm-kicker>
+            <div class="flex min-h-0 flex-1 items-center justify-center">
+              <lm-diagram-viewport #diagramVp [aspectRatio]="560 / 380">
+                <lm-light-scene
+                  [width]="diagramVp.size().width"
+                  [height]="diagramVp.size().height"
+                  [time]="time()"
+                  [extent]="extent"
+                  [fixedViewBox]="true"
+                  [observers]="observers()"
+                  [sources]="sources"
+                />
+              </lm-diagram-viewport>
+            </div>
+          </div>
+          <div class="mt-[22px] border-t border-ink-faint pt-[22px]">
+            <lm-slider
+              label="v / c"
+              [value]="vOverC()"
+              accent="accent-2"
+              [disabled]="!runner.atExplorationWait()"
+              (valueChange)="onVOverCChange($event)"
+            />
           </div>
         </div>
       </div>
@@ -110,13 +123,25 @@ export class Step03Component implements OnInit, OnDestroy {
   protected readonly hasNextStep = hasNextStep;
   protected readonly extent = SCENE_EXTENT;
 
-  protected readonly observers: LightSceneObserver[] = [
-    { id: 'b', x: 0, y: 0, label: 'B', color: 'accent-2' },
-    { id: 'a', x: 0, y: 0, label: 'A', color: 'accent-1', velocity: { x: -B_SPEED, y: 0 } },
-  ];
   protected readonly sources: LightSceneSource[] = [
     { id: 'flash', x: 0, y: 0, emissions: [FLASH_EMISSION] },
   ];
+
+  protected readonly vOverC = signal(B_SPEED);
+  protected readonly observers = computed<LightSceneObserver[]>(() => {
+    const v = this.vOverC();
+    return [
+      { id: 'b', x: 0, y: 0, label: 'B', color: 'accent-2' },
+      {
+        id: 'a',
+        x: 0,
+        y: 0,
+        label: 'A',
+        color: 'accent-1',
+        velocity: { x: -v, y: 0 },
+      },
+    ];
+  });
 
   protected readonly time = signal(0);
   protected readonly runner: TimelineRunner;
@@ -127,6 +152,11 @@ export class Step03Component implements OnInit, OnDestroy {
       get: () => this.time(),
       set: (v) => this.time.set(v),
       initial: 0,
+    });
+    this.registry.register('B.vOverC', {
+      get: () => this.vOverC(),
+      set: (v) => this.vOverC.set(v),
+      initial: B_SPEED,
     });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     registerFeedbackStepContext(this.runner, this.chapterRoute, 3);
@@ -140,6 +170,12 @@ export class Step03Component implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.runner.destroy();
     this.registry.clear();
+  }
+
+  protected onVOverCChange(value: number): void {
+    if (this.runner.atExplorationWait()) {
+      this.vOverC.set(value);
+    }
   }
 
   @HostListener('document:keydown', ['$event'])

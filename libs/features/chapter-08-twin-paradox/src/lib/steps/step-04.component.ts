@@ -1,4 +1,11 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  computed,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {
   LmDiagramViewportComponent,
   LmNarratorChatFeedComponent,
@@ -7,13 +14,15 @@ import {
   TargetRegistry,
   TimelineRunner,
 } from '@lm/engine';
-import { LmFactLineComponent, LmKickerComponent } from '@lm/design';
+import { LmFactLineComponent, LmKickerComponent, LmSliderComponent } from '@lm/design';
 import { LmSpacetimeDiagramComponent } from '@lm/spacetime-diagram';
-import { twinReadout } from '@lm/physics';
 import {
-  STAY_HOME_PROPER_YEARS,
-  TRAVELLER_PROPER_YEARS,
+  twinProperTimes,
+  twinReadout,
+} from '@lm/physics';
+import {
   TWIN_TURNAROUND,
+  TWIN_TOTAL_YEARS,
   TWIN_V_OVER_C,
 } from '../twin.constants';
 import {
@@ -33,6 +42,7 @@ import { STEP_04_DOPPLER_COUNT } from './step-04-doppler-count';
     LmSpacetimeDiagramComponent,
     LmFactLineComponent,
     LmKickerComponent,
+    LmSliderComponent,
   ],
   template: `
     <lm-step-frame
@@ -84,32 +94,43 @@ import { STEP_04_DOPPLER_COUNT } from './step-04-doppler-count';
                   [width]="diagramVp.size().width"
                   [height]="diagramVp.size().height"
                   variant="twin"
-                  [twinVOverC]="vOverC"
+                  [twinVOverC]="vOverC()"
                   [twinTurnaround]="turnaround"
                   [twinProgress]="1"
                   [twinShowPulses]="true"
-                  [twinPulseCount]="6"
+                  [twinPulseCount]="pulseCount()"
                 />
               </lm-diagram-viewport>
             </div>
           </div>
-          <div
-            class="mt-[22px] grid grid-cols-3 gap-x-6 gap-y-2 border-t border-ink-faint pt-[22px]"
-          >
-            <lm-fact-line
-              label="A · stay-at-home"
-              [value]="readout.stayHomeLabel"
-              accent="accent-1"
-            />
-            <lm-fact-line
-              label="B · traveller"
-              [value]="readout.travellerLabel"
+          <div class="mt-[22px] space-y-5 border-t border-ink-faint pt-[22px]">
+            <lm-slider
+              label="v / c"
+              [value]="vOverC()"
               accent="accent-2"
+              [disabled]="!runner.atExplorationWait()"
+              (valueChange)="onVOverCChange($event)"
             />
-            <lm-fact-line
-              label="age difference"
-              [value]="readout.differenceLabel"
-            />
+            <div class="grid grid-cols-2 gap-x-6 gap-y-2">
+              <lm-fact-line
+                label="A · stay-at-home"
+                [value]="readout().stayHomeLabel"
+                accent="accent-1"
+              />
+              <lm-fact-line
+                label="B · traveller"
+                [value]="readout().travellerLabel"
+                accent="accent-2"
+              />
+              <lm-fact-line
+                label="age difference"
+                [value]="readout().differenceLabel"
+              />
+              <lm-fact-line
+                label="pulses counted"
+                [value]="pulseCountLabel()"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -124,17 +145,34 @@ export class Step04Component implements OnInit, OnDestroy {
   protected readonly chapterTitle = CHAPTER_08_TWIN_TITLE;
   protected readonly stepsTotal = CHAPTER_08_TWIN_TOTAL_STEPS;
   protected readonly hasNextStep = hasNextStep;
-  protected readonly vOverC = TWIN_V_OVER_C;
   protected readonly turnaround = TWIN_TURNAROUND;
-  protected readonly readout = twinReadout(
-    STAY_HOME_PROPER_YEARS,
-    TRAVELLER_PROPER_YEARS,
-  );
+
+  protected readonly vOverC = signal(TWIN_V_OVER_C);
+  protected readonly pulseCount = computed(() => TWIN_TOTAL_YEARS);
+  protected readonly readout = computed(() => {
+    const { stayHomeYears, travellerYears } = twinProperTimes(
+      TWIN_TOTAL_YEARS,
+      this.vOverC(),
+    );
+    return twinReadout(stayHomeYears, travellerYears);
+  });
+  protected readonly pulseCountLabel = computed(() => {
+    const { stayHomeYears, travellerYears } = twinProperTimes(
+      TWIN_TOTAL_YEARS,
+      this.vOverC(),
+    );
+    return `A←${Math.round(travellerYears)} · B←${Math.round(stayHomeYears)}`;
+  });
 
   protected readonly runner: TimelineRunner;
   protected readonly totalDurationMs: number;
 
   constructor() {
+    this.registry.register('turnaround.vOverC', {
+      get: () => this.vOverC(),
+      set: (v) => this.vOverC.set(v),
+      initial: TWIN_V_OVER_C,
+    });
     this.runner = new TimelineRunner(this.step.timeline, this.registry);
     registerFeedbackStepContext(this.runner, this.chapterRoute, 4);
     this.totalDurationMs = this.runner.getTotalDurationMs();
@@ -147,6 +185,12 @@ export class Step04Component implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.runner.destroy();
     this.registry.clear();
+  }
+
+  protected onVOverCChange(value: number): void {
+    if (this.runner.atExplorationWait()) {
+      this.vOverC.set(value);
+    }
   }
 
   @HostListener('document:keydown', ['$event'])

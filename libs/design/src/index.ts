@@ -35,3 +35,7 @@ export {
   LmPredictionChoiceComponent,
   type PredictionOption,
 } from './lib/components/lm-prediction-choice.component';
+export {
+  LmDerivationComponent,
+  type DerivationFrame,
+} from './lib/components/lm-derivation.component';

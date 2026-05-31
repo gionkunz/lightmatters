@@ -16,6 +16,8 @@ export interface StepEntry {
 
 export const CHAPTER_06_CLOCKS_TOTAL_STEPS = 4;
 export const CHAPTER_06_CLOCKS_TITLE = 'Clocks & rulers';
+/** Journey URL chapter (`/chapter/7/...`). */
+export const CHAPTER_06_CLOCKS_ROUTE_NUMBER = 7;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_LIGHT_CLOCK_AT_REST, component: Step01Component }],

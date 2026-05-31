@@ -70,6 +70,16 @@ interface SourceRender {
   readonly label: string;
 }
 
+interface OriginConnector {
+  readonly id: string;
+  readonly x1: number;
+  readonly y1: number;
+  readonly x2: number;
+  readonly y2: number;
+  readonly ox: number;
+  readonly oy: number;
+}
+
 /**
  * Top-down 2-D space scene for Chapter 3+.
  *
@@ -86,6 +96,40 @@ interface SourceRender {
       [attr.viewBox]="svgViewBox()"
       class="block"
     >
+      @for (line of originConnectors(); track line.id) {
+        <line
+          [attr.x1]="line.x1"
+          [attr.y1]="line.y1"
+          [attr.x2]="line.x2"
+          [attr.y2]="line.y2"
+          class="stroke-ink"
+          stroke-width="1"
+          stroke-dasharray="2 3.5"
+          stroke-linecap="round"
+          opacity="0.4"
+        />
+        <circle
+          [attr.cx]="line.ox"
+          [attr.cy]="line.oy"
+          r="2.5"
+          class="fill-ink"
+          opacity="0.45"
+        />
+      }
+
+      @for (ghost of ghostPulses(); track ghost.id) {
+        <circle
+          [attr.cx]="ghost.cx"
+          [attr.cy]="ghost.cy"
+          [attr.r]="ghost.r"
+          class="stroke-accent-1"
+          fill="none"
+          stroke-width="1.3"
+          stroke-dasharray="4 4"
+          [attr.opacity]="ghost.opacity"
+        />
+      }
+
       @for (pulse of pulses(); track pulse.id) {
         <circle
           [attr.cx]="pulse.cx"
@@ -166,6 +210,25 @@ export class LmLightSceneComponent {
   readonly fixedViewBox = input(false);
   /** Speed of light in scene units per scene-time unit. Default 1. */
   readonly c = input(1);
+  /**
+   * Draw a dotted connector from each moving observer back to its starting origin
+   * (its position at t = 0), so the path it has travelled is visible.
+   */
+  readonly showObserverOrigins = input(false);
+  /**
+   * Draw a dotted connector from each moving source to the emission origin of each
+   * of its pulses (the centre of that wavefront), so it is clear the circle is
+   * anchored where the flash was born even after the source has moved on.
+   */
+  readonly showSourceEmissionOrigins = input(false);
+  /**
+   * Draw the (wrong) emission-theory prediction as a dashed "ghost" wavefront:
+   * a circle of the same radius as the real pulse, but centred on the source's
+   * *current* position — i.e. as if the light were dragged along with the source
+   * and its leading edge raced ahead at c + v. The real pulse stays anchored at
+   * the birth point, so the two visibly diverge.
+   */
+  readonly showEmissionTheoryGhost = input(false);
 
   // Per-observer position overrides (timeline target friendly).
   // Map of `<id>` → `{ x?: number; y?: number }`.
@@ -286,6 +349,36 @@ export class LmLightSceneComponent {
     return out;
   });
 
+  /**
+   * Emission-theory "ghost" wavefronts: same radius as the real pulse, but centred
+   * on the source's *current* position (as if the light rode along with the source).
+   */
+  protected readonly ghostPulses = computed<PulseRender[]>(() => {
+    if (!this.showEmissionTheoryGhost()) return [];
+    const t = this.time();
+    const c = this.c();
+    const u = this.unit();
+    const out: PulseRender[] = [];
+    for (const src of this.sources()) {
+      const v = src.velocity ?? { x: 0, y: 0 };
+      const cx = src.x + v.x * t;
+      const cy = src.y + v.y * t;
+      for (const emission of src.emissions) {
+        const r = lightCircleRadius(emission.atTime, t, c);
+        if (r <= 0) continue;
+        const center = this.toPx(cx, cy);
+        out.push({
+          id: `ghost:${src.id}|${emission.pulseId}`,
+          cx: center.x,
+          cy: center.y,
+          r: r * u,
+          opacity: 0.6,
+        });
+      }
+    }
+    return out;
+  });
+
   protected readonly renderedSources = computed<SourceRender[]>(() => {
     const t = this.time();
     return this.sources().map((src) => {
@@ -322,6 +415,64 @@ export class LmLightSceneComponent {
         received: receivedSet.has(obs.id),
       };
     });
+  });
+
+  protected readonly originConnectors = computed<OriginConnector[]>(() => {
+    const t = this.time();
+    const c = this.c();
+    const out: OriginConnector[] = [];
+
+    if (this.showObserverOrigins()) {
+      const overrides = this.overrides();
+      for (const obs of this.observers()) {
+        const v = obs.velocity ?? { x: 0, y: 0 };
+        const override = overrides[obs.id] ?? {};
+        const x = override.x !== undefined ? override.x : obs.x + v.x * t;
+        const y = override.y !== undefined ? override.y : obs.y + v.y * t;
+        if (Math.hypot(x - obs.x, y - obs.y) < 1e-6) continue;
+        const origin = this.toPx(obs.x, obs.y);
+        const current = this.toPx(x, y);
+        out.push({
+          id: `obs:${obs.id}`,
+          x1: origin.x,
+          y1: origin.y,
+          x2: current.x,
+          y2: current.y,
+          ox: origin.x,
+          oy: origin.y,
+        });
+      }
+    }
+
+    if (this.showSourceEmissionOrigins()) {
+      for (const src of this.sources()) {
+        const v = src.velocity ?? { x: 0, y: 0 };
+        const curX = src.x + v.x * t;
+        const curY = src.y + v.y * t;
+        for (const emission of src.emissions) {
+          if (lightCircleRadius(emission.atTime, t, c) <= 0) continue;
+          const emitPos = emissionPosition(
+            { x: src.x, y: src.y },
+            v,
+            emission.atTime,
+          );
+          if (Math.hypot(curX - emitPos.x, curY - emitPos.y) < 1e-6) continue;
+          const origin = this.toPx(emitPos.x, emitPos.y);
+          const current = this.toPx(curX, curY);
+          out.push({
+            id: `src:${src.id}|${emission.pulseId}`,
+            x1: origin.x,
+            y1: origin.y,
+            x2: current.x,
+            y2: current.y,
+            ox: origin.x,
+            oy: origin.y,
+          });
+        }
+      }
+    }
+
+    return out;
   });
 
   private observerFill(color?: LightSceneObserver['color']): string {

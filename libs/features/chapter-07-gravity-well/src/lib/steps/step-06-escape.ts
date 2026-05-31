@@ -178,7 +178,7 @@ export const STEP_06_ESCAPE: Step = {
     },
     {
       type: 'narrate',
-      text: 'Do not take that as the whole story. Gravity **always** curves geometry, and light always follows it — but around ordinary mass the deflection is tiny. Only when gravity becomes **extreme** — a much deeper well — does light visibly **bend** instead of passing straight through. Chapter 12 lives in that regime.',
+      text: 'Do not take that as the whole story. Gravity **always** curves geometry, and light always follows it — but around ordinary mass the deflection is tiny. Only when gravity becomes **extreme** — a much deeper well — does light visibly **bend** instead of passing straight through. Chapter 13 lives in that regime.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

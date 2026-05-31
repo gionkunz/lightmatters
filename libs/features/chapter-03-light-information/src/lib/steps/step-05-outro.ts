@@ -10,17 +10,17 @@ export const STEP_05_OUTRO: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'In Chapter 2 we saw that motion through space steals from time on each clock. Here we saw the consequence: when news arrives — and even **whether two things were simultaneous** — depends on who is moving.',
+      text: 'In Chapter 3 we saw that motion through space steals from time on each clock. Here we saw the consequence: when news arrives — and even **whether two things were simultaneous** — depends on who is moving.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
-      text: 'We have not yet asked: does the source\'s motion change the speed of its light? (No — and Chapter 4 explains why the old idea of an "ether" had to go.)',
+      text: 'We have not yet asked: does the source\'s motion change the speed of its light? (No — and Chapter 5 explains why the old idea of an "ether" had to go.)',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
-      text: 'Nor have we touched colour and rhythm — the **Doppler shift** that makes a moving source sound, and look, different. That is Chapter 7, along with the way starlight tilts forward when you accelerate.',
+      text: 'Nor have we touched colour and rhythm — the **Doppler shift** that makes a moving source sound, and look, different. That is Chapter 8, along with the way starlight tilts forward when you accelerate.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

@@ -15,7 +15,7 @@ export const STEP_04_MOVING_SOURCE: Step = {
     },
     {
       type: 'narrate',
-      text: '**Emission theory** says light inherits the source\'s velocity — the circle would lean forward, dragged along with $S$. Watch what actually happens.',
+      text: '**Emission theory** says light inherits the source\'s velocity — the **dashed circle** is that guess: a wavefront dragged along with $S$, its leading edge racing ahead at $c + v$. Watch what actually happens.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     { type: 'sound', sound: 'expand', volume: 0.45 },
@@ -29,7 +29,7 @@ export const STEP_04_MOVING_SOURCE: Step = {
     },
     {
       type: 'narrate',
-      text: 'The circle stays anchored at the **birth point** and expands at $c$ in all directions. The source sailed on, but the light did not inherit its velocity. Each photon is a self-propagating electromagnetic wave — oscillating fields that sustain each other — launched into spacetime at $c$, period.',
+      text: 'The **solid** circle stays anchored at the **birth point** and expands at $c$ in all directions — while the dashed prediction sails off with the source and never matches reality. The light did not inherit the source\'s velocity. Each photon is a self-propagating electromagnetic wave — oscillating fields that sustain each other — launched into spacetime at $c$, period.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

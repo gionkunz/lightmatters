@@ -10,7 +10,7 @@ export const STEP_03_SOURCE_AT_REST: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'Back to our spatial scene. A source $S$ at rest sends one flash. The wavefront expands outward at $c$ in every direction — the same picture from Chapter 3.',
+      text: 'Back to our spatial scene. A source $S$ at rest sends one flash. The wavefront expands outward at $c$ in every direction — the same picture from Chapter 4.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

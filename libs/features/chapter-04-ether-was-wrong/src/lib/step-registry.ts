@@ -18,6 +18,8 @@ export interface StepEntry {
 
 export const CHAPTER_04_TOTAL_STEPS = 5;
 export const CHAPTER_04_TITLE = 'The ether was wrong';
+/** Journey URL chapter (`/chapter/5/...`). */
+export const CHAPTER_04_ETHER_WAS_WRONG_ROUTE_NUMBER = 5;
 
 const REGISTRY = new Map<number, StepEntry>([
   [1, { step: STEP_01_THE_ETHER, component: Step01Component }],

@@ -20,7 +20,7 @@ export const STEP_01_HOOK: Step = {
     },
     {
       type: 'narrate',
-      text: 'But it is not a new law bolted on at the end. It has been hiding inside the **speed budget** since Chapter 2, waiting for us to read it the right way.',
+      text: 'But it is not a new law bolted on at the end. It has been hiding inside the **speed budget** since Chapter 3, waiting for us to read it the right way.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

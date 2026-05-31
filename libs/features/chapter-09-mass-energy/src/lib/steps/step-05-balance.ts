@@ -1,6 +1,17 @@
 import type { Step } from '@lm/engine';
+import type { DerivationFrame } from '@lm/design';
 
 const BEAT_PAUSE_MS = 6500;
+
+export const STEP_05_DERIVATION_FRAMES: readonly DerivationFrame[] = [
+  {
+    latex: String.raw`\cssId{M}{M}\cdot\frac{EL}{\cssId{Mc2}{Mc^2}} = \cssId{m}{m}\cdot \cssId{L}{L}`,
+    cancel: ['M', 'L'],
+  },
+  {
+    latex: String.raw`\cssId{m}{m} = \frac{\cssId{E}{E}}{c^2}`,
+  },
+];
 
 export const STEP_05_BALANCE: Step = {
   id: 'mass-energy-balance',
@@ -47,6 +58,14 @@ export const STEP_05_BALANCE: Step = {
       type: 'narrate',
       text: 'Drop that into the see-saw: $M \\times \\dfrac{EL}{Mc^2} = m \\times L$. The $M$ cancels on the left, the $L$ cancels on both sides…',
       pauseAfter: BEAT_PAUSE_MS,
+    },
+    {
+      type: 'animate',
+      target: 'derivation.frame',
+      from: 0,
+      to: 1,
+      duration: 3,
+      easing: 'ease-out',
     },
     {
       type: 'narrate',

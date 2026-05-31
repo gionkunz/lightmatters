@@ -25,7 +25,7 @@ export const STEP_04_MOVING_SPACETIME: Step = {
     },
     {
       type: 'narrate',
-      text: 'Spacetime works like a **budget** — everything moves at $c$, split between space and time. Drag the slider and watch the vector tilt. Chapter 2 will unpack what that budget really means.',
+      text: 'Spacetime works like a **budget** — everything moves at $c$, split between space and time. Drag the slider and watch the vector tilt. Chapter 3 will unpack what that budget really means.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

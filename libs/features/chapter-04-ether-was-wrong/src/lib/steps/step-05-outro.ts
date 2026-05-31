@@ -15,7 +15,7 @@ export const STEP_05_OUTRO: Step = {
     },
     {
       type: 'narrate',
-      text: 'Chapter 3 showed that **when** news arrives depends on motion. This chapter showed two failed pictures — an ether wind we cannot detect, and light that does not inherit its source\'s speed. $c$ belongs to light itself, not to a medium or a parent body.',
+      text: 'Chapter 4 showed that **when** news arrives depends on motion. This chapter showed two failed pictures — an ether wind we cannot detect, and light that does not inherit its source\'s speed. $c$ belongs to light itself, not to a medium or a parent body.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -25,7 +25,7 @@ export const STEP_05_OUTRO: Step = {
     },
     {
       type: 'narrate',
-      text: 'Compress the circles, watch the clock change colour. That is Chapter 7.',
+      text: 'Compress the circles, watch the clock change colour. That is Chapter 8.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],
