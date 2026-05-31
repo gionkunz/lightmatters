@@ -28,6 +28,9 @@
       "@lm/feature-chapter-02-speed-budget": [
         "./libs/features/chapter-02-speed-budget/src/index.ts"
       ],
+      "@lm/feature-chapter-02-speed-of-light": [
+        "./libs/features/chapter-02-speed-of-light/src/index.ts"
+      ],
       "@lm/feature-chapter-03-light-information": [
         "./libs/features/chapter-03-light-information/src/index.ts"
       ],
