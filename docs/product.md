@@ -44,24 +44,25 @@ The visual design is mocked up in `visual-design-prototype/` and is the source o
 
 The product is organized as a sequence of **chapters**, each containing several **steps**. A step is the atomic unit — one visual, one beat of narration, one interaction.
 
-The **v1.0 journey map is locked** (see `openspec/changes/reorder-chapters-and-route-scheme`). The engine is designed so chapters and steps can still be reordered, added, or rewritten without touching the core, but the twelve-chapter v1.0 sequence below is the committed order:
+The **v1.0 journey map is locked** (see `openspec/changes/add-speed-of-light-chapter` and `openspec/changes/reorder-chapters-and-route-scheme`). The engine is designed so chapters and steps can still be reordered, added, or rewritten without touching the core, but the thirteen-chapter v1.0 sequence below is the committed order:
 
 | # | Chapter | Block |
 |---|---------|-------|
 | 1 | Position, time, spacetime | flat (SR) |
-| 2 | The speed budget | flat (SR) |
-| 3 | Light and information | flat (SR) |
-| 4 | The ether was wrong | flat (SR) |
-| 5 | The same speed of light | flat (SR) |
-| 6 | Clocks & rulers | flat (SR) |
-| 7 | Doppler and seeing motion | flat (SR) |
-| 8 | The twin paradox | flat (SR) |
-| 9 | Mass is energy (E=mc²) | flat (SR) |
-| 10 | Rolling the diagram | curved (GR) |
-| 11 | The center of the Earth | curved (GR) |
-| 12 | Light bending around mass | curved (GR) |
+| 2 | The speed of light | flat (SR) |
+| 3 | The speed budget | flat (SR) |
+| 4 | Light and information | flat (SR) |
+| 5 | The ether was wrong | flat (SR) |
+| 6 | The same speed of light | flat (SR) |
+| 7 | Clocks & rulers | flat (SR) |
+| 8 | Doppler and seeing motion | flat (SR) |
+| 9 | The twin paradox | flat (SR) |
+| 10 | Mass is energy (E=mc²) | flat (SR) |
+| 11 | Rolling the diagram | curved (GR) |
+| 12 | The center of the Earth | curved (GR) |
+| 13 | Light bending around mass | curved (GR) |
 
-**Structure:** Chapters 1–9 build **flat spacetime** (special relativity intuition); chapters 10–12 turn to **curved spacetime** (general relativity). The SR block follows a strict dependency chain — see light move (3) → no medium (4) → c is the same for all (5) → clocks dilate & rulers shrink (6) → what you *see* when sources move (7) → path-dependence of time (8) → mass is energy (9). Finish the speed-budget arc in Chapter 2 before opening Chapter 3.
+**Structure:** Chapters 1–10 build **flat spacetime** (special relativity intuition); chapters 11–13 turn to **curved spacetime** (general relativity). The SR block follows a strict dependency chain — establish `c` (2) → speed budget (3) → see light move (4) → no medium (5) → c is the same for all (6) → clocks dilate & rulers shrink (7) → what you *see* when sources move (8) → path-dependence of time (9) → mass is energy (10).
 
 **Routes:** chapter steps live at `/chapter/:chapter/step/:step` with unpadded integers (`/chapter/1/step/2`).
 
@@ -74,7 +75,13 @@ Establish the vocabulary before introducing relativity at all.
 - The spacetime diagram: space on one axis, time on the other. Things trace lines through it.
 - Introduce the spacetime diagram as the core reusable visual that will appear throughout the entire product.
 
-### Chapter 2 — The speed budget
+### Chapter 2 — The speed of light
+
+*New chapter — see `openspec/changes/add-speed-of-light-chapter`.*
+
+Make `c` tangible before the speed budget derives it geometrically. Six steps: how fast light is (Earth laps, Moon, Sun); `c` as the limit of causality; light's timelessness as a teaser; measuring `c` with a flash-and-detect experiment; what light is (self-propagating EM wave); the same number from Maxwell's constants. Bridges to Chapter 3 (the speed budget).
+
+### Chapter 3 — The speed budget
 
 The single most powerful idea in the journey: you are always moving through spacetime at the speed of light. You only choose how to allocate it between space and time.
 
@@ -85,11 +92,11 @@ The single most powerful idea in the journey: you are always moving through spac
 - Two-vector comparison: catch-up problems become straightforward graphical exercises.
 - The realization that we — at everyday speeds — are essentially moving through time at the speed of light.
 
-**Bridge to Chapter 3.** The final step of Chapter 2 is a short handoff: two stationary observers, B sends one flash toward A along a light ray, both clocks agree. One forward-looking question — what changes with motion, or with many flashes? — then continue to Chapter 3, which introduces wavefronts, moving observers, and relativity of simultaneity.
+**Bridge to Chapter 4.** The final step of Chapter 3 is a short handoff: two stationary observers, B sends one flash toward A along a light ray, both clocks agree. One forward-looking question — what changes with motion, or with many flashes? — then continue to Chapter 4, which introduces wavefronts, moving observers, and relativity of simultaneity.
 
-### Chapter 3 — Light and information
+### Chapter 4 — Light and information
 
-We **change cameras**. The Epstein spacetime diagram is set aside; both axes here are **space**, viewed from above. Light expands as visible circles in space. Time is the animation, not a dimension on the page. The diagram returns intact in Chapter 10.
+We **change cameras**. The Epstein spacetime diagram is set aside; both axes here are **space**, viewed from above. Light expands as visible circles in space. Time is the animation, not a dimension on the page. The diagram returns intact in Chapter 11.
 
 - **Step 1 — Light through space.** Camera-switch beat. One source $S$, one observer $A$. The wavefront expands at $c$ in every direction and reaches $A$.
 - **Step 2 — Two listeners.** Stationary $A$ and $B$, equidistant from $S$. The pulse arrives at both at the same instant — symmetry on display.

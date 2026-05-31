@@ -322,11 +322,11 @@ On invalid **app-level** routes, redirect to `/` (landing). Unknown **step numbe
 
 ### v1.0 journey map (locked)
 
-Twelve chapters; flat spacetime (SR) 1–9, curved spacetime (GR) 10–12:
+Thirteen chapters; flat spacetime (SR) 1–10, curved spacetime (GR) 11–13:
 
-1 Position, time, spacetime · 2 The speed budget · 3 Light and information · 4 The ether was wrong · 5 The same speed of light · 6 Clocks & rulers · 7 Doppler and seeing motion · 8 The twin paradox · 9 Mass is energy (E=mc²) · 10 Rolling the diagram · 11 The center of the Earth · 12 Light bending around mass.
+1 Position, time, spacetime · 2 The speed of light · 3 The speed budget · 4 Light and information · 5 The ether was wrong · 6 The same speed of light · 7 Clocks & rulers · 8 Doppler and seeing motion · 9 The twin paradox · 10 Mass is energy (E=mc²) · 11 Rolling the diagram · 12 The center of the Earth · 13 Light bending around mass.
 
-Chapters 5, 6, 8, 9 are new (added by the `add-c-invariance-and-twin-paradox`, `add-light-clock-and-length-contraction`, and `add-matter-and-emc2` changes). Renumbering of existing chapters (Doppler 5→7; Rolling 6→10; Center 7→11; Bending 8→12) and the route rename are handled by `reorder-chapters-and-route-scheme`, which should land first.
+Chapter 2 was added by `add-speed-of-light-chapter`. Chapters 6–7, 9–10 are from `add-c-invariance-and-twin-paradox`, `add-light-clock-and-length-contraction`, and `add-matter-and-emc2`. Earlier renumbering (Doppler, Rolling, Center, Bending) is in `reorder-chapters-and-route-scheme`.
 
 ## State and persistence
 
