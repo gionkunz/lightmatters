@@ -4,6 +4,7 @@ export * from './lib/mass-energy';
 export * from './lib/length-contraction';
 export * from './lib/tick-period';
 export * from './lib/speed-budget';
+export * from './lib/speed-of-light';
 export * from './lib/traveller-readout';
 export * from './lib/worldline-proper-time';
 export * from './lib/twin-readout';
