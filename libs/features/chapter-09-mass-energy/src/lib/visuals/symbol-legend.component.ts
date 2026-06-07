@@ -11,18 +11,20 @@ export interface SymbolLegendRow {
 @Component({
   selector: 'lm-symbol-legend',
   template: `
-    <dl class="m-0 grid grid-cols-[1.4rem_1fr] gap-x-3 gap-y-1.5">
+    <dl class="m-0 grid grid-cols-2 gap-x-6 gap-y-1">
       @for (row of rows(); track row.sym) {
-        <dt
-          class="font-serif text-[length:var(--lm-text-chrome)] italic leading-tight text-ink"
-        >
-          {{ row.sym }}
-        </dt>
-        <dd
-          class="m-0 self-center font-mono text-[length:var(--lm-text-mono-md)] leading-tight text-ink opacity-65"
-        >
-          {{ row.desc }}
-        </dd>
+        <div class="grid min-w-0 grid-cols-[1.4rem_1fr] items-baseline gap-x-2.5">
+          <dt
+            class="font-serif text-[length:var(--lm-text-chrome)] italic leading-tight text-ink"
+          >
+            {{ row.sym }}
+          </dt>
+          <dd
+            class="m-0 font-mono text-[length:var(--lm-text-mono-md)] leading-tight text-ink opacity-65"
+          >
+            {{ row.desc }}
+          </dd>
+        </div>
       }
     </dl>
   `,

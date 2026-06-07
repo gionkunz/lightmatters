@@ -3,7 +3,7 @@ import { LmKickerComponent } from './lm-kicker.component';
 import { LmWordmarkComponent } from './lm-wordmark.component';
 import { ViewportResolutionHintService } from '../viewport/viewport-resolution-hint.service';
 
-/** Full-screen branded gate when the viewport is smaller than 1920×1080. */
+/** Full-screen branded gate when the viewport is smaller than 1200×900. */
 @Component({
   selector: 'lm-viewport-resolution-hint',
   imports: [LmKickerComponent, LmWordmarkComponent],
@@ -59,8 +59,8 @@ import { ViewportResolutionHintService } from '../viewport/viewport-resolution-h
             <p
               class="mt-3 font-serif text-[length:var(--lm-text-hint)] leading-normal text-ink-soft"
             >
-              Open Light Matters on a desktop or laptop at full HD (1920×1080)
-              or larger.
+              Open Light Matters on a desktop or laptop window at least
+              1200×900.
             </p>
           </div>
 

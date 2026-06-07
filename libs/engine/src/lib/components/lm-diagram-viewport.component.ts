@@ -19,7 +19,10 @@ import { computeDiagramFit } from '../diagram/compute-diagram-fit';
       'flex h-full min-h-0 min-w-0 w-full flex-1 items-center justify-center',
   },
   template: `
-    <div #measure class="h-full w-full min-h-0 min-w-0">
+    <div
+      #measure
+      class="flex h-full w-full min-h-0 min-w-0 items-center justify-center"
+    >
       <ng-content />
     </div>
   `,

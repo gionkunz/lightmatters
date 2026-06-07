@@ -78,25 +78,31 @@ import {
             [visibleCount]="runner.narrationVisibleCount()"
           />
         </div>
-        <div class="flex min-h-0 flex-col justify-center bg-paper-alt px-[26px] py-[22px]">
-          <lm-kicker [opacity]="0.55" class="mb-3.5">
-            electromagnetic spectrum · all at $c$
-          </lm-kicker>
-          <div class="flex min-h-0 flex-1 flex-col items-center justify-center">
-            <div class="relative w-full max-w-full">
-              <lm-diagram-viewport #diagramVp [aspectRatio]="640 / 210">
+        <div class="flex min-h-0 flex-col">
+          <div
+            class="flex min-h-0 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]"
+          >
+            <lm-kicker [opacity]="0.55" class="mb-3.5">
+              electromagnetic spectrum · all at $c$
+            </lm-kicker>
+            <div class="w-full" style="aspect-ratio: 640 / 210">
+              <lm-diagram-viewport
+                #diagramVp
+                class="size-full flex-none!"
+                [aspectRatio]="640 / 210"
+              >
                 <lm-em-spectrum-scene
                   [width]="diagramVp.size().width"
                   [height]="diagramVp.size().height"
                   [highlightIndex]="highlightIndex()"
                 />
               </lm-diagram-viewport>
-              <lm-em-spectrum-band-readout
-                class="mt-5 block w-full"
-                [bandIndex]="highlightIndex()"
-              />
             </div>
           </div>
+          <lm-em-spectrum-band-readout
+            class="mt-[22px] block w-full"
+            [bandIndex]="highlightIndex()"
+          />
         </div>
       </div>
     </lm-step-frame>

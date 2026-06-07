@@ -10,9 +10,12 @@ export interface PredictionOption {
 /** Selectable prediction prompt for pedagogical commitment beats. */
 @Component({
   selector: 'lm-prediction-choice',
+  host: {
+    class: 'block max-w-full',
+  },
   imports: [LmInteractiveDirective, LmKickerComponent],
   template: `
-    <div class="flex flex-col gap-3">
+    <div class="lm-prediction-choice-root flex flex-col gap-3">
       @if (kicker()) {
         <lm-kicker [opacity]="0.55">{{ kicker() }}</lm-kicker>
       }

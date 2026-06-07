@@ -72,6 +72,53 @@
   --lm-glow-ink: rgba(20, 20, 26, 0.16);
 }
 
+@media (max-width: 1399px) {
+  :root,
+  [data-theme='light'] {
+    --lm-text-narrator: calc(19px * var(--lm-type-scale));
+    --lm-text-chat-past: calc(13px * var(--lm-type-scale));
+    --lm-text-chat-current: calc(17px * var(--lm-type-scale));
+  }
+}
+
+/* Single-column lm-narrator: scale from column width, not viewport. */
+lm-narrator {
+  container-type: inline-size;
+  container-name: narrator;
+}
+
+@container narrator (max-width: 1000px) {
+  .lm-narrator-root {
+    --lm-text-narrator: calc(20px * var(--lm-type-scale));
+  }
+}
+
+@container narrator (max-width: 720px) {
+  .lm-narrator-root {
+    --lm-text-narrator: calc(17px * var(--lm-type-scale));
+  }
+}
+
+/* Prediction Q&A in the narrow step column. */
+lm-prediction-choice {
+  container-type: inline-size;
+  container-name: prediction;
+}
+
+@container prediction (max-width: 520px) {
+  .lm-prediction-choice-root {
+    --lm-text-button: calc(15px * var(--lm-type-scale));
+    --lm-text-button-sm: calc(14px * var(--lm-type-scale));
+  }
+}
+
+@container prediction (max-width: 400px) {
+  .lm-prediction-choice-root {
+    --lm-text-button: calc(14px * var(--lm-type-scale));
+    --lm-text-button-sm: calc(13px * var(--lm-type-scale));
+  }
+}
+
 [data-theme='dark'] {
   --lm-paper: #0a0c11;
   --lm-paper-alt: #10131a;

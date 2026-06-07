@@ -6,7 +6,7 @@ import { Component, input } from '@angular/core';
   template: `
     <div class="flex items-baseline justify-between gap-4">
       <span
-        class="font-mono text-[length:calc(12px*var(--lm-type-scale))] uppercase tracking-[0.14em]"
+        class="font-mono text-[length:var(--lm-text-mono-sm)] uppercase tracking-[0.14em]"
         [class.text-accent-1]="accent() === 'accent-1'"
         [class.text-accent-2]="accent() === 'accent-2'"
         [class.text-ink]="!accent()"
@@ -14,7 +14,7 @@ import { Component, input } from '@angular/core';
         [class.opacity-60]="!accent()"
         >{{ label() }}</span
       >
-      <span class="font-mono text-[length:calc(14px*var(--lm-type-scale))] text-ink opacity-85">{{ value() }}</span>
+      <span class="font-mono text-[length:calc(12px*var(--lm-type-scale))] text-ink opacity-85">{{ value() }}</span>
     </div>
   `,
 })

@@ -15,6 +15,7 @@ import {
   buildNarrateRenderPieces,
   narrateTextTypingUnits,
   parseNarrateText,
+  type NarrateRenderPiece,
 } from '../timeline/narrate-text';
 
 const PAST_TEXT =
@@ -49,7 +50,11 @@ const MATH_HOST = `${MATH_PILL} [&_mjx-container]:!my-0 [&_mjx-container]:!text-
     >
       @for (beat of pastBeats(); track $index) {
         <p [class]="PAST_TEXT">
-          @for (piece of pastPieces(beat); track $index) {
+          @for (
+            piece of pastPieces(beat);
+            track pieceTrackKey(pieceIndex, piece);
+            let pieceIndex = $index
+          ) {
             @switch (piece.kind) {
               @case ('space') {
                 {{ ' ' }}
@@ -89,7 +94,11 @@ const MATH_HOST = `${MATH_PILL} [&_mjx-container]:!my-0 [&_mjx-container]:!text-
 
       @if (currentText()) {
         <p #currentBeat [class]="CURRENT_TEXT">
-          @for (piece of currentPieces(); track $index) {
+          @for (
+            piece of currentPieces();
+            track pieceTrackKey(pieceIndex, piece);
+            let pieceIndex = $index
+          ) {
             @switch (piece.kind) {
               @case ('space') {
                 {{ ' ' }}
@@ -162,17 +171,33 @@ export class LmNarratorChatFeedComponent {
     );
   }
 
+  protected pieceTrackKey(
+    pieceIndex: number,
+    piece: NarrateRenderPiece,
+  ): string {
+    if (piece.kind === 'math') {
+      return `m${pieceIndex}:${piece.latex}`;
+    }
+    return `${piece.kind}:${pieceIndex}`;
+  }
+
   constructor() {
     effect(() => {
       this.pastBeats();
+      afterNextRender(
+        () => {
+          void this.typesetPastMathWithRetry();
+        },
+        { injector: this.injector },
+      );
+    });
+
+    effect(() => {
       this.currentText();
       this.currentPieces();
       afterNextRender(
         () => {
-          void this.typesetMathHosts([
-            ...this.pastMathHosts(),
-            ...this.currentMathHosts(),
-          ]);
+          void this.typesetMathHosts(this.currentMathHosts());
           this.currentBeat()?.nativeElement.scrollIntoView({
             block: 'nearest',
           });
@@ -182,26 +207,55 @@ export class LmNarratorChatFeedComponent {
     });
   }
 
+  private async typesetPastMathWithRetry(): Promise<void> {
+    await this.typesetMathHosts(this.pastMathHosts());
+    requestAnimationFrame(() => {
+      void this.typesetMathHosts(this.pastMathHosts());
+    });
+  }
+
   private async typesetMathHosts(
     hosts: readonly ElementRef<HTMLElement>[],
   ): Promise<void> {
-    for (const ref of hosts) {
-      const element = ref.nativeElement;
-      const latex = element.dataset['latex'];
-      if (
-        !latex ||
-        element.dataset['typeset'] === 'done' ||
-        element.dataset['typeset'] === 'pending'
-      ) {
-        continue;
-      }
+    const targets = hosts
+      .map((ref) => this.toTypesetTarget(ref.nativeElement))
+      .filter((target): target is { element: HTMLElement; latex: string } =>
+        target !== null,
+      );
 
-      try {
-        await this.mathJax.typesetElement(element, latex);
-      } catch {
+    if (targets.length === 0) {
+      return;
+    }
+
+    try {
+      await this.mathJax.typesetElements(targets);
+    } catch {
+      for (const { element, latex } of targets) {
+        if (element.querySelector('mjx-container')) {
+          continue;
+        }
         element.dataset['typeset'] = 'error';
         element.textContent = `$${latex}$`;
       }
     }
+  }
+
+  private toTypesetTarget(
+    element: HTMLElement,
+  ): { element: HTMLElement; latex: string } | null {
+    const latex = element.getAttribute('data-latex');
+    if (!latex || element.querySelector('mjx-container')) {
+      return null;
+    }
+
+    if (element.dataset['typeset'] === 'pending') {
+      return null;
+    }
+
+    if (element.dataset['typeset'] === 'done') {
+      delete element.dataset['typeset'];
+    }
+
+    return { element, latex };
   }
 }

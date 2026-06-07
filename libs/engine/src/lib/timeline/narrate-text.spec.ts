@@ -36,6 +36,32 @@ describe('parseNarrateText', () => {
     ]);
   });
 
+  it('parses the Maxwell wave-speed formula beat', () => {
+    expect(
+      parseNarrateText(
+        'Put them together and the wave speed falls out: $c = 1 / \\sqrt{\\varepsilon_0 \\mu_0}$. No clocks over a kilometre — pure electromagnetism.',
+      ),
+    ).toEqual([
+      { kind: 'text', content: 'Put them together and the wave speed falls out: ' },
+      { kind: 'math', latex: 'c = 1 / \\sqrt{\\varepsilon_0 \\mu_0}' },
+      { kind: 'text', content: '. No clocks over a kilometre — pure electromagnetism.' },
+    ]);
+  });
+
+  it('parses multiple inline math segments in one beat', () => {
+    expect(
+      parseNarrateText(
+        'Constants $\\varepsilon_0$ (epsilon nought) and $\\mu_0$ (mu nought).',
+      ),
+    ).toEqual([
+      { kind: 'text', content: 'Constants ' },
+      { kind: 'math', latex: '\\varepsilon_0' },
+      { kind: 'text', content: ' (epsilon nought) and ' },
+      { kind: 'math', latex: '\\mu_0' },
+      { kind: 'text', content: ' (mu nought).' },
+    ]);
+  });
+
   it('parses bold adjacent to inline math', () => {
     expect(parseNarrateText('The factor $\\gamma$ is **large**.')).toEqual([
       { kind: 'text', content: 'The factor ' },

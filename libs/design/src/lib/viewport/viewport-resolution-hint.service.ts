@@ -6,8 +6,8 @@ import {
   signal,
 } from '@angular/core';
 
-export const MIN_VIEWPORT_WIDTH = 1920;
-export const MIN_VIEWPORT_HEIGHT = 1080;
+export const MIN_VIEWPORT_WIDTH = 1200;
+export const MIN_VIEWPORT_HEIGHT = 900;
 
 const RESIZE_DEBOUNCE_MS = 100;
 

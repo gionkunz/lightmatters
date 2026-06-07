@@ -21,7 +21,7 @@ export {
   isViewportUndersized,
 } from './lib/viewport/viewport-resolution-hint.service';
 export { LmViewportResolutionHintComponent } from './lib/components/lm-viewport-resolution-hint.component';
-export { MathJaxService } from './lib/math/mathjax.service';
+export { MathJaxService, type MathJaxTypesetTarget } from './lib/math/mathjax.service';
 export { LmInteractiveDirective } from './lib/directives/lm-interactive.directive';
 export { LmWordmarkComponent } from './lib/components/lm-wordmark.component';
 export { LmKickerComponent } from './lib/components/lm-kicker.component';

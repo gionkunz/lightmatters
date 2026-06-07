@@ -27,9 +27,12 @@ const MATH_HOST = `${MATH_PILL} animate-char-in [&_mjx-container]:!my-0 [&_mjx-c
 /** Narrator text revealed letter-by-letter with inline LaTeX via MathJax. */
 @Component({
   selector: 'lm-narrator',
+  host: {
+    class: 'block max-w-full',
+  },
   imports: [LmKickerComponent],
   template: `
-    <div>
+    <div class="lm-narrator-root">
       @if (kicker()) {
         <lm-kicker class="mb-[18px] block" [opacity]="0.5">{{
           kicker()
@@ -163,7 +166,7 @@ export class LmNarratorComponent {
 
     for (const ref of pending) {
       const element = ref.nativeElement;
-      const latex = element.dataset['latex'];
+      const latex = element.getAttribute('data-latex');
       if (!latex) {
         continue;
       }

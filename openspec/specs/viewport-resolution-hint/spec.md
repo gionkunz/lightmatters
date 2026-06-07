@@ -2,39 +2,39 @@
 
 ## Purpose
 
-Advisory overlay when the browser window is smaller than the recommended 1920×1080 canvas. Dismissible per undersized episode; re-shows when the viewport shrinks again after meeting the minimum.
+Advisory overlay when the browser window is smaller than the recommended 1200×900 canvas. Dismissible per undersized episode; re-shows when the viewport shrinks again after meeting the minimum.
 
 ## Requirements
 
-### Requirement: Undersized viewport is detected at 1920 by 1080
+### Requirement: Undersized viewport is detected at 1200 by 900
 
-The viewport resolution hint system SHALL treat the viewport as undersized when `window.innerWidth` is strictly less than **1920** OR `window.innerHeight` is strictly less than **1080**. Detection SHALL run on initial load and on every window resize until the service is destroyed.
+The viewport resolution hint system SHALL treat the viewport as undersized when `window.innerWidth` is strictly less than **1200** OR `window.innerHeight` is strictly less than **900**. Detection SHALL run on initial load and on every window resize until the service is destroyed.
 
 #### Scenario: Width below minimum triggers undersized
 
-- **WHEN** `window.innerWidth` is 1919 and `window.innerHeight` is 1080
+- **WHEN** `window.innerWidth` is 1199 and `window.innerHeight` is 900
 - **THEN** the viewport is considered undersized
 
 #### Scenario: Height below minimum triggers undersized
 
-- **WHEN** `window.innerWidth` is 1920 and `window.innerHeight` is 1079
+- **WHEN** `window.innerWidth` is 1200 and `window.innerHeight` is 899
 - **THEN** the viewport is considered undersized
 
 #### Scenario: Both dimensions at minimum are sufficient
 
-- **WHEN** `window.innerWidth` is 1920 and `window.innerHeight` is 1080
+- **WHEN** `window.innerWidth` is 1200 and `window.innerHeight` is 900
 - **THEN** the viewport is not considered undersized
 
-### Requirement: Hint recommends 1920 by 1080 and is dismissible
+### Requirement: Hint recommends 1200 by 900 and is dismissible
 
-When the viewport is undersized and the hint is visible, the UI SHALL display advisory copy stating that a window size of at least **1920×1080** is recommended for the best experience. The user SHALL be able to dismiss the hint via an explicit control (button or close affordance) with an accessible name.
+When the viewport is undersized and the hint is visible, the UI SHALL display advisory copy stating that a window size of at least **1200×900** is recommended for the best experience. The user SHALL be able to dismiss the hint via an explicit control (button or close affordance) with an accessible name.
 
 #### Scenario: Hint visible on undersized viewport
 
 - **WHEN** the viewport is undersized
 - **AND** the user has not dismissed the hint for the current undersized episode
 - **THEN** the resolution hint overlay is shown
-- **AND** the message mentions 1920×1080 (or equivalent wording)
+- **AND** the message mentions 1200×900 (or equivalent wording)
 
 #### Scenario: User dismisses hint
 
@@ -56,13 +56,13 @@ Dismissal state SHALL NOT be written to `localStorage`, `sessionStorage`, or coo
 #### Scenario: Growing viewport clears dismiss episode
 
 - **WHEN** the user dismissed the hint while undersized
-- **AND** the viewport resizes to at least 1920×1080
+- **AND** the viewport resizes to at least 1200×900
 - **THEN** the dismiss episode ends
 
 #### Scenario: Shrinking viewport shows hint again
 
 - **WHEN** the user previously dismissed the hint while undersized
-- **AND** the viewport grew to at least 1920×1080
+- **AND** the viewport grew to at least 1200×900
 - **AND** the viewport becomes undersized again
 - **THEN** the resolution hint overlay is shown again
 

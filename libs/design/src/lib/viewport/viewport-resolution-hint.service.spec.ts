@@ -33,7 +33,7 @@ describe('isViewportUndersized', () => {
     );
   });
 
-  it('is false at exactly 1920×1080', () => {
+  it('is false at exactly the minimum dimensions', () => {
     expect(isViewportUndersized(MIN_VIEWPORT_WIDTH, MIN_VIEWPORT_HEIGHT)).toBe(
       false,
     );
@@ -54,33 +54,33 @@ describe('ViewportResolutionHintService', () => {
   });
 
   it('shows modal when viewport is undersized', fakeAsync(() => {
-    setViewportSize(1919, 1080);
+    setViewportSize(MIN_VIEWPORT_WIDTH - 1, MIN_VIEWPORT_HEIGHT);
     tick(150);
     expect(service.visible()).toBe(true);
   }));
 
-  it('hides modal at 1920×1080', fakeAsync(() => {
-    setViewportSize(1920, 1080);
+  it('hides modal at minimum dimensions', fakeAsync(() => {
+    setViewportSize(MIN_VIEWPORT_WIDTH, MIN_VIEWPORT_HEIGHT);
     tick(150);
     expect(service.visible()).toBe(false);
   }));
 
   it('hides modal when viewport grows from undersized', fakeAsync(() => {
-    setViewportSize(1919, 1080);
+    setViewportSize(MIN_VIEWPORT_WIDTH - 1, MIN_VIEWPORT_HEIGHT);
     tick(150);
     expect(service.visible()).toBe(true);
 
-    setViewportSize(1920, 1080);
+    setViewportSize(MIN_VIEWPORT_WIDTH, MIN_VIEWPORT_HEIGHT);
     tick(150);
     expect(service.visible()).toBe(false);
   }));
 
   it('shows modal again when viewport shrinks below minimum', fakeAsync(() => {
-    setViewportSize(1920, 1080);
+    setViewportSize(MIN_VIEWPORT_WIDTH, MIN_VIEWPORT_HEIGHT);
     tick(150);
     expect(service.visible()).toBe(false);
 
-    setViewportSize(1919, 1080);
+    setViewportSize(MIN_VIEWPORT_WIDTH - 1, MIN_VIEWPORT_HEIGHT);
     tick(150);
     expect(service.visible()).toBe(true);
   }));
