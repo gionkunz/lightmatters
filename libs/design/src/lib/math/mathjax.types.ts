@@ -11,12 +11,16 @@ export interface MathJaxApi {
 declare global {
   interface Window {
     MathJax?: {
+      loader?: {
+        paths?: Record<string, string>;
+      };
       tex?: {
         inlineMath?: string[][];
         displayMath?: string[][];
       };
       options?: {
         enableMenu?: boolean;
+        renderActions?: Record<string, unknown[]>;
       };
       startup?: {
         ready?: () => void;

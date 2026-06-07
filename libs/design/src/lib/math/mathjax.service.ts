@@ -126,12 +126,43 @@ export class MathJaxService {
   private loadMathJax(): Promise<void> {
     return new Promise((resolve, reject) => {
       window.MathJax = {
+        // Self-host the newcm font. The `-nofont` build ships no glyph data and
+        // by default fetches it from jsdelivr (`loader.paths.fonts`). Overriding
+        // the `mathjax-newcm` path keeps the font component, its on-demand
+        // `chtml/dynamic/*` chunks, and the `chtml/woff2/*` files on our own
+        // origin (copied to `public/mathjax/mathjax-newcm-font` by copy-mathjax),
+        // so rendering no longer depends on an external CDN being reachable.
+        loader: {
+          paths: {
+            'mathjax-newcm': '/mathjax/mathjax-newcm-font',
+          },
+        },
         tex: {
           inlineMath: [['\\(', '\\)']],
           displayMath: [],
         },
         options: {
           enableMenu: false,
+          // MathJax 4 runs semantic enrichment + speech/Braille generation in a
+          // Web Worker (the speech-rule engine) that relies on SharedArrayBuffer.
+          // Without cross-origin isolation (COOP/COEP) that worker can hang, and
+          // because `enrich`/`attachSpeech` are render actions in the typeset
+          // pipeline, a single hang leaves typesetPromise unresolved forever and
+          // poisons the document's typeset queue — every subsequent expression
+          // then renders as raw `\(...\)` source.
+          //
+          // The `enableEnrichment`/`enableSpeech` flags are not enough: the menu
+          // component re-applies its own stored settings over them. Instead we
+          // remove the worker-backed render actions from the pipeline entirely
+          // (an empty array disables a default action). We don't surface any of
+          // this a11y metadata anyway, so this is also faster.
+          renderActions: {
+            enrich: [],
+            attachSpeech: [],
+            explorable: [],
+            addMenu: [],
+            getMenus: [],
+          },
         },
         startup: {
           ready() {

@@ -9,10 +9,14 @@
     "copy-mathjax": {
       "executor": "nx:run-commands",
       "cache": true,
-      "inputs": ["{workspaceRoot}/node_modules/mathjax/**/*"],
+      "inputs": [
+        "{workspaceRoot}/node_modules/mathjax/**/*",
+        "{workspaceRoot}/node_modules/@mathjax/mathjax-newcm-font/chtml.js",
+        "{workspaceRoot}/node_modules/@mathjax/mathjax-newcm-font/chtml/**/*"
+      ],
       "outputs": ["{workspaceRoot}/apps/lightmatters/public/mathjax"],
       "options": {
-        "command": "rm -rf apps/lightmatters/public/mathjax && cp -r node_modules/mathjax apps/lightmatters/public/mathjax"
+        "command": "rm -rf apps/lightmatters/public/mathjax && cp -r node_modules/mathjax apps/lightmatters/public/mathjax && mkdir -p apps/lightmatters/public/mathjax/mathjax-newcm-font && cp node_modules/@mathjax/mathjax-newcm-font/chtml.js apps/lightmatters/public/mathjax/mathjax-newcm-font/chtml.js && cp -r node_modules/@mathjax/mathjax-newcm-font/chtml apps/lightmatters/public/mathjax/mathjax-newcm-font/chtml"
       }
     },
     "generate-seo": {
