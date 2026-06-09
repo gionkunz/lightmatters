@@ -21,7 +21,7 @@ describe('LmSpacetimeDiagramComponent', () => {
       expect(svg).toBeTruthy();
       expect(svg.querySelector('line')).toBeTruthy();
       expect(svg.querySelector('circle')).toBeTruthy();
-      expect(svg.textContent).toContain('x');
+      expect(svg.textContent).toContain('Space');
     });
 
     it('moves point when position input changes', () => {
@@ -81,16 +81,17 @@ describe('LmSpacetimeDiagramComponent', () => {
       fixture.detectChanges();
     });
 
-    it('renders both axes, labels, light cone, worldline, and point', () => {
+    it('renders both axes, labels, worldline, and point with no 45° light cone', () => {
       const svg = fixture.nativeElement.querySelector('svg');
       expect(svg).toBeTruthy();
       expect(svg.querySelectorAll('line').length).toBeGreaterThanOrEqual(4);
-      expect(svg.textContent).toContain('x');
-      expect(svg.textContent).toContain('t');
+      expect(svg.textContent).toContain('Space');
+      expect(svg.textContent).toContain('Proper time');
       expect(svg.querySelector('circle')).toBeTruthy();
 
+      // Epstein convention: no Minkowski light cone (the only dashed line).
       const dashed = svg.querySelector('[stroke-dasharray="3 4"]');
-      expect(dashed).toBeTruthy();
+      expect(dashed).toBeNull();
     });
 
     it('updates point and worldline when position changes', () => {
@@ -124,12 +125,13 @@ describe('LmSpacetimeDiagramComponent', () => {
       fixture.detectChanges();
     });
 
-    it('renders axes, labels, light cone, vector, and arrowhead', () => {
+    it('renders axes, labels, vector, and arrowhead with no 45° light cone', () => {
       const svg = fixture.nativeElement.querySelector('svg');
       expect(svg).toBeTruthy();
-      expect(svg.textContent).toContain('x');
-      expect(svg.textContent).toContain('t');
-      expect(svg.querySelector('[stroke-dasharray="3 4"]')).toBeTruthy();
+      expect(svg.textContent).toContain('Space');
+      expect(svg.textContent).toContain('Proper time');
+      // Epstein convention: no Minkowski light cone.
+      expect(svg.querySelector('[stroke-dasharray="3 4"]')).toBeNull();
       expect(svg.querySelector('polyline')).toBeTruthy();
       expect(svg.querySelector('circle')).toBeTruthy();
     });
@@ -338,8 +340,8 @@ describe('LmSpacetimeDiagramComponent', () => {
       expect(svg.textContent).toContain('a');
       expect(svg.textContent).toContain('b');
       expect(svg.textContent).toContain('c');
-      expect(svg.textContent).toContain('x');
-      expect(svg.textContent).toContain('t');
+      expect(svg.textContent).toContain('Space');
+      expect(svg.textContent).toContain('Proper time');
     });
 
     it('places all observer dots at the bottom when time is zero', () => {
@@ -391,7 +393,10 @@ describe('LmSpacetimeDiagramComponent', () => {
     it('hides observer C when wavefrontShowObserverC is false', () => {
       fixture.componentRef.setInput('wavefrontShowObserverC', false);
       fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).not.toContain('c');
+      // Observer C is accent-2; no accent-2 worldline or dot should remain.
+      expect(
+        fixture.nativeElement.querySelector('[stroke="var(--lm-accent-2)"]'),
+      ).toBeNull();
       expect(
         fixture.nativeElement.querySelector('circle.fill-accent-2'),
       ).toBeNull();

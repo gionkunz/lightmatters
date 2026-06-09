@@ -73,6 +73,7 @@ import { STEP_04_MOVING_SPACETIME } from './step-04-moving-spacetime';
                 [height]="diagramVp.size().height"
             variant="single"
             [velocity]="velocity()"
+            [budgetArc]="true"
           />
               </lm-diagram-viewport>
         </div>

@@ -156,32 +156,6 @@ import type { DiagramVariant } from '../data/chapters.data';
             fill="var(--lm-accent-1)"
           />
         }
-        @case ('lightcone') {
-          <line
-            [attr.x1]="lightconeGeom().left"
-            [attr.y1]="lightconeGeom().top"
-            [attr.x2]="lightconeGeom().right"
-            [attr.y2]="lightconeGeom().bottom"
-            stroke="currentColor"
-            stroke-width="1.5"
-            opacity="0.8"
-          />
-          <line
-            [attr.x1]="lightconeGeom().left"
-            [attr.y1]="lightconeGeom().bottom"
-            [attr.x2]="lightconeGeom().right"
-            [attr.y2]="lightconeGeom().top"
-            stroke="currentColor"
-            stroke-width="1.5"
-            opacity="0.8"
-          />
-          <circle
-            [attr.cx]="width() / 2"
-            [attr.cy]="height() / 2"
-            r="3"
-            fill="currentColor"
-          />
-        }
         @case ('emwave') {
           <polyline
             [attr.points]="emWaveE()"
@@ -242,7 +216,13 @@ import type { DiagramVariant } from '../data/chapters.data';
             [attr.cx]="twinGeom().cx"
             [attr.cy]="twinGeom().yTop"
             r="3"
-            fill="currentColor"
+            fill="var(--lm-accent-1)"
+          />
+          <circle
+            [attr.cx]="twinGeom().cx"
+            [attr.cy]="twinGeom().yTravellerTop"
+            r="3"
+            fill="var(--lm-accent-2)"
           />
         }
       }
@@ -321,21 +301,6 @@ export class LmDiagramPlaceholderComponent {
     };
   });
 
-  /** Crossing 45° light lines through the origin — c is the same for all. */
-  readonly lightconeGeom = computed(() => {
-    const w = this.width();
-    const h = this.height();
-    const cx = w / 2;
-    const cy = h / 2;
-    const d = Math.min(cx - this.pad, cy - this.pad);
-    return {
-      left: cx - d,
-      right: cx + d,
-      top: cy - d,
-      bottom: cy + d,
-    };
-  });
-
   /** Two rulers: full rest length on top, contracted length below. */
   readonly contractionGeom = computed(() => {
     const w = this.width();
@@ -351,20 +316,26 @@ export class LmDiagramPlaceholderComponent {
     };
   });
 
-  /** Stay-at-home worldline plus the traveller's out-and-back path. */
+  /**
+   * Epstein space-proper-time twin: A (proper time vertical) climbs straight to the
+   * top; B's bent path banks less proper time, so it returns to the axis below A.
+   */
   readonly twinGeom = computed(() => {
     const w = this.width();
     const h = this.height();
     const cx = w / 2 - 6;
     const yBottom = h - this.pad;
     const yTop = this.pad;
+    // B reunites in space (x = cx) but lower on the proper-time axis than A.
+    const yTravellerTop = yBottom - (yBottom - yTop) * 0.72;
     const apexX = cx + 44;
-    const apexY = (yBottom + yTop) / 2;
+    const apexY = (yBottom + yTravellerTop) / 2;
     return {
       cx,
       yBottom,
       yTop,
-      travel: `M ${cx} ${yBottom} L ${apexX} ${apexY} L ${cx} ${yTop}`,
+      yTravellerTop,
+      travel: `M ${cx} ${yBottom} L ${apexX} ${apexY} L ${cx} ${yTravellerTop}`,
     };
   });
 

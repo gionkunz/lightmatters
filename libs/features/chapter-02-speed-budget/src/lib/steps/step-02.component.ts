@@ -103,7 +103,7 @@ import { STEP_02_TWO_TRAVELLERS } from './step-02-two-travellers';
             <div
               class="mb-3.5 flex items-baseline justify-between gap-4"
             >
-              <lm-kicker [opacity]="0.55">spacetime · normalized to c</lm-kicker>
+              <lm-kicker [opacity]="0.55">proper-time &amp; space axes</lm-kicker>
               <div class="flex gap-3.5">
                 <lm-legend color="accent-1" label="A" />
                 <lm-legend color="accent-2" label="B" />

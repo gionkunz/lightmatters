@@ -30,6 +30,10 @@ export const STEP_03_SPACETIME: Step = {
     },
     {
       type: 'narrate',
+      text: 'The upward axis is **proper time**: the time on the object\'s own clock, the seconds it actually lives through. For something sitting still, that is just ordinary time ticking by.',
+    },
+    {
+      type: 'narrate',
       text: 'We call those lines worldlines. Drag the sliders. The point moves through spacetime, and the line from the origin is its worldline so far.',
     },
     { type: 'wait', for: 'userAdvance' },

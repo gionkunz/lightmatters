@@ -33,15 +33,6 @@ interface TwinDot {
   readonly color: string;
 }
 
-interface TwinPulse {
-  readonly id: string;
-  readonly x1: number;
-  readonly y1: number;
-  readonly x2: number;
-  readonly y2: number;
-  readonly color: string;
-}
-
 /** SVG spacetime diagram — position-only, time-only, full, and single variants for Chapter 1. */
 @Component({
   selector: 'lm-spacetime-diagram',
@@ -83,7 +74,7 @@ interface TwinPulse {
             [attr.y]="axisY + 4"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
-            x
+            {{ spaceAxisLabel() }}
           </text>
         }
       } @else if (variant() === 'time-only') {
@@ -122,7 +113,7 @@ interface TwinPulse {
             [attr.y]="timeTop - 4"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
-            t
+            {{ timeAxisLabel() }}
           </text>
         }
       } @else if (variant() === 'full' || variant() === 'single' || variant() === 'pair') {
@@ -151,20 +142,6 @@ interface TwinPulse {
             />
           }
         </g>
-
-        @if (showLightCone()) {
-          <line
-            [attr.x1]="left"
-            [attr.y1]="fullBottom"
-            [attr.x2]="lightConeEndX"
-            [attr.y2]="fullTop"
-            class="stroke-ink"
-            fill="none"
-            stroke-width="1"
-            stroke-dasharray="3 4"
-            [attr.opacity]="axisOpacity() * 0.55"
-          />
-        }
 
         @if (variant() === 'full') {
           @if (showWorldline()) {
@@ -309,14 +286,14 @@ interface TwinPulse {
             [attr.y]="fullBottom + 4"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
-            x
+            {{ spaceAxisLabel() }}
           </text>
           <text
             [attr.x]="left - 4"
             [attr.y]="fullTop - 8"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
-            t
+            {{ timeAxisLabel() }}
           </text>
         }
       } @else if (variant() === 'wavefront') {
@@ -455,14 +432,14 @@ interface TwinPulse {
             [attr.y]="fullBottom + 4"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
-            x
+            {{ spaceAxisLabel() }}
           </text>
           <text
             [attr.x]="left - 4"
             [attr.y]="fullTop - 8"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
-            t
+            {{ timeAxisLabel() }}
           </text>
         }
       } @else if (variant() === 'twin') {
@@ -476,18 +453,25 @@ interface TwinPulse {
           <line [attr.x1]="left" [attr.y1]="fullBottom" [attr.x2]="left" [attr.y2]="fullTop" />
         </g>
 
-        @for (pulse of twinPulses(); track pulse.id) {
+        @if (twinAgeGap(); as gap) {
           <line
-            [attr.x1]="pulse.x1"
-            [attr.y1]="pulse.y1"
-            [attr.x2]="pulse.x2"
-            [attr.y2]="pulse.y2"
-            [attr.stroke]="pulse.color"
+            [attr.x1]="gap.x"
+            [attr.y1]="gap.yA"
+            [attr.x2]="gap.x"
+            [attr.y2]="gap.yB"
+            class="stroke-ink"
             fill="none"
-            stroke-width="1"
-            stroke-dasharray="2 3"
-            opacity="0.55"
+            stroke-width="1.4"
+            stroke-dasharray="3 3"
+            opacity="0.6"
           />
+          <text
+            [attr.x]="gap.x + 8"
+            [attr.y]="gap.yLabel"
+            class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-70"
+          >
+            {{ gap.label }}
+          </text>
         }
 
         @for (wl of twinWorldlines(); track wl.id) {
@@ -537,14 +521,14 @@ interface TwinPulse {
             [attr.y]="fullBottom + 4"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
-            x
+            {{ spaceAxisLabel() }}
           </text>
           <text
             [attr.x]="left - 4"
             [attr.y]="fullTop - 8"
             class="fill-ink font-mono text-[11px] uppercase tracking-wider opacity-65"
           >
-            t
+            {{ timeAxisLabel() }}
           </text>
         }
       }
@@ -562,7 +546,10 @@ export class LmSpacetimeDiagramComponent {
   readonly height = input(200);
   readonly showLabels = input(true);
   readonly axisOpacity = input(1);
-  readonly showLightCone = input(true);
+  /** Vertical-axis label. Epstein space-proper-time diagrams plot proper time. */
+  readonly timeAxisLabel = input('Proper time');
+  /** Horizontal-axis label (space). */
+  readonly spaceAxisLabel = input('Space');
   readonly showWorldline = input(true);
   readonly showDot = input(true);
   readonly vectorStroke = input(2.4);
@@ -588,16 +575,15 @@ export class LmSpacetimeDiagramComponent {
   readonly wavefrontShowObserverC = input(true);
   readonly wavefrontSignal = input<'ray' | 'ring' | 'horizontal'>('ring');
 
-  // Twin-paradox worldlines (time vertical). Stay-at-home A is a straight
-  // vertical worldline at x = 0; traveller B goes out at +twinVOverC and
-  // returns, with a corner at twinTurnaround (fraction of the total trip).
+  // Twin-paradox worldlines on an Epstein space-proper-time diagram (proper time
+  // τ vertical, space x horizontal). Stay-at-home A climbs straight up the τ-axis;
+  // traveller B goes out at +twinVOverC and returns, banking less proper time, so
+  // B's bent path ends lower on the τ-axis. The corner is at twinTurnaround
+  // (fraction of the total coordinate-time trip).
   readonly twinVOverC = input(0.6);
   readonly twinTurnaround = input(0.5);
   /** Fraction of the journey elapsed (0–1); worldlines are drawn up to here. */
   readonly twinProgress = input(1);
-  /** Draw the light-signal (null) lines exchanged between the twins. */
-  readonly twinShowPulses = input(false);
-  readonly twinPulseCount = input(6);
 
   protected readonly left = 70;
   protected readonly right = 610;
@@ -865,10 +851,6 @@ export class LmSpacetimeDiagramComponent {
 
   protected get fullPointY(): number {
     return this.fullBottom - this.time() * this.fullTimeAxisSpan;
-  }
-
-  protected get lightConeEndX(): number {
-    return this.left + this.fullTimeAxisSpan;
   }
 
   protected get maxVectorAngleRad(): number {
@@ -1224,51 +1206,77 @@ export class LmSpacetimeDiagramComponent {
     };
   }
 
-  // ── Twin-paradox geometry (time vertical, c = 1, total trip time = 1) ──────
+  // ── Twin-paradox geometry: Epstein space-proper-time (τ vertical, x horizontal) ──
+  // Everything advances through spacetime at c. Over a slice of coordinate time dt at
+  // speed v, a worldline banks Δτ = dt·√(1−v²) of proper time and crosses Δx = dt·v of
+  // space, so its segment leans asin(v) off the τ-axis. Stay-at-home A (v = 0) climbs
+  // straight up; traveller B's bent path banks less proper time and ends lower on the
+  // τ-axis. Coordinate time is normalised to 1 over the whole round trip.
 
-  private get twinUnit(): number {
-    // Equal pixel scale for x and t keeps light signals at 45° (light-cone convention).
-    return this.fullTimeAxisSpan;
-  }
-
-  /** Horizontal offset so A's worldline (x = 0) sits just inside the t-axis. */
+  /** Horizontal offset so A's worldline (x = 0) sits just inside the τ-axis. */
   private readonly twinOriginPad = 22;
 
-  private twinPx(x: number, t: number): { x: number; y: number } {
+  private twinLegs(): {
+    v1: number;
+    k1: number;
+    v2: number;
+    k2: number;
+    tTurn: number;
+    xMax: number;
+    tauTurn: number;
+    tauTop: number;
+  } {
+    const v1 = Math.min(0.999, Math.max(0, this.twinVOverC()));
+    const tTurn = Math.min(0.999, Math.max(0.001, this.twinTurnaround()));
+    const xMax = v1 * tTurn;
+    const v2 = Math.min(0.999, xMax / (1 - tTurn));
+    const k1 = Math.sqrt(1 - v1 * v1);
+    const k2 = Math.sqrt(1 - v2 * v2);
+    const tauTurn = k1 * tTurn;
+    const tauTop = tauTurn + k2 * (1 - tTurn);
+    return { v1, k1, v2, k2, tTurn, xMax, tauTurn, tauTop };
+  }
+
+  /** Equal pixel scale for x and τ; the full trip (τ = 1) fills the vertical axis. */
+  private get twinUnit(): number {
+    const legs = this.twinLegs();
+    const byHeight = this.fullTimeAxisSpan;
+    const byWidth = (this.right - this.left - 60) / Math.max(legs.xMax, 1e-3);
+    return Math.min(byHeight, byWidth);
+  }
+
+  private twinPx(x: number, tau: number): { x: number; y: number } {
     return {
       x: this.left + this.twinOriginPad + x * this.twinUnit,
-      y: this.fullBottom - t * this.twinUnit,
+      y: this.fullBottom - tau * this.twinUnit,
     };
   }
 
-  private get twinXMax(): number {
-    return this.twinVOverC() * this.twinTurnaround();
-  }
-
-  /** Traveller position at coordinate time t along the out-and-back path. */
-  private twinTravellerX(t: number): number {
-    const tTurn = this.twinTurnaround();
-    const v = this.twinVOverC();
-    if (t <= tTurn) {
-      return v * t;
+  /** Traveller position (space, proper time) at coordinate-time fraction p. */
+  private twinTravellerPoint(p: number): { x: number; tau: number } {
+    const legs = this.twinLegs();
+    if (p <= legs.tTurn) {
+      return { x: legs.v1 * p, tau: legs.k1 * p };
     }
-    return this.twinXMax - v * (t - tTurn);
+    const dp = p - legs.tTurn;
+    return { x: legs.xMax - legs.v2 * dp, tau: legs.tauTurn + legs.k2 * dp };
   }
 
   protected twinWorldlines(): TwinWorldline[] {
     const p = Math.min(1, Math.max(0, this.twinProgress()));
-    const tTurn = this.twinTurnaround();
+    const legs = this.twinLegs();
 
     const aStart = this.twinPx(0, 0);
     const aEnd = this.twinPx(0, p);
-    const aLabel = this.twinPx(0, Math.min(p, 1));
 
     const bPoints: { x: number; y: number }[] = [this.twinPx(0, 0)];
-    if (p <= tTurn) {
-      bPoints.push(this.twinPx(this.twinTravellerX(p), p));
+    if (p <= legs.tTurn) {
+      const pt = this.twinTravellerPoint(p);
+      bPoints.push(this.twinPx(pt.x, pt.tau));
     } else {
-      bPoints.push(this.twinPx(this.twinXMax, tTurn));
-      bPoints.push(this.twinPx(this.twinTravellerX(p), p));
+      bPoints.push(this.twinPx(legs.xMax, legs.tauTurn));
+      const pt = this.twinTravellerPoint(p);
+      bPoints.push(this.twinPx(pt.x, pt.tau));
     }
     const bTip = bPoints[bPoints.length - 1];
 
@@ -1277,8 +1285,8 @@ export class LmSpacetimeDiagramComponent {
         id: 'a',
         points: `${aStart.x},${aStart.y} ${aEnd.x},${aEnd.y}`,
         color: 'var(--lm-accent-1)',
-        labelX: aLabel.x - 16,
-        labelY: aLabel.y + 4,
+        labelX: aEnd.x - 16,
+        labelY: aEnd.y + 4,
         label: 'A',
       },
       {
@@ -1293,79 +1301,54 @@ export class LmSpacetimeDiagramComponent {
   }
 
   protected twinShowTurnaround(): boolean {
-    return this.twinProgress() >= this.twinTurnaround() - 1e-6;
+    return this.twinProgress() >= this.twinLegs().tTurn - 1e-6;
   }
 
   protected twinTurnaroundDot(): { x: number; y: number } {
-    return this.twinPx(this.twinXMax, this.twinTurnaround());
+    const legs = this.twinLegs();
+    return this.twinPx(legs.xMax, legs.tauTurn);
   }
 
   protected twinDots(): TwinDot[] {
     const p = Math.min(1, Math.max(0, this.twinProgress()));
     const a = this.twinPx(0, p);
-    const b = this.twinPx(this.twinTravellerX(p), p);
+    const bp = this.twinTravellerPoint(p);
+    const b = this.twinPx(bp.x, bp.tau);
     return [
       { id: 'a', x: a.x, y: a.y, color: 'var(--lm-accent-1)' },
       { id: 'b', x: b.x, y: b.y, color: 'var(--lm-accent-2)' },
     ];
   }
 
-  protected twinPulses(): TwinPulse[] {
-    if (!this.twinShowPulses()) {
-      return [];
+  /**
+   * At the reunion (both back at x = 0) the proper-time difference is read straight
+   * off the τ-axis: A sits higher than B by 1 − tauTop. Drawn only once the trip
+   * completes, as a dashed bracket between the two endpoints.
+   */
+  protected twinAgeGap(): {
+    x: number;
+    yA: number;
+    yB: number;
+    yLabel: number;
+    label: string;
+  } | null {
+    if (this.twinProgress() < 1 - 1e-6) {
+      return null;
     }
-    const n = this.twinPulseCount();
-    const v = this.twinVOverC();
-    const tTurn = this.twinTurnaround();
-    const pulses: TwinPulse[] = [];
-
-    // A → B: right-going null rays emitted from the t-axis at equal intervals.
-    for (let k = 1; k <= n; k++) {
-      const t0 = (k * 1) / (n + 1);
-      let tHit = t0 / (1 - v);
-      if (tHit > tTurn) {
-        tHit = (t0 + 2 * v * tTurn) / (1 + v);
-      }
-      if (tHit > 1 + 1e-9 || tHit < t0) {
-        continue;
-      }
-      const from = this.twinPx(0, t0);
-      const to = this.twinPx(this.twinTravellerX(tHit), tHit);
-      pulses.push({
-        id: `ab-${k}`,
-        x1: from.x,
-        y1: from.y,
-        x2: to.x,
-        y2: to.y,
-        color: 'var(--lm-accent-1)',
-      });
-    }
-
-    // B → A: left-going null rays emitted along B's worldline, received on the t-axis.
-    for (let k = 1; k <= n; k++) {
-      const te = (k * 1) / (n + 1);
-      const xe = this.twinTravellerX(te);
-      const tA = te + xe;
-      if (tA > 1 + 1e-9) {
-        continue;
-      }
-      const from = this.twinPx(xe, te);
-      const to = this.twinPx(0, tA);
-      pulses.push({
-        id: `ba-${k}`,
-        x1: from.x,
-        y1: from.y,
-        x2: to.x,
-        y2: to.y,
-        color: 'var(--lm-accent-2)',
-      });
-    }
-
-    return pulses;
+    const legs = this.twinLegs();
+    const a = this.twinPx(0, 1);
+    const b = this.twinPx(0, legs.tauTop);
+    return {
+      x: a.x,
+      yA: a.y,
+      yB: b.y,
+      yLabel: (a.y + b.y) / 2 + 4,
+      label: 'age gap',
+    };
   }
 
   private twinPlotRight(): number {
-    return this.twinPx(this.twinXMax, 0).x + 28;
+    return this.twinPx(this.twinLegs().xMax, 0).x + 28;
   }
 
   private twinContentBounds(): {
@@ -1375,7 +1358,7 @@ export class LmSpacetimeDiagramComponent {
     height: number;
   } {
     const minX = this.left - 24;
-    const maxX = this.twinPlotRight() + 12;
+    const maxX = this.twinPlotRight() + 24;
     const minY = this.fullTop - 16;
     const maxY = this.fullBottom + 20;
     return { minX, minY, width: maxX - minX, height: maxY - minY };

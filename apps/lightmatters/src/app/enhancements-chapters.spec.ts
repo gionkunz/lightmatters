@@ -28,9 +28,11 @@ describe('enhancements chapter narration', () => {
       'libs/features/chapter-08-twin-paradox/src/lib/steps/step-04-doppler-count.ts',
     );
 
-    it('distinguishes Minkowski 45° from speed-budget convention', () => {
-      expect(texts).toMatch(/45°/);
-      expect(texts).toMatch(/speed-budget/i);
+    it('counts flashes without invoking a Minkowski 45° convention', () => {
+      // Epstein-only: the twin chapter no longer switches to a 45° light convention.
+      expect(texts).not.toMatch(/45°/);
+      expect(texts).toMatch(/count/i);
+      expect(texts).toMatch(/proper time/i);
     });
   });
 

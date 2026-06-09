@@ -9,7 +9,6 @@ export type DiagramVariant =
   | 'bend'
   | 'vector'
   | 'source'
-  | 'lightcone'
   | 'contraction'
   | 'twin'
   | 'emwave';
@@ -68,7 +67,7 @@ export const CHAPTERS: readonly ChapterPreview[] = [
     n: 6,
     title: 'The same speed of light',
     blurb: 'Every observer measures the same c — the postulate made visible.',
-    mini: 'lightcone',
+    mini: 'wavefront',
     minutes: 7,
   },
   {

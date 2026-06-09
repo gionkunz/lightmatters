@@ -86,7 +86,7 @@ import { STEP_04_DOPPLER_COUNT } from './step-04-doppler-count';
             class="flex min-h-0 flex-1 flex-col bg-paper-alt px-[26px] pb-[18px] pt-[22px]"
           >
             <lm-kicker [opacity]="0.55" class="mb-3.5">
-              light pulses · 45° null lines
+              doppler counting · proper-time totals
             </lm-kicker>
             <div class="flex min-h-0 flex-1 items-center justify-center">
               <lm-diagram-viewport #diagramVp [aspectRatio]="520 / 420">
@@ -97,8 +97,6 @@ import { STEP_04_DOPPLER_COUNT } from './step-04-doppler-count';
                   [twinVOverC]="vOverC()"
                   [twinTurnaround]="turnaround"
                   [twinProgress]="1"
-                  [twinShowPulses]="true"
-                  [twinPulseCount]="pulseCount()"
                 />
               </lm-diagram-viewport>
             </div>
@@ -148,7 +146,6 @@ export class Step04Component implements OnInit, OnDestroy {
   protected readonly turnaround = TWIN_TURNAROUND;
 
   protected readonly vOverC = signal(TWIN_V_OVER_C);
-  protected readonly pulseCount = computed(() => TWIN_TOTAL_YEARS);
   protected readonly readout = computed(() => {
     const { stayHomeYears, travellerYears } = twinProperTimes(
       TWIN_TOTAL_YEARS,

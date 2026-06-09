@@ -41,7 +41,7 @@ export const STEP_01_ALWAYS_AT_C: Step = {
     },
     {
       type: 'narrate',
-      text: "That's how light moves through spacetime — at $c$ through space, and completely timeless!",
+      text: 'Light is the edge of the budget — all of it spent on space, and completely timeless. (Strictly, the "everything moves at $c$" picture is drawn for things with mass; light is the limit they never quite reach.)',
       pauseAfter: BEAT_PAUSE_MS,
     },
     { type: 'sound', sound: 'tilt', volume: 0.55 },

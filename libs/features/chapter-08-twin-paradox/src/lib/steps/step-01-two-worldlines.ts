@@ -15,7 +15,7 @@ export const STEP_01_TWO_WORLDLINES: Step = {
     },
     {
       type: 'narrate',
-      text: 'Draw it on the spacetime diagram — time running **up**, space across. $A$\'s path is a straight vertical line: standing still is still moving through time.',
+      text: 'Draw it the Epstein way — **proper time** running up, space across. $A$ never moves through space, so all of $A$\'s budget goes into time: a straight line climbing the proper-time axis.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     { type: 'sound', sound: 'expand', volume: 0.45 },
@@ -29,7 +29,7 @@ export const STEP_01_TWO_WORLDLINES: Step = {
     },
     {
       type: 'narrate',
-      text: '$B$\'s path bends. Out to the right, then a sharp **corner** at the turnaround, then back to meet $A$ again. Same two endpoints, two very different routes.',
+      text: '$B$\'s path leans. Out to the right, a sharp **corner** at the turnaround, then back to the same place in space. Same launch, same meeting point — but watch how $B$\'s bent path climbs **less** proper time.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
