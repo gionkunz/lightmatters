@@ -10,7 +10,7 @@ export const STEP_05_OUTRO: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'The twin paradox was never really a paradox. It is the deepest lesson of flat spacetime: **proper time is the length of your path through it.**',
+      text: 'The twin paradox was never really a paradox. It is the deepest lesson of flat space and time: **proper time is the length of your path through it.**',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -20,7 +20,7 @@ export const STEP_05_OUTRO: Step = {
     },
     {
       type: 'narrate',
-      text: 'That single idea — clocks measure path length — is the doorway out of flat spacetime. Next we let gravity bend the paths themselves, and the same rule keeps working.',
+      text: 'That single idea — clocks measure path length — is the doorway out of flat space and time. Next we let gravity bend the paths themselves, and the same rule keeps working.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

@@ -39,7 +39,7 @@ import { ViewportResolutionHintService } from '../viewport/viewport-resolution-h
           <p
             class="text-pretty font-serif text-[length:var(--lm-text-chrome)] leading-normal text-ink opacity-[0.82]"
           >
-            A guided tour through spacetime — paper, vectors, light cones, and
+            A guided tour through space and time — paper, vectors, and
             gravity wells — that builds intuition before you ever see an
             equation.
           </p>

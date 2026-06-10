@@ -35,7 +35,7 @@ export const STEP_03_NO_TIME: Step = {
     },
     {
       type: 'narrate',
-      text: 'For **you**, that journey took about **2.5 million years**. But light travels at the absolute speed limit — every bit of the spacetime budget spent on space, none on time.',
+      text: 'For **you**, that journey took about **2.5 million years**. But light travels at the absolute speed limit — every bit of the budget spent on space, none on time.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

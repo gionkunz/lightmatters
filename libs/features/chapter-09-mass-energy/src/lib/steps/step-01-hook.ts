@@ -15,7 +15,7 @@ export const STEP_01_HOOK: Step = {
     },
     {
       type: 'narrate',
-      text: 'It looks like it belongs to a different story — bombs, reactors, stars — not to the patient geometry of spacetime we have been drawing all along.',
+      text: 'It looks like it belongs to a different story — bombs, reactors, stars — not to the patient geometry of space and time we have been drawing all along.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

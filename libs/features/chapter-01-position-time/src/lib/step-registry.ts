@@ -16,7 +16,7 @@ export interface StepEntry {
 
 export const CHAPTER_01_TOTAL_STEPS = 6;
 
-export const CHAPTER_01_TITLE = 'Position, time, spacetime';
+export const CHAPTER_01_TITLE = 'Position, time, together';
 /** Journey URL chapter (`/chapter/1/...`). */
 export const CHAPTER_01_POSITION_TIME_ROUTE_NUMBER = 1;
 

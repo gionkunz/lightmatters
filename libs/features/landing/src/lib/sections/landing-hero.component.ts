@@ -34,7 +34,7 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
           class="mt-7 max-w-[520px] text-pretty font-serif text-xl leading-normal text-ink opacity-[0.78]"
         >
           A guided journey of small interactive experiments — paper, vectors,
-          light cones, gravity wells — that build intuition for spacetime before
+          gravity wells — that build intuition for space and time before
           you ever see an equation.
         </p>
         <div class="mt-9 flex items-center gap-[18px]">
@@ -66,7 +66,7 @@ import { LmDiagramPlaceholderComponent } from '../placeholders/diagram-placehold
           <div
             class="mb-[18px] min-h-16 text-pretty font-serif text-[length:var(--lm-text-narrator)] leading-[1.4] text-ink"
           >
-            You are always moving through spacetime at the speed of light. You
+            You are always moving through space and time at the speed of light. You
             only choose how to spend it.
           </div>
           <div class="flex justify-center">

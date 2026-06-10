@@ -25,7 +25,7 @@ export const STEP_07_REALITY: Step = {
     },
     {
       type: 'narrate',
-      text: 'Gravitational waves ripple spacetime at the same limit. Nothing outruns $c$. Cause cannot reach effect faster than this — anywhere in the universe.',
+      text: 'Gravitational waves ripple space and time at the same limit. Nothing outruns $c$. Cause cannot reach effect faster than this — anywhere in the universe.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

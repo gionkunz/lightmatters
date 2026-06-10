@@ -20,17 +20,17 @@ export const STEP_06_PAYOFF: Step = {
     },
     {
       type: 'narrate',
-      text: 'Mass is simply energy that is standing still — bottled spacetime motion, the rest energy of Chapter 3 given a name.',
+      text: 'Mass is simply energy that is standing still — bottled motion through space and time, the rest energy of Chapter 3 given a name.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
-      text: 'And this is the hinge of the whole journey. If mass and energy are the same thing, then it is **mass-energy** — not mass alone — that bends spacetime.',
+      text: 'And this is the hinge of the whole journey. If mass and energy are the same thing, then it is **mass-energy** — not mass alone — that bends space and time.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
-      text: 'We have wrung everything we can from flat spacetime. Next, we let it curve. Time to roll the diagram — and meet gravity.',
+      text: 'We have wrung everything we can from flat space and time. Next, we let it curve. Time to roll the diagram — and meet gravity.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

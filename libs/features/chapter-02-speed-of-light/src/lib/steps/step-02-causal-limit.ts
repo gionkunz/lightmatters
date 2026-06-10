@@ -43,7 +43,7 @@ export const STEP_02_CAUSAL_LIMIT: Step = {
     },
     {
       type: 'narrate',
-      text: 'Light itself sits on the rim — all budget through space, none through time. That direction is the fastest anything can move through spacetime.',
+      text: 'Light itself sits on the rim — all budget through space, none through time. That direction is the fastest anything can move through space and time.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

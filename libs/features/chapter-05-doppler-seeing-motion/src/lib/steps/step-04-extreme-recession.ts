@@ -34,7 +34,7 @@ export const STEP_04_EXTREME_RECESSION: Step = {
     },
     {
       type: 'narrate',
-      text: 'Flat spacetime has one more trick: bend the diagram.',
+      text: 'Flat space and time has one more trick: bend the diagram.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

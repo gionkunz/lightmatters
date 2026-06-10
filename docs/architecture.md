@@ -12,7 +12,7 @@ Light Matters is a single-page application. The page is structured as a stack of
 2. **Visualization layer(s)** (SVG and/or WebGL canvases) — the diagrams the narrator refers to.
 3. **Control layer** (HTML, near the visualization) — sliders, buttons, and other inputs the user can manipulate.
 
-At any moment, at most two visualization canvases are on screen — typically one 2D diagram (often the recurring spacetime diagram) and one 3D scene (e.g. a gravity-well cone). All of them are orchestrated by the same engine.
+At any moment, at most two visualization canvases are on screen — typically one 2D diagram (often the recurring space and proper-time diagram) and one 3D scene (e.g. a gravity-well cone). All of them are orchestrated by the same engine.
 
 ```
 ┌────────────────────────────────────────────────────┐
@@ -31,7 +31,7 @@ At any moment, at most two visualization canvases are on screen — typically on
 ## Tech stack
 
 - **Framework:** Angular. Light Matters is genuinely an application — stateful, interactive, multi-component — not a document site. Angular's component model, dependency injection, and reactive primitives (signals, RxJS) match the orchestration this product needs.
-- **3D rendering:** **Three.js** for Chapters 6–8 curved-spacetime wireframes (`lm-curved-surface`). Chosen after an ogl prototype proved too fragile for morphing line geometry and oblique camera reads. Physics stays in `@lm/physics`; the renderer boundary remains swappable.
+- **3D rendering:** **Three.js** for Chapters 6–8 curved space and time wireframes (`lm-curved-surface`). Chosen after an ogl prototype proved too fragile for morphing line geometry and oblique camera reads. Physics stays in `@lm/physics`; the renderer boundary remains swappable.
 - **2D rendering:** SVG for diagrams. Lightweight, accessible, easy to author, animates smoothly for the small element counts we expect. 2D canvas as a fallback only if a specific diagram demands it.
 - **Animation:** custom timeline engine (see below), driven by `requestAnimationFrame`. Interpolation is hand-rolled (linear + a small library of easings) rather than wrapping GSAP/anime.js — the animation system *is* the narrative system, so a thin coordinator is cleaner than bridging an external library's lifecycle.
 - **State:** Angular signals for component-local and shared reactive state. A small step-scoped store for the active timeline and its variables.
@@ -70,7 +70,7 @@ lightmatters/                          ← workspace root
     engine/                            ← timeline runner, narrator, step frame, playback bar, step-page host
     physics/                           ← pure functions: lorentz, time-dilation, doppler, geodesics
     primitives/
-      spacetime-diagram/               ← the reusable 2D spacetime diagram (time vertical)
+      spacetime-diagram/               ← the reusable 2D space and proper-time diagram (proper time vertical)
       light-circle/                    ← expanding wavefront primitive
       velocity-vector/                 ← (planned) twin-vector pair; single vector lives in spacetime-diagram for now
       curved-surface/                  ← cylinder ↔ cone ↔ gravity-well surface (3D)
@@ -174,7 +174,7 @@ export const step: Step = {
   title: 'The speed budget',
   visualizations: ['spacetime-diagram'],
   timeline: [
-    { at: 0,    narrate: 'Every object moves through spacetime at the same speed.' },
+    { at: 0,    narrate: 'Every object moves through space and time at the same speed.' },
     { at: 1.5,  animate: { target: 'vector.angle', from: 0,    to: 90, duration: 2 } },
     { wait:     { for: 'animationDone' } },
     { narrate:  'When you stand still, all of that speed flows through time.' },
@@ -228,14 +228,14 @@ The product is built from a small set of reusable visual components. Each primit
 - Renders consistently with the project's line-art aesthetic.
 - Can appear in either a 2D (SVG) or a 3D (WebGL) context where appropriate.
 
-### The spacetime diagram
+### The space and proper-time diagram
 
 The single most important primitive. It is essentially:
 
-- An axis system: **time vertical, space horizontal** (matches Epstein and physics tradition).
+- An axis system: **proper time vertical, space horizontal** (the Epstein convention).
 - A configurable viewport (zoom, pan, axis ranges).
 - A set of slots into which other primitives (vectors, light circles, worldlines, points) can be inserted.
-- Optionally, a "fold" transform that can morph the diagram from a flat plane into a cylinder or cone — this is the bridge between Chapter 1's flat diagram and Chapter 3's cone geometry. The 2D and 3D renderings of the spacetime diagram should be the **same conceptual object**, just rendered differently.
+- Optionally, a "fold" transform that can morph the diagram from a flat plane into a cylinder or cone — this is the bridge between Chapter 1's flat diagram and Chapter 3's cone geometry. The 2D and 3D renderings of the space and proper-time diagram should be the **same conceptual object**, just rendered differently.
 
 **Incremental variants.** Chapter 1 grows the diagram one concept at a time:
 
@@ -243,10 +243,10 @@ The single most important primitive. It is essentially:
 |---------|----------------|---------------|
 | `position-only` | Step 1 | Horizontal spatial axis, movable point — no time axis yet |
 | `time-only` | Step 2 | Vertical time axis, movable point — no space axis yet |
-| `full` | Step 3 | Both axes, light cone, worldline segment from origin to `(position, time)` |
-| `single` | Step 4 | Both axes, light cone, fixed-length **velocity vector** from origin; angle driven by `velocity` (v/c, 0 = pure time, 1 = light cone) |
+| `full` | Step 3 | Both axes, worldline segment from origin to `(position, time)` |
+| `single` | Step 4 | Both axes, fixed-length **velocity vector** from origin; angle driven by `velocity` (v/c, 0 = pure proper time, 1 = light, lying flat along the space axis) |
 
-Steps 5–6 will extend the vocabulary further. The `pair` twin-vector variant (Chapter 2 speed-budget comparison) and decorative vector swing animation remain deferred. See `visual-guidelines.md` §8 for stroke, arrowhead, and light-cone conventions.
+Steps 5–6 will extend the vocabulary further. The `pair` twin-vector variant (Chapter 2 speed-budget comparison) and decorative vector swing animation remain deferred. See `visual-guidelines.md` §8 for stroke and arrowhead conventions.
 
 ### The curved surface
 
@@ -322,9 +322,9 @@ On invalid **app-level** routes, redirect to `/` (landing). Unknown **step numbe
 
 ### v1.0 journey map (locked)
 
-Thirteen chapters; flat spacetime (SR) 1–10, curved spacetime (GR) 11–13:
+Thirteen chapters; flat space and time (SR) 1–10, curved space and time (GR) 11–13:
 
-1 Position, time, spacetime · 2 The speed of light · 3 The speed budget · 4 Light and information · 5 The ether was wrong · 6 The same speed of light · 7 Clocks & rulers · 8 Doppler and seeing motion · 9 The twin paradox · 10 Mass is energy (E=mc²) · 11 Rolling the diagram · 12 The center of the Earth · 13 Light bending around mass.
+1 Position, time, together · 2 The speed of light · 3 The speed budget · 4 Light and information · 5 The ether was wrong · 6 The same speed of light · 7 Clocks & rulers · 8 Doppler and seeing motion · 9 The twin paradox · 10 Mass is energy (E=mc²) · 11 Rolling the diagram · 12 The center of the Earth · 13 Light bending around mass.
 
 Chapter 2 was added by `add-speed-of-light-chapter`. Chapters 6–7, 9–10 are from `add-c-invariance-and-twin-paradox`, `add-light-clock-and-length-contraction`, and `add-matter-and-emc2`. Earlier renumbering (Doppler, Rolling, Center, Bending) is in `reorder-chapters-and-route-scheme`.
 
@@ -412,10 +412,10 @@ When adding a chapter step, update the chapter's `chapter-steps.ts` (exported `C
 4. ~~**Landing feature**~~ at `libs/features/landing`. Done.
 5. ~~**The `TimelineRunner`**~~ in `libs/engine` with `narrate`, `animate`, `wait`, skip, read pause, pause/resume, rewind, and progress tracking. Done.
 6. ~~**The `Narrator` component**~~ in `libs/engine` — per-letter fade-in reveal driven by the timeline. Done.
-7. ~~**End-to-end step + spacetime diagram primitive.**~~ Done as Chapter 1 Step 1 (`position-only` variant + `LmSlider`).
+7. ~~**End-to-end step + space and proper-time diagram primitive.**~~ Done as Chapter 1 Step 1 (`position-only` variant + `LmSlider`).
 8. **Chapter 1** as `libs/features/chapter-01-position-time` — Steps 1–4 authored (`position-only` → `time-only` → `full` → `single` / speed budget); steps 5–6 remain. Step-to-step footer navigation wired through step 4. Add an `nx g chapter` generator while authoring the rest so chapters 2+ are one command.
 9. ~~**Inline math in narration.**~~ Done — `$...$` LaTeX in narrate strings, MathJax v4 lazy load, atomic math reveal in typewriter.
 10. **Chapter-index and design-sheet features** at `libs/features/chapter-index` and `libs/features/design-sheet`, both lazy-loaded from the shell.
 11. **WebGL rendering** — `libs/primitives/curved-surface` (Three.js) for cylinder/cone wireframes in Chapter 6+.
 12. **Expand the timeline event set** (`bind`, `branch`, `trigger`) as Chapter 2 and Chapter 3 demand them.
-13. **Chapter 2, then Chapter 3.** Chapter 2 (speed budget) and the bridge step are authored. Chapter 3 (light and information) is authored on a new `libs/primitives/light-scene` primitive — top-down 2-D space, expanding pulse circles, no time axis — alongside `@lm/physics` reception helpers (`pulseReachesStationary`, `pulseReachesMoving`). The Epstein spacetime diagram returns in Chapter 6. From here, further chapters are mostly content on top of `light-scene`, `spacetime-diagram`, and (later) `curved-surface`.
+13. **Chapter 2, then Chapter 3.** Chapter 2 (speed budget) and the bridge step are authored. Chapter 3 (light and information) is authored on a new `libs/primitives/light-scene` primitive — top-down 2-D space, expanding pulse circles, no time axis — alongside `@lm/physics` reception helpers (`pulseReachesStationary`, `pulseReachesMoving`). The Epstein space and proper-time diagram returns in Chapter 6. From here, further chapters are mostly content on top of `light-scene`, `spacetime-diagram`, and (later) `curved-surface`.

@@ -28,7 +28,7 @@ import { LmKickerComponent } from '@lm/design';
           >
             The deepest debt is to Epstein and his book
             <em>Relativity Visualized</em>. Folded paper, cones on the rim,
-            vectors on a spacetime diagram — he showed that relativity could be
+            vectors on a space and proper-time diagram — he showed that relativity could be
             held in the hand and tilted until it clicked. Light Matters is a
             love letter to that way of seeing. If anything here makes sense,
             the credit is mostly his.
@@ -80,7 +80,7 @@ export class LandingAcknowledgmentsComponent {
     },
     {
       name: 'Albert Einstein',
-      role: 'Spacetime geometry as physics — special relativity, then general.',
+      role: 'The geometry of space and time as physics — special relativity, then general.',
     },
     {
       name: 'Hermann Minkowski',

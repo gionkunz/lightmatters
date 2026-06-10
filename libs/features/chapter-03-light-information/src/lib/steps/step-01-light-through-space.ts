@@ -10,7 +10,7 @@ export const STEP_01_LIGHT_THROUGH_SPACE: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'New camera. The spacetime diagram is gone — both axes here are **space**, and we are looking down on it from above. Time is now the animation, not a line on the page.',
+      text: 'New camera. The space and proper-time diagram is gone — both axes here are **space**, and we are looking down on it from above. Time is now the animation, not a line on the page.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

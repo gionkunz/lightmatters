@@ -10,7 +10,7 @@ export const STEP_01_TIME_ONLY: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'The spacetime diagram, **laid flat**. **Space** runs up the left edge; **time** runs along the bottom. A body at rest in space sits at one place in space and moves only through time — a line **parallel** to the time axis, slightly offset so we can see it.',
+      text: 'The space and proper-time diagram, **laid flat**. **Space** runs up the left edge; **time** runs along the bottom. A body at rest in space sits at one place in space and moves only through time — a line **parallel** to the time axis, slightly offset so we can see it.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     { type: 'sound', sound: 'expand', volume: 0.45 },

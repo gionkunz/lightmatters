@@ -71,12 +71,12 @@ export const STEP_08_SPECTRUM: Step = {
     },
     {
       type: 'narrate',
-      text: 'The same $c$ governs radio, heat, and the forces that hold atoms together. Later we will see that **mass itself is bottled energy** — and energy is motion through spacetime at $c$.',
+      text: 'The same $c$ governs radio, heat, and the forces that hold atoms together. Later we will see that **mass itself is bottled energy** — and energy is motion through space and time at $c$.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
       type: 'narrate',
-      text: 'For now, hold one idea: every object shares a single, fixed budget of speed through spacetime — and next we will see how to spend it.',
+      text: 'For now, hold one idea: every object shares a single, fixed budget of speed through space and time — and next we will see how to spend it.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

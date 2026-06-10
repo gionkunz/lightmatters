@@ -10,7 +10,7 @@ export const STEP_02_REST_ENERGY: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'Recall the speed budget: everything moves through spacetime at the same speed, $c$. Standing still, you spend all of that budget moving through **time**.',
+      text: 'Recall the speed budget: everything moves through space and time at the same speed, $c$. Standing still, you spend all of that budget moving through **time**.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

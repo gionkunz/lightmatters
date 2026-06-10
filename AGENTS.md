@@ -18,7 +18,7 @@ nx affected -t lint test build --tui=false  # only what changed
 
 ## What this is
 
-Light Matters (lightmatters.app) is an interactive web app that builds intuition for special and general relativity through a guided journey of small, narrated, interactive steps. Heavy inspiration from Lewis Carroll Epstein's _Relativity Visualized_. **Engine-first design:** a small timeline-driven engine with reusable visual primitives (spacetime diagram, expanding light circles, cone / curved-surface, etc.) on which chapters and steps are authored as small TypeScript modules.
+Light Matters (lightmatters.app) is an interactive web app that builds intuition for special and general relativity through a guided journey of small, narrated, interactive steps. Heavy inspiration from Lewis Carroll Epstein's _Relativity Visualized_. **Engine-first design:** a small timeline-driven engine with reusable visual primitives (space and proper-time diagram, expanding light circles, cone / curved-surface, etc.) on which chapters and steps are authored as small TypeScript modules.
 
 ### Always-loaded context
 
@@ -43,7 +43,7 @@ See `docs/architecture.md` for full reasoning. Highlights so you don't re-litiga
 - **Interactive elements glow.** Diagrams stay quiet linework. The halo is the contract that says "you can grab this."
 - **Engine:** custom timeline runner with five event types (`narrate`, `animate`, `wait`, `bind`, `trigger`). `branch` deferred until a step needs it.
 - **Tweening:** hand-rolled easings, no GSAP/anime.js wrapper.
-- **Spacetime diagram convention:** time vertical, space horizontal.
+- **Space and proper-time (Epstein) diagram convention:** proper time vertical, space horizontal. No Minkowski spacetime diagrams or light cones anywhere; light lies flat along the space axis.
 - **Routing:** per-step URLs (`/chapter/:chapter/step/:step`, unpadded integers), standard Angular Router. (Legacy `/ch/:c/step/:s` is retired; see `openspec/changes/reorder-chapters-and-route-scheme`.)
 - **Visualization lifecycle:** always remount per step. No cross-step persistence; continuity is achieved via continuous starting parameters.
 - **Parameter state:** resets on every step entry. Re-visiting a step replays it from defaults.

@@ -173,7 +173,7 @@ export const STEP_06_ESCAPE: Step = {
     },
     {
       type: 'narrate',
-      text: "Turn **spatial motion** all the way up: the worldline is nearly a **straight line** through the folded spacetime — out through the bulge and into outer space on the far side. That is **light** crossing **Earth's** gravity. The well is so shallow that the bend is barely visible in our demo.",
+      text: "Turn **spatial motion** all the way up: the worldline is nearly a **straight line** through the folded space and time — out through the bulge and into outer space on the far side. That is **light** crossing **Earth's** gravity. The well is so shallow that the bend is barely visible in our demo.",
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

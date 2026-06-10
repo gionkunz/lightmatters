@@ -25,7 +25,7 @@ export const STEP_03_ASYMMETRY: Step = {
     },
     {
       type: 'narrate',
-      text: 'Stay-at-home $A$ logs the full **10 years**. Traveller $B$, at $0.6\\,c$, logs only **8**. The straight worldline wins. $B$ comes home genuinely **2 years younger** — no clock was broken, the paths were just different lengths through spacetime.',
+      text: 'Stay-at-home $A$ logs the full **10 years**. Traveller $B$, at $0.6\\,c$, logs only **8**. The straight worldline wins. $B$ comes home genuinely **2 years younger** — no clock was broken, the paths were just different lengths through space and time.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

@@ -12,7 +12,7 @@ export const STEP_01_ALWAYS_AT_C: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'Welcome to the speed budget — the idea Chapter 1 teased with the tilting vector. Everything in the universe moves through spacetime at exactly $c$. Not almost — exactly.',
+      text: 'Welcome to the speed budget — the idea Chapter 1 teased with the tilting vector. Everything in the universe moves through space and time at exactly $c$. Not almost — exactly.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -22,7 +22,7 @@ export const STEP_01_ALWAYS_AT_C: Step = {
     },
     {
       type: 'narrate',
-      text: "Not that I'm calling you lazy — but this is how we usually move through spacetime. Nearly all time, almost no space. We never get anywhere near relativistic speeds.",
+      text: "Not that I'm calling you lazy — but this is how we usually move through space and time. Nearly all time, almost no space. We never get anywhere near relativistic speeds.",
       pauseAfter: BEAT_PAUSE_MS,
     },
     { type: 'sound', sound: 'tilt', volume: 0.55 },

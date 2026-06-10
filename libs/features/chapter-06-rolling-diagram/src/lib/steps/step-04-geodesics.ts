@@ -10,7 +10,7 @@ export const STEP_04_GEODESICS: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'Draw a **straight line** on the cone — as straight as the surface allows. That is a geodesic: the natural path through curved spacetime.',
+      text: 'Draw a **straight line** on the cone — as straight as the surface allows. That is a geodesic: the natural path through curved space and time.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     { type: 'sound', sound: 'expand', volume: 0.45 },
@@ -38,7 +38,7 @@ export const STEP_04_GEODESICS: Step = {
     },
     {
       type: 'narrate',
-      text: 'Straight on the surface, curved in space. That is gravity — not a force pulling inward, just the shape of spacetime decides.',
+      text: 'Straight on the surface, curved in space. That is gravity — not a force pulling inward, just the shape of space and time decides.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

@@ -29,7 +29,7 @@ export const STEP_04_MOVING_SOURCE: Step = {
     },
     {
       type: 'narrate',
-      text: 'The **solid** circle stays anchored at the **birth point** and expands at $c$ in all directions — while the dashed prediction sails off with the source and never matches reality. The light did not inherit the source\'s velocity. Each photon is a self-propagating electromagnetic wave — oscillating fields that sustain each other — launched into spacetime at $c$, period.',
+      text: 'The **solid** circle stays anchored at the **birth point** and expands at $c$ in all directions — while the dashed prediction sails off with the source and never matches reality. The light did not inherit the source\'s velocity. Each photon is a self-propagating electromagnetic wave — oscillating fields that sustain each other — launched into space and time at $c$, period.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

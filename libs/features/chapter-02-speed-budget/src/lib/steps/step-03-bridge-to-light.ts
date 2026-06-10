@@ -11,7 +11,7 @@ export const STEP_03_BRIDGE_TO_LIGHT: Step = {
   timeline: [
     {
       type: 'narrate',
-      text: 'You have seen the speed budget: everyone moves through spacetime at $c$. Vertical means at rest, all of $c$ spent on time. Horizontal means light, all of $c$ spent on space — no time elapses for the photon.',
+      text: 'You have seen the speed budget: everyone moves through space and time at $c$. Vertical means at rest, all of $c$ spent on time. Horizontal means light, all of $c$ spent on space — no time elapses for the photon.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {
@@ -40,7 +40,7 @@ export const STEP_03_BRIDGE_TO_LIGHT: Step = {
     },
     {
       type: 'narrate',
-      text: 'In the next chapter we step out of the spacetime diagram. We will watch the pulses move through space directly, the way you would see them from above. The rules from this chapter still hold; we are just changing the camera.',
+      text: 'In the next chapter we step out of the space and proper-time diagram. We will watch the pulses move through space directly, the way you would see them from above. The rules from this chapter still hold; we are just changing the camera.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

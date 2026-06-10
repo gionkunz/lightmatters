@@ -22,11 +22,11 @@ export interface ChapterPreview {
   readonly minutes: number;
 }
 
-/** Chapters 1–10: flat spacetime (SR). Chapters 11–13: curved spacetime (GR). */
+/** Chapters 1–10: flat space and time (SR). Chapters 11–13: curved space and time (GR). */
 export const CHAPTERS: readonly ChapterPreview[] = [
   {
     n: 1,
-    title: 'Position, time, spacetime',
+    title: 'Position, time, together',
     blurb:
       'A point on an axis. Time on another. The diagram everything else lives on.',
     mini: 'axes',
@@ -43,7 +43,7 @@ export const CHAPTERS: readonly ChapterPreview[] = [
   {
     n: 3,
     title: 'The speed budget',
-    blurb: 'You move through spacetime at c — always. Choose how to spend it.',
+    blurb: 'You move through space and time at c — always. Choose how to spend it.',
     mini: 'vector',
     minutes: 5,
   },
@@ -87,14 +87,14 @@ export const CHAPTERS: readonly ChapterPreview[] = [
   {
     n: 9,
     title: 'The twin paradox',
-    blurb: 'Two paths through spacetime. Two elapsed times. One reunion.',
+    blurb: 'Two paths through space and time. Two elapsed times. One reunion.',
     mini: 'twin',
     minutes: 8,
   },
   {
     n: 10,
     title: 'Mass is energy (E=mc²)',
-    blurb: 'Rest mass is bottled spacetime motion — energy you can release.',
+    blurb: 'Rest mass is bottled motion through space and time — energy you can release.',
     mini: 'single',
     minutes: 9,
   },

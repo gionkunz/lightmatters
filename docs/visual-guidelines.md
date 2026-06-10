@@ -166,7 +166,7 @@ Lowercase, italic serif. Used as a sub-wordmark in the brand sheet and in the fo
 
 - Hero h2 (current): *Relativity, the way it should have clicked the first time.* — note the inline italic emphasis on "should have" and the colored period.
 - CTA h2: *Light is not metaphor. It is the geometry.* — italic emphasis on "It is the geometry."
-- Hero subhead: *A guided journey of small interactive experiments — paper, vectors, light cones, gravity wells — that build intuition for spacetime before you ever see an equation.*
+- Hero subhead: *A guided journey of small interactive experiments — paper, vectors, gravity wells — that build intuition for space and time before you ever see an equation.*
 - Marketing metadata kicker: *~ 90 min · 8 chapters · no prior physics*
 
 ---
@@ -186,7 +186,7 @@ Every primitive defined in `primitives.jsx`. Each must exist in the Angular port
 | `Kicker` | `lm-kicker` | The defining mono uppercase label, 10–11px, 0.22em tracking. Used everywhere. |
 | `Button` | `lm-button` | Primary (filled ink) / secondary (outline). Italic serif label. Glow on hover. |
 | `Slider` | `lm-slider` | Mono label + value, `1px` track, ticks, draggable accent-glowing thumb. Accepts `accent` color. |
-| `STDiagram` | `lm-spacetime-diagram` | The recurring spacetime diagram. Variants: `position-only` (Ch 1 Step 1), `single`, `pair`, `wavefront`, `cone`. |
+| `STDiagram` | `lm-spacetime-diagram` | The recurring space and proper-time diagram. Variants: `position-only` (Ch 1 Step 1), `single`, `pair`, `wavefront`, `cone`. |
 | `STMini` | (variant of above) | Tiny thumbnail variants for chapter cards: `axes`, `vector`, `pair`, `cone`, `wavefront`, `well`, `doppler`, `bend`. |
 | `ConeShape` / `BigCone` | (variant of curved-surface) | Wireframe cone with rims, meridians, cross-section ellipses, and an optional worldline path. |
 | `ThemeToggle` | `lm-theme-toggle` | Outlined mono pill with an accent dot. Glows on hover. |
@@ -198,15 +198,15 @@ Every primitive defined in `primitives.jsx`. Each must exist in the Angular port
 
 ---
 
-## 8. Spacetime diagram conventions
+## 8. Space and proper-time diagram conventions
 
-The spacetime diagram is the most-reused primitive. Lock these conventions:
+The space and proper-time diagram is the most-reused primitive. It is an Epstein diagram, never a Minkowski spacetime diagram. Lock these conventions:
 
-- **Full diagram** — time vertical (up), space horizontal (right). `1px` stroke, `ink` color. Origin at bottom-left of the diagram area.
-- **Position-only variant (Ch 1 Step 1)** — horizontal spatial axis only: tick marks, `x` label, movable point at normalized position 0–1. No time axis yet.
+- **Full diagram** — proper time vertical (up), space horizontal (right). `1px` stroke, `ink` color. Origin at bottom-left of the diagram area.
+- **Position-only variant (Ch 1 Step 1)** — horizontal spatial axis only: tick marks, `Space` label, movable point at normalized position 0–1. No proper-time axis yet.
 - **Ticks** — 5 tick marks per axis, `5px` long, perpendicular outward.
-- **Axis labels** — `t` and `x` in mono, italic serif `c` for the light-cone line. Small (10–11px), `~0.65` opacity.
-- **Light cone** — dashed diagonal line (`stroke-dasharray: 3 4`, opacity `~0.55`) at 45°, from origin upward and to the right.
+- **Axis labels** — `Proper time` (vertical) and `Space` (horizontal) in mono. Small (10–11px), `~0.65` opacity.
+- **Light** — lies flat along the horizontal space axis (all of the budget spent on space, none on proper time). No 45° line and no light cone: those belong to Minkowski diagrams, which this project does not use.
 - **Vector** — `2.2–2.6px` stroke, round line caps, arrowhead drawn as a 3-point polyline. Animated to swing on a loop (~6.4s, cubic-bezier `.6,.05,.4,.95`) when used decoratively.
 - **Twin vectors** — A in `accent1`, B in `accent2`, slightly thicker stroke (`+0.2`), each with its own out-of-phase swing animation.
 - **Wavefront** — emitter dot (4px accent1 fill) at a point; 4 concentric rings expand from `r=0` outward (`4.2s ease-out`, staggered `1.05s` between rings), 1.4px stroke. Observer stick figure (small circle + line + base) drawn in accent2 at the receiving side.

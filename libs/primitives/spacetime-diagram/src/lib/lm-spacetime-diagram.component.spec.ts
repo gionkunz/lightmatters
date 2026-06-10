@@ -146,7 +146,7 @@ describe('LmSpacetimeDiagramComponent', () => {
       );
     });
 
-    it('tilts vector toward the light cone at velocity 1', () => {
+    it('tilts vector to 45° at velocity 1', () => {
       fixture.componentRef.setInput('velocity', 1);
       fixture.detectChanges();
       const line = fixture.nativeElement.querySelector('line[stroke-linecap="round"]');

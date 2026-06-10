@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import type { DiagramVariant } from '../data/chapters.data';
 
-/** Static SVG stand-in for spacetime diagram primitives on the landing page. */
+/** Static SVG stand-in for space and proper-time diagram primitives on the landing page. */
 @Component({
   selector: 'lm-diagram-placeholder',
   imports: [],

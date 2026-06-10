@@ -557,7 +557,7 @@ export class LmSpacetimeDiagramComponent {
   readonly budgetArc = input(false);
   readonly showTipLabel = input(false);
   readonly tipProperYears = input(1);
-  /** Elapsed coordinate time (c = 1); observers and light cone advance together. */
+  /** Elapsed time (c = 1); observers and expanding light circles advance together. */
   readonly wavefrontTime = input(0);
   /** @deprecated Use wavefrontTime */
   readonly wavefrontRadius = input(0);

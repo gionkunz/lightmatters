@@ -2,7 +2,7 @@ import type { Step } from '@lm/engine';
 
 export const STEP_03_SPACETIME: Step = {
   id: 'spacetime-intro',
-  title: 'The spacetime diagram',
+  title: 'The space and proper-time diagram',
   kicker: 'a worldline',
   layout: 'intro',
   timeline: [
@@ -34,7 +34,7 @@ export const STEP_03_SPACETIME: Step = {
     },
     {
       type: 'narrate',
-      text: 'We call those lines worldlines. Drag the sliders. The point moves through spacetime, and the line from the origin is its worldline so far.',
+      text: 'We call those lines worldlines. Drag the sliders. The point moves through space and time, and the line from the origin is its worldline so far.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],

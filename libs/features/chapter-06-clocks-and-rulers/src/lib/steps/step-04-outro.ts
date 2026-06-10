@@ -20,7 +20,7 @@ export const STEP_04_OUTRO: Step = {
     },
     {
       type: 'narrate',
-      text: 'Neither effect is a glitch in the instruments. They are how flat spacetime reconciles a single invariant speed.',
+      text: 'Neither effect is a glitch in the instruments. They are how flat space and time reconcile a single invariant speed.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

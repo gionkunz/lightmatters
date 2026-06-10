@@ -38,7 +38,7 @@ export const STEP_03_FOLDED_PAPER: Step = {
     },
     {
       type: 'narrate',
-      text: 'Look at the worldline now. **A straight line.** Free fall is what happens when a particle moves in the simplest possible way through spacetime — and the cones merely curl that straight line into orbit.',
+      text: 'Look at the worldline now. **A straight line.** Free fall is what happens when a particle moves in the simplest possible way through space and time — and the cones merely curl that straight line into orbit.',
       pauseAfter: BEAT_PAUSE_MS,
     },
     {

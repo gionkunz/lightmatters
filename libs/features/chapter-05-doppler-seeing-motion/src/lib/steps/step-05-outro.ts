@@ -20,7 +20,7 @@ export const STEP_05_OUTRO: Step = {
     },
     {
       type: 'narrate',
-      text: 'Next we leave flat spacetime. We roll the diagram, bend it into a cone, and gravity becomes geometry. Chapter 11 awaits.',
+      text: 'Next we leave flat space and time. We roll the diagram, bend it into a cone, and gravity becomes geometry. Chapter 11 awaits.',
     },
     { type: 'wait', for: 'userAdvance' },
   ],
